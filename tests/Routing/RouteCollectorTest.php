@@ -22,7 +22,6 @@ use Slim\Tests\TestCase;
 
 use function dirname;
 use function file_exists;
-use function file_put_contents;
 use function sprintf;
 use function unlink;
 
@@ -38,6 +37,8 @@ class RouteCollectorTest extends TestCase
         if ($this->cacheFile && file_exists($this->cacheFile)) {
             unlink($this->cacheFile);
         }
+
+        stream_wrapper_unregister('test');
     }
 
     public function testGetSetBasePath()
@@ -153,8 +154,20 @@ class RouteCollectorTest extends TestCase
      */
     public function testCacheFileExistsAndIsNotReadable()
     {
-        $this->cacheFile = __DIR__ . '/non-readable.cache';
-        file_put_contents($this->cacheFile, '<?php return []; ?>');
+        clearstatcache();
+
+        $nonReadableFileStream = new class() {
+            public function url_stat()
+            {
+                return [
+                    // not readable
+                    'mode' => 0,
+                ];
+            }
+        };
+
+        stream_wrapper_register('test', $nonReadableFileStream::class);
+        $this->cacheFile = 'test://router.cache';
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage(sprintf('Route collector cache file `%s` is not readable', $this->cacheFile));
