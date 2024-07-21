@@ -144,9 +144,8 @@ class ResponseEmitterTest extends TestCase
         $responseEmitter->emit($response);
 
         $expectedStack = [
-            ['header' => 'X-Foo: baz1', 'replace' => true, 'status_code' => null],
-            ['header' => 'X-Foo: baz2', 'replace' => false, 'status_code' => null],
-            ['header' => 'HTTP/1.1 200 OK', 'replace' => true, 'status_code' => 200],
+            ['header' => 'X-Foo: baz1'],
+            ['header' => 'X-Foo: baz2'],
         ];
 
         $this->assertSame($expectedStack, HeaderStack::stack());
@@ -162,9 +161,8 @@ class ResponseEmitterTest extends TestCase
         $responseEmitter->emit($response);
 
         $expectedStack = [
-            ['header' => 'set-cOOkie: foo=bar', 'replace' => false, 'status_code' => null],
-            ['header' => 'set-cOOkie: bar=baz', 'replace' => false, 'status_code' => null],
-            ['header' => 'HTTP/1.1 200 OK', 'replace' => true, 'status_code' => 200],
+            ['header' => 'set-cOOkie: foo=bar',],
+            ['header' => 'set-cOOkie: bar=baz'],
         ];
 
         $this->assertSame($expectedStack, HeaderStack::stack());
