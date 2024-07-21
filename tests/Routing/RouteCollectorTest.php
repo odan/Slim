@@ -38,7 +38,9 @@ class RouteCollectorTest extends TestCase
             unlink($this->cacheFile);
         }
 
-        stream_wrapper_unregister('test');
+        if (in_array('test', stream_get_wrappers())) {
+            stream_wrapper_unregister('test');
+        }
     }
 
     public function testGetSetBasePath()
@@ -157,13 +159,21 @@ class RouteCollectorTest extends TestCase
         clearstatcache();
 
         $nonReadableFileStream = new class () {
+            // Prevent creation of dynamic property
+            public mixed $context = null;
+
             // phpcs:ignore
-            public function url_stat()
+            public function url_stat(): array
             {
                 return [
                     // not readable
                     'mode' => 0,
                 ];
+            }
+
+            public function unlink(): bool
+            {
+                return true;
             }
         };
 
