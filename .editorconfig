@@ -13,3 +13,11 @@ trim_trailing_whitespace = false
 
 [*.{yml,yaml}]
 indent_size = 2
+
+[*.neon]
+indent_style = tab
+indent_size = 4
+
+[composer.json]
+indent_style = space
+indent_size = 4
