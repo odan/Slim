@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Mocks;
 
-class InvokableTest
+class InvokableTester
 {
     public static $CalledCount = 0;
 

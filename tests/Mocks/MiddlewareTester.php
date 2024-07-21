@@ -16,7 +16,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Tests\Providers\PSR7ObjectProvider;
 
-class MiddlewareTest implements MiddlewareInterface
+class MiddlewareTester implements MiddlewareInterface
 {
     public static $CalledCount = 0;
 
