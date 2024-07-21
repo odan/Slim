@@ -230,9 +230,9 @@ class CallableResolverTest extends TestCase
     public function testResolutionToAnInvokableClass(): void
     {
         $resolver = new CallableResolver(); // No container injected
-        $callable = $resolver->resolve('Slim\Tests\Mocks\InvokableTest');
-        $callableRoute = $resolver->resolveRoute('Slim\Tests\Mocks\InvokableTest');
-        $callableMiddleware = $resolver->resolveMiddleware('Slim\Tests\Mocks\InvokableTest');
+        $callable = $resolver->resolve(\Slim\Tests\Mocks\InvokableTester::class);
+        $callableRoute = $resolver->resolveRoute(\Slim\Tests\Mocks\InvokableTester::class);
+        $callableMiddleware = $resolver->resolveMiddleware(\Slim\Tests\Mocks\InvokableTester::class);
 
         $callable();
         $this->assertSame(1, InvokableTester::$CalledCount);
@@ -247,7 +247,7 @@ class CallableResolverTest extends TestCase
     public function testResolutionToAPsrRequestHandlerClass(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Slim\\Tests\\Mocks\\RequestHandlerTest is not resolvable');
+        $this->expectExceptionMessage('Slim\\Tests\\Mocks\\RequestHandlerTester is not resolvable');
 
         $resolver = new CallableResolver(); // No container injected
         $resolver->resolve(RequestHandlerTester::class);
@@ -265,7 +265,7 @@ class CallableResolverTest extends TestCase
     public function testMiddlewareResolutionToAPsrRequestHandlerClass(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Slim\\Tests\\Mocks\\RequestHandlerTest is not resolvable');
+        $this->expectExceptionMessage('Slim\\Tests\\Mocks\\RequestHandlerTester is not resolvable');
 
         $resolver = new CallableResolver(); // No container injected
         $resolver->resolveMiddleware(RequestHandlerTester::class);
