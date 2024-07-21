@@ -14,6 +14,8 @@ use GuzzleHttp\Psr7\ServerRequest as GuzzleServerRequest;
 use HttpSoft\Message\ServerRequest as HttpSoftServerRequest;
 use Laminas\Diactoros\ServerRequest as LaminasDiactorosServerRequest;
 use Nyholm\Psr7\ServerRequest as NyholmServerRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Slim\Factory\Psr17\GuzzlePsr17Factory;
@@ -42,11 +44,7 @@ class ServerRequestCreatorFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideImplementations
-     * @param string $psr17factory
-     * @param string $expectedServerRequestClass
-     */
+    #[DataProvider('provideImplementations')]
     public function testCreateAppWithAllImplementations(string $psr17factory, string $expectedServerRequestClass)
     {
         Psr17FactoryProvider::setFactories([$psr17factory]);
@@ -70,8 +68,9 @@ class ServerRequestCreatorFactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess - Psr17FactoryProvider::setFactories breaks other tests
+     * RunInSeparateProcess - Psr17FactoryProvider::setFactories breaks other tests
      */
+    #[RunInSeparateProcess()]
     public function testDetermineServerRequestCreatorThrowsRuntimeException()
     {
         $this->expectException(RuntimeException::class);
@@ -94,8 +93,9 @@ class ServerRequestCreatorFactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess - ServerRequestCreatorFactory::setServerRequestCreator breaks other tests
+     * RunInSeparateProcess - ServerRequestCreatorFactory::setServerRequestCreator breaks other tests
      */
+    #[RunInSeparateProcess()]
     public function testSetServerRequestCreatorWithoutDecorators()
     {
         ServerRequestCreatorFactory::setSlimHttpDecoratorsAutomaticDetection(false);
@@ -115,8 +115,9 @@ class ServerRequestCreatorFactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess - ServerRequestCreatorFactory::setServerRequestCreator breaks other tests
+     * RunInSeparateProcess - ServerRequestCreatorFactory::setServerRequestCreator breaks other tests
      */
+    #[RunInSeparateProcess()]
     public function testSetServerRequestCreatorWithDecorators()
     {
         ServerRequestCreatorFactory::setSlimHttpDecoratorsAutomaticDetection(true);

@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Slim\Tests\Routing;
 
 use Error;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Prophecy\Argument;
 use Slim\Interfaces\DispatcherInterface;
 use Slim\Interfaces\RouteCollectorInterface;
@@ -33,13 +34,7 @@ class RouteResolverTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider computeRoutingResultsDataProvider
-     *
-     * @param string $method The request method
-     * @param string $uri The request uri
-     * @param string $expectedUri The expected uri after transformation in the computeRoutingResults()
-     */
+    #[DataProvider('computeRoutingResultsDataProvider')]
     public function testComputeRoutingResults(string $method, string $uri, string $expectedUri)
     {
         $routeCollectorProphecy = $this->prophesize(RouteCollectorInterface::class);

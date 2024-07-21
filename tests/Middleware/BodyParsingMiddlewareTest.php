@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Middleware;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -145,9 +146,7 @@ class BodyParsingMiddlewareTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider parsingProvider
-     */
+    #[DataProvider('parsingProvider')]
     public function testParsing($contentType, $body, $expected)
     {
         $request = $this->createRequestWithBody($contentType, $body);

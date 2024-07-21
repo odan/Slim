@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Slim\Tests\Routing;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
@@ -100,14 +101,7 @@ class RouteParserTest extends TestCase
         $this->assertSame('/hello/world', $results);
     }
 
-    /**
-     * @dataProvider urlForCases
-     * @param $withBasePath
-     * @param $pattern
-     * @param $arguments
-     * @param $queryParams
-     * @param $expectedResult
-     */
+    #[DataProvider('urlForCases')]
     public function testUrlForWithBasePath($withBasePath, $pattern, $arguments, $queryParams, $expectedResult)
     {
         $responseFactoryProphecy = $this->prophesize(ResponseFactoryInterface::class);

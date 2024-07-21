@@ -14,6 +14,8 @@ use GuzzleHttp\Psr7\HttpFactory;
 use HttpSoft\Message\ResponseFactory as HttpSoftResponseFactory;
 use Laminas\Diactoros\ResponseFactory as LaminasDiactorosResponseFactory;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -60,11 +62,7 @@ class AppFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideImplementations
-     * @param string $psr17factory
-     * @param string $expectedResponseFactoryClass
-     */
+    #[DataProvider('provideImplementations')]
     public function testCreateAppWithAllImplementations(string $psr17factory, string $expectedResponseFactoryClass)
     {
         Psr17FactoryProvider::setFactories([$psr17factory]);
@@ -109,8 +107,9 @@ class AppFactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess - Psr17FactoryProvider::setFactories breaks other tests
+     * RunInSeparateProcess - Psr17FactoryProvider::setFactories breaks other tests
      */
+    #[RunInSeparateProcess()]
     public function testDetermineResponseFactoryThrowsRuntimeException()
     {
         $this->expectException(RuntimeException::class);
@@ -131,8 +130,9 @@ class AppFactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess - Psr17FactoryProvider::setFactories breaks other tests
+     * RunInSeparateProcess - Psr17FactoryProvider::setFactories breaks other tests
      */
+    #[RunInSeparateProcess()]
     public function testResponseFactoryIsStillReturnedIfStreamFactoryIsNotAvailable()
     {
         Psr17FactoryProvider::setFactories([MockPsr17FactoryWithoutStreamFactory::class]);
@@ -144,8 +144,9 @@ class AppFactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess - AppFactory::setResponseFactory breaks other tests
+     * RunInSeparateProcess - AppFactory::setResponseFactory breaks other tests
      */
+    #[RunInSeparateProcess()]
     public function testAppIsCreatedWithInstancesFromSetters()
     {
         $responseFactoryProphecy = $this->prophesize(ResponseFactoryInterface::class);
@@ -200,9 +201,10 @@ class AppFactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess - AppFactory::create saves $responseFactory into static::$responseFactory,
+     * RunInSeparateProcess - AppFactory::create saves $responseFactory into static::$responseFactory,
      *                         this breaks other tests
      */
+    #[RunInSeparateProcess()]
     public function testAppIsCreatedWithInjectedInstancesFromFunctionArguments()
     {
         $responseFactoryProphecy = $this->prophesize(ResponseFactoryInterface::class);
@@ -251,8 +253,9 @@ class AppFactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess - AppFactory::setResponseFactory breaks other tests
+     * RunInSeparateProcess - AppFactory::setResponseFactory breaks other tests
      */
+    #[RunInSeparateProcess()]
     public function testResponseAndStreamFactoryIsBeingInjectedInDecoratedResponseFactory()
     {
         $responseProphecy = $this->prophesize(ResponseInterface::class);

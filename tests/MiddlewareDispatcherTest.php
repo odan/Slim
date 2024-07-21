@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Prophecy\Argument;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -154,15 +155,10 @@ class MiddlewareDispatcherTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider deferredCallableProvider
-     *
-     * @param string $callable
-     * @param callable|MiddlewareInterface
-     */
+    #[DataProvider('deferredCallableProvider')]
     public function testDeferredResolvedCallableWithContainerAndNonAdvancedCallableResolverUnableToResolveCallable(
-        $callable,
-        $result
+        string $callable,
+        string|callable|MockMiddlewareSlimCallable|MiddlewareInterface $result
     ): void {
         if ($callable === 'MiddlewareInterfaceNotImplemented') {
             $this->expectException(RuntimeException::class);

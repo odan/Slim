@@ -13,6 +13,7 @@ namespace Slim\Tests\Routing;
 use FastRoute\BadRouteException;
 use FastRoute\DataGenerator\GroupCountBased;
 use FastRoute\RouteCollector;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Slim\Routing\FastRouteDispatcher;
 use Slim\Tests\TestCase;
 
@@ -20,9 +21,7 @@ use function FastRoute\simpleDispatcher;
 
 class FastRouteDispatcherTest extends TestCase
 {
-    /**
-     * @dataProvider provideFoundDispatchCases
-     */
+    #[DataProvider('provideFoundDispatchCases')]
     public function testFoundDispatches($method, $uri, $callback, $handler, $argDict)
     {
         /** @var FastRouteDispatcher $dispatcher */
@@ -56,9 +55,7 @@ class FastRouteDispatcherTest extends TestCase
         return FastRouteDispatcher::class;
     }
 
-    /**
-     * @dataProvider provideNotFoundDispatchCases
-     */
+    #[DataProvider('provideNotFoundDispatchCases')]
     public function testNotFoundDispatches($method, $uri, $callback)
     {
         /** @var FastRouteDispatcher $dispatcher */
@@ -69,12 +66,7 @@ class FastRouteDispatcherTest extends TestCase
         $this->assertSame($dispatcher::NOT_FOUND, $results[0]);
     }
 
-    /**
-     * @dataProvider provideMethodNotAllowedDispatchCases
-     * @param $method
-     * @param $uri
-     * @param $callback
-     */
+    #[DataProvider('provideMethodNotAllowedDispatchCases')]
     public function testMethodNotAllowedDispatches($method, $uri, $callback)
     {
         /** @var FastRouteDispatcher $dispatcher */
@@ -85,13 +77,7 @@ class FastRouteDispatcherTest extends TestCase
         $this->assertSame($dispatcher::METHOD_NOT_ALLOWED, $results[0]);
     }
 
-    /**
-     * @dataProvider provideMethodNotAllowedDispatchCases
-     * @param $method
-     * @param $uri
-     * @param $callback
-     * @param $allowedMethods
-     */
+    #[DataProvider('provideMethodNotAllowedDispatchCases')]
     public function testGetAllowedMethods($method, $uri, $callback, $allowedMethods)
     {
         /** @var FastRouteDispatcher $dispatcher */
