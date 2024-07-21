@@ -157,6 +157,7 @@ class RouteCollectorTest extends TestCase
         clearstatcache();
 
         $nonReadableFileStream = new class () {
+            // phpcs:ignore
             public function url_stat()
             {
                 return [
