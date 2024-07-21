@@ -28,7 +28,7 @@ use Slim\Interfaces\InvocationStrategyInterface;
 use Slim\Interfaces\RouteCollectorProxyInterface;
 use Slim\Routing\Route;
 use Slim\Routing\RouteGroup;
-use Slim\Tests\Mocks\CallableTest;
+use Slim\Tests\Mocks\CallableTester;
 use Slim\Tests\Mocks\InvocationStrategyTest;
 use Slim\Tests\Mocks\MockCustomRequestHandlerInvocationStrategy;
 use Slim\Tests\Mocks\MockMiddlewareWithoutConstructor;
@@ -400,16 +400,16 @@ class RouteTest extends TestCase
         $callableResolver = new CallableResolver();
         $responseFactory = $this->getResponseFactory();
 
-        $deferred = $callableResolver->resolve('\Slim\Tests\Mocks\CallableTest:toCall');
+        $deferred = $callableResolver->resolve('\Slim\Tests\Mocks\CallableTester:toCall');
         $route = new Route(['GET'], '/', $deferred, $responseFactory, $callableResolver);
 
-        CallableTest::$CalledCount = 0;
+        CallableTester::$CalledCount = 0;
 
         $request = $this->createServerRequest('/');
         $response = $route->run($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame(1, CallableTest::$CalledCount);
+        $this->assertSame(1, CallableTester::$CalledCount);
     }
 
     public function testControllerMethodAsStringResolvesWithContainer()
@@ -549,7 +549,7 @@ class RouteTest extends TestCase
         $callableResolver = new CallableResolver();
         $invocationStrategy = new InvocationStrategyTest();
 
-        $deferred = '\Slim\Tests\Mocks\CallableTest:toCall';
+        $deferred = '\Slim\Tests\Mocks\CallableTester:toCall';
         $route = new Route(
             ['GET'],
             '/',
@@ -564,7 +564,7 @@ class RouteTest extends TestCase
         $response = $route->run($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertEquals([new CallableTest(), 'toCall'], InvocationStrategyTest::$LastCalledFor);
+        $this->assertEquals([new CallableTester(), 'toCall'], InvocationStrategyTest::$LastCalledFor);
     }
 
     /**
@@ -581,13 +581,13 @@ class RouteTest extends TestCase
             ->shouldBeCalledOnce();
 
         $containerProphecy = $this->prophesize(ContainerInterface::class);
-        $containerProphecy->has('\Slim\Tests\Mocks\CallableTest')->willReturn(true);
-        $containerProphecy->get('\Slim\Tests\Mocks\CallableTest')->willReturn(new CallableTest());
+        $containerProphecy->has('\Slim\Tests\Mocks\CallableTester')->willReturn(true);
+        $containerProphecy->get('\Slim\Tests\Mocks\CallableTester')->willReturn(new CallableTester());
 
         $callableResolver = new CallableResolver($containerProphecy->reveal());
         $strategy = new InvocationStrategyTest();
 
-        $deferred = '\Slim\Tests\Mocks\CallableTest:toCall';
+        $deferred = '\Slim\Tests\Mocks\CallableTester:toCall';
         $route = new Route(
             ['GET'],
             '/',
@@ -602,7 +602,7 @@ class RouteTest extends TestCase
         $response = $route->run($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertEquals([new CallableTest(), 'toCall'], InvocationStrategyTest::$LastCalledFor);
+        $this->assertEquals([new CallableTester(), 'toCall'], InvocationStrategyTest::$LastCalledFor);
     }
 
     public function testInvokeUsesRequestHandlerStrategyForRequestHandlers()
@@ -760,13 +760,13 @@ class RouteTest extends TestCase
             null,
             $strategy
         );
-        $route->setCallable('\Slim\Tests\Mocks\CallableTest:toCall'); //Then we fix it here.
+        $route->setCallable('\Slim\Tests\Mocks\CallableTester:toCall'); //Then we fix it here.
 
         $request = $this->createServerRequest('/');
         $response = $route->run($request);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertEquals([new CallableTest(), 'toCall'], InvocationStrategyTest::$LastCalledFor);
+        $this->assertEquals([new CallableTester(), 'toCall'], InvocationStrategyTest::$LastCalledFor);
     }
 
     /**
@@ -784,7 +784,7 @@ class RouteTest extends TestCase
 
         $containerProphecy = $this->prophesize(ContainerInterface::class);
         $containerProphecy->has('CallableTest2')->willReturn(true);
-        $containerProphecy->get('CallableTest2')->willReturn(new CallableTest());
+        $containerProphecy->get('CallableTest2')->willReturn(new CallableTester());
 
         $callableResolver = new CallableResolver($containerProphecy->reveal());
         $strategy = new InvocationStrategyTest();
@@ -843,7 +843,7 @@ class RouteTest extends TestCase
 
         $containerProphecy = $this->prophesize(ContainerInterface::class);
         $containerProphecy->has('CallableTest3')->willReturn(true);
-        $containerProphecy->get('CallableTest3')->willReturn(new CallableTest());
+        $containerProphecy->get('CallableTest3')->willReturn(new CallableTester());
         $containerProphecy->has('ClosureMiddleware')->willReturn(true);
         $containerProphecy->get('ClosureMiddleware')->willReturn(function () use ($responseFactoryProphecy) {
             $response = $responseFactoryProphecy->reveal()->createResponse();

@@ -49,7 +49,7 @@ class AppFactoryTest extends TestCase
         $reflectionClass->setStaticPropertyValue('responseFactoryClass', DecoratedResponseFactory::class);
     }
 
-    public function provideImplementations()
+    public static function provideImplementations()
     {
         return [
             [SlimPsr17Factory::class, SlimResponseFactory::class],

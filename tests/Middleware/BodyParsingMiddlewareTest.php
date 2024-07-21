@@ -64,7 +64,7 @@ class BodyParsingMiddlewareTest extends TestCase
     }
 
 
-    public function parsingProvider()
+    public static function parsingProvider()
     {
         return [
             'form' => [

@@ -162,7 +162,7 @@ class FastRouteDispatcherTest extends TestCase
         }, $this->generateDispatcherOptions());
     }
 
-    public function provideFoundDispatchCases()
+    public static function provideFoundDispatchCases()
     {
         $cases = [];
 
@@ -461,7 +461,7 @@ class FastRouteDispatcherTest extends TestCase
         return $cases;
     }
 
-    public function provideNotFoundDispatchCases()
+    public static function provideNotFoundDispatchCases()
     {
         $cases = [];
 
@@ -538,7 +538,7 @@ class FastRouteDispatcherTest extends TestCase
         return $cases;
     }
 
-    public function provideMethodNotAllowedDispatchCases()
+    public static function provideMethodNotAllowedDispatchCases()
     {
         $cases = [];
 

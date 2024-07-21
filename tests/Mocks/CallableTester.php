@@ -12,7 +12,7 @@ namespace Slim\Tests\Mocks;
 
 use Slim\Tests\Providers\PSR7ObjectProvider;
 
-class CallableTest
+class CallableTester
 {
     public static $CalledCount = 0;
 

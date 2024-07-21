@@ -17,7 +17,7 @@ use Slim\Tests\TestCase;
 
 class RouteParserTest extends TestCase
 {
-    public function urlForCases()
+    public static function urlForCases(): array
     {
         return [
             'with base path' => [
