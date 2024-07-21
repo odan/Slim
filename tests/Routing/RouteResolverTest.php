@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -36,8 +36,8 @@ class RouteResolverTest extends TestCase
     /**
      * @dataProvider computeRoutingResultsDataProvider
      *
-     * @param string $method      The request method
-     * @param string $uri         The request uri
+     * @param string $method The request method
+     * @param string $uri The request uri
      * @param string $expectedUri The expected uri after transformation in the computeRoutingResults()
      */
     public function testComputeRoutingResults(string $method, string $uri, string $expectedUri)
@@ -50,11 +50,13 @@ class RouteResolverTest extends TestCase
             ->dispatch(Argument::type('string'), Argument::type('string'))
             ->will(function ($args) use ($routingResultsProphecy, $expectedUri) {
                 if ($args[1] !== $expectedUri) {
-                    throw new Error(sprintf(
-                        "URI transformation failed.\n  Received: '%s'\n  Expected: '%s'",
-                        $args[1],
-                        $expectedUri
-                    ));
+                    throw new Error(
+                        sprintf(
+                            "URI transformation failed.\n  Received: '%s'\n  Expected: '%s'",
+                            $args[1],
+                            $expectedUri
+                        )
+                    );
                 }
                 return $routingResultsProphecy->reveal();
             })

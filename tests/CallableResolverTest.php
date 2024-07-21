@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -177,7 +177,7 @@ class CallableResolverTest extends TestCase
         $this->assertSame($container, CallableTest::$CalledContainer);
 
         CallableTest::$CalledContainer = null;
-        $resolver->resolveMiddleware([CallableTest::class ,'toCall']);
+        $resolver->resolveMiddleware([CallableTest::class, 'toCall']);
         $this->assertSame($container, CallableTest::$CalledContainer);
     }
 

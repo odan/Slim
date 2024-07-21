@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -72,7 +72,7 @@ class OutputBufferingMiddlewareTest extends TestCase
         $middlewareDispatcher->addMiddleware($outputBufferingMiddleware);
         $response = $middlewareDispatcher->handle($request);
 
-        $this->assertSame('BodyTest', (string) $response->getBody());
+        $this->assertSame('BodyTest', (string)$response->getBody());
     }
 
     public function testPrepend()
@@ -97,7 +97,7 @@ class OutputBufferingMiddlewareTest extends TestCase
         $middlewareDispatcher->addMiddleware($outputBufferingMiddleware);
         $response = $middlewareDispatcher->handle($request);
 
-        $this->assertSame('TestBody', (string) $response->getBody());
+        $this->assertSame('TestBody', (string)$response->getBody());
     }
 
     public function testOutputBufferIsCleanedWhenThrowableIsCaught()

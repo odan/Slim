@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -27,10 +27,10 @@ class RouteContextTest extends TestCase
         $routingResults = $this->createMock(RoutingResults::class);
 
         $serverRequest = $this->createServerRequest('/')
-                              ->withAttribute(RouteContext::BASE_PATH, '')
-                              ->withAttribute(RouteContext::ROUTE, $route)
-                              ->withAttribute(RouteContext::ROUTE_PARSER, $routeParser)
-                              ->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
+            ->withAttribute(RouteContext::BASE_PATH, '')
+            ->withAttribute(RouteContext::ROUTE, $route)
+            ->withAttribute(RouteContext::ROUTE_PARSER, $routeParser)
+            ->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
 
         $routeContext = RouteContext::fromRequest($serverRequest);
 
@@ -98,9 +98,9 @@ class RouteContextTest extends TestCase
         $routingResults = $this->createMock(RoutingResults::class);
 
         return $this->createServerRequest('/')
-                    ->withAttribute(RouteContext::BASE_PATH, '')
-                    ->withAttribute(RouteContext::ROUTE, $route)
-                    ->withAttribute(RouteContext::ROUTE_PARSER, $routeParser)
-                    ->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
+            ->withAttribute(RouteContext::BASE_PATH, '')
+            ->withAttribute(RouteContext::ROUTE, $route)
+            ->withAttribute(RouteContext::ROUTE_PARSER, $routeParser)
+            ->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
     }
 }

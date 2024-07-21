@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -141,6 +141,7 @@ class ErrorMiddleware implements MiddlewareInterface
      *
      * The callable signature MUST match the ErrorHandlerInterface
      *
+     * @param string|callable|ErrorHandler $handler
      * @see \Slim\Interfaces\ErrorHandlerInterface
      *
      * 1. Instance of \Psr\Http\Message\ServerRequestInterface
@@ -152,7 +153,6 @@ class ErrorMiddleware implements MiddlewareInterface
      * The callable MUST return an instance of
      * \Psr\Http\Message\ResponseInterface.
      *
-     * @param string|callable|ErrorHandler $handler
      */
     public function setDefaultErrorHandler($handler): self
     {
@@ -169,6 +169,10 @@ class ErrorMiddleware implements MiddlewareInterface
      * Pass true to $handleSubclasses to make the handler handle all subclasses of
      * the type as well. Pass an array of classes to make the same function handle multiple exceptions.
      *
+     * @param string|string[] $typeOrTypes Exception/Throwable name.
+     * ie: RuntimeException::class or an array of classes
+     * ie: [HttpNotFoundException::class, HttpMethodNotAllowedException::class]
+     * @param string|callable|ErrorHandlerInterface $handler
      * @see \Slim\Interfaces\ErrorHandlerInterface
      *
      * 1. Instance of \Psr\Http\Message\ServerRequestInterface
@@ -180,10 +184,6 @@ class ErrorMiddleware implements MiddlewareInterface
      * The callable MUST return an instance of
      * \Psr\Http\Message\ResponseInterface.
      *
-     * @param string|string[] $typeOrTypes Exception/Throwable name.
-     * ie: RuntimeException::class or an array of classes
-     * ie: [HttpNotFoundException::class, HttpMethodNotAllowedException::class]
-     * @param string|callable|ErrorHandlerInterface $handler
      */
     public function setErrorHandler($typeOrTypes, $handler, bool $handleSubclasses = false): self
     {

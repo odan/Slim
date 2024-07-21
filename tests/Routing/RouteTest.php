@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -43,15 +43,15 @@ use function ob_start;
 class RouteTest extends TestCase
 {
     /**
-     * @param string|array        $methods
-     * @param string              $pattern
+     * @param string|array $methods
+     * @param string $pattern
      * @param Closure|string|null $callable
      * @return Route
      */
     public function createRoute($methods = 'GET', string $pattern = '/', $callable = null): Route
     {
         $callable ??= function (ServerRequestInterface $request, ResponseInterface $response) {
-                return $response;
+            return $response;
         };
 
         $callableResolverProphecy = $this->prophesize(CallableResolverInterface::class);
@@ -475,7 +475,7 @@ class RouteTest extends TestCase
         $request = $this->createServerRequest('/');
         $response = $route->run($request);
 
-        $this->assertSame('foo', (string) $response->getBody());
+        $this->assertSame('foo', (string)$response->getBody());
     }
 
     /**
@@ -498,7 +498,7 @@ class RouteTest extends TestCase
         ob_end_clean();
 
         // Output buffer is ignored without optional middleware
-        $this->assertSame('', (string) $response->getBody());
+        $this->assertSame('', (string)$response->getBody());
         $this->assertSame(201, $response->getStatusCode());
     }
 
@@ -517,7 +517,7 @@ class RouteTest extends TestCase
         $request = $this->createServerRequest('/');
         $response = $route->run($request);
 
-        $this->assertSame('foo', (string) $response->getBody());
+        $this->assertSame('foo', (string)$response->getBody());
     }
 
     public function testInvokeWithException()
@@ -869,6 +869,6 @@ class RouteTest extends TestCase
         $request = $this->createServerRequest('/');
         $response = $route->run($request);
 
-        $this->assertSame('Hello', (string) $response->getBody());
+        $this->assertSame('Hello', (string)$response->getBody());
     }
 }

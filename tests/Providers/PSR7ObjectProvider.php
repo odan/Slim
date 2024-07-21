@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -32,7 +32,7 @@ class PSR7ObjectProvider implements PSR7ObjectProviderInterface
     /**
      * @param string $uri
      * @param string $method
-     * @param array  $data
+     * @param array $data
      * @return ServerRequestInterface
      */
     public function createServerRequest(
@@ -72,7 +72,7 @@ class PSR7ObjectProvider implements PSR7ObjectProviderInterface
     }
 
     /**
-     * @param int    $statusCode
+     * @param int $statusCode
      * @param string $reasonPhrase
      * @return ResponseInterface
      */

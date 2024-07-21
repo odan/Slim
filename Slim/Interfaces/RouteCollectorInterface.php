@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -95,8 +95,8 @@ interface RouteCollectorInterface
     /**
      * Add route
      *
-     * @param string[]        $methods Array of HTTP methods
-     * @param string          $pattern The route pattern
+     * @param string[] $methods Array of HTTP methods
+     * @param string $pattern The route pattern
      * @param callable|string $handler The route callable
      */
     public function map(array $methods, string $pattern, $handler): RouteInterface;

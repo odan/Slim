@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -39,7 +39,7 @@ class RouteGroup implements RouteGroupInterface
     protected string $pattern;
 
     /**
-     * @param callable|string              $callable
+     * @param callable|string $callable
      * @param RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null> $routeCollectorProxy
      */
     public function __construct(

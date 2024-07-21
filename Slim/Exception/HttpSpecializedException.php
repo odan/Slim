@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -17,8 +17,8 @@ abstract class HttpSpecializedException extends HttpException
 {
     /**
      * @param ServerRequestInterface $request
-     * @param string|null            $message
-     * @param Throwable|null         $previous
+     * @param string|null $message
+     * @param Throwable|null $previous
      */
     public function __construct(ServerRequestInterface $request, ?string $message = null, ?Throwable $previous = null)
     {

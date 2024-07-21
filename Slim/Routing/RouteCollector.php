@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -25,9 +25,9 @@ use Slim\Interfaces\RouteParserInterface;
 use function array_pop;
 use function dirname;
 use function file_exists;
-use function sprintf;
 use function is_readable;
 use function is_writable;
+use function sprintf;
 
 /**
  * RouteCollector is used to collect routes and route groups
@@ -282,7 +282,7 @@ class RouteCollector implements RouteCollectorInterface
     }
 
     /**
-     * @param string[]        $methods
+     * @param string[] $methods
      * @param callable|string $callable
      */
     protected function createRoute(array $methods, string $pattern, $callable): RouteInterface

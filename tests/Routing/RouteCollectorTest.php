@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -174,10 +174,12 @@ class RouteCollectorTest extends TestCase
         $cacheFile = __DIR__ . '/non-writable-directory/router.cache';
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage(sprintf(
-            'Route collector cache file directory `%s` is not writable',
-            dirname($cacheFile)
-        ));
+        $this->expectExceptionMessage(
+            sprintf(
+                'Route collector cache file directory `%s` is not writable',
+                dirname($cacheFile)
+            )
+        );
 
         $responseFactoryProphecy = $this->prophesize(ResponseFactoryInterface::class);
         $callableResolverProphecy = $this->prophesize(CallableResolverInterface::class);

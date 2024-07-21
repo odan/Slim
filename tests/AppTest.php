@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -201,7 +201,7 @@ class AppTest extends TestCase
         });
         $response = $app->handle($requestProphecy->reveal());
 
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testAnyRoute(): void
@@ -236,7 +236,7 @@ class AppTest extends TestCase
 
             $response = $app->handle($requestProphecy->reveal());
 
-            $this->assertSame('Hello World', (string) $response->getBody());
+            $this->assertSame('Hello World', (string)$response->getBody());
         }
     }
 
@@ -290,7 +290,7 @@ class AppTest extends TestCase
         });
         $response = $app->handle($requestProphecy->reveal());
 
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testRedirectRoute(): void
@@ -369,7 +369,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     /********************************************************************************
@@ -413,112 +413,148 @@ class AppTest extends TestCase
     {
         return [
             'empty group with empty route' => [
-                ['', ''], ''
+                ['', ''],
+                ''
             ],
             'empty group with single slash route' => [
-                ['', '/'], '/'
+                ['', '/'],
+                '/'
             ],
             'empty group with segment route that does not end in aSlash' => [
-                ['', '/foo'], '/foo'
+                ['', '/foo'],
+                '/foo'
             ],
             'empty group with segment route that ends in aSlash' => [
-                ['', '/foo/'], '/foo/'
+                ['', '/foo/'],
+                '/foo/'
             ],
             'group single slash with empty route' => [
-                ['/', ''], '/'
+                ['/', ''],
+                '/'
             ],
             'group single slash with single slash route' => [
-                ['/', '/'], '//'
+                ['/', '/'],
+                '//'
             ],
             'group single slash with segment route that does not end in aSlash' => [
-                ['/', '/foo'], '//foo'
+                ['/', '/foo'],
+                '//foo'
             ],
             'group single slash with segment route that ends in aSlash' => [
-                ['/', '/foo/'], '//foo/'
+                ['/', '/foo/'],
+                '//foo/'
             ],
             'group segment with empty route' => [
-                ['/foo', ''], '/foo'
+                ['/foo', ''],
+                '/foo'
             ],
             'group segment with single slash route' => [
-                ['/foo', '/'], '/foo/'
+                ['/foo', '/'],
+                '/foo/'
             ],
             'group segment with segment route that does not end in aSlash' => [
-                ['/foo', '/bar'], '/foo/bar'
+                ['/foo', '/bar'],
+                '/foo/bar'
             ],
             'group segment with segment route that ends in aSlash' => [
-                ['/foo', '/bar/'], '/foo/bar/'
+                ['/foo', '/bar/'],
+                '/foo/bar/'
             ],
             'empty group with nested group segment with an empty route' => [
-                ['', '/foo', ''], '/foo'
+                ['', '/foo', ''],
+                '/foo'
             ],
             'empty group with nested group segment with single slash route' => [
-                ['', '/foo', '/'], '/foo/'
+                ['', '/foo', '/'],
+                '/foo/'
             ],
             'group single slash with empty nested group and segment route without leading slash' => [
-                ['/', '', 'foo'], '/foo'
+                ['/', '', 'foo'],
+                '/foo'
             ],
             'group single slash with empty nested group and segment route' => [
-                ['/', '', '/foo'], '//foo'
+                ['/', '', '/foo'],
+                '//foo'
             ],
             'group single slash with single slash group and segment route without leading slash' => [
-                ['/', '/', 'foo'], '//foo'
+                ['/', '/', 'foo'],
+                '//foo'
             ],
             'group single slash with single slash nested group and segment route' => [
-                ['/', '/', '/foo'], '///foo'
+                ['/', '/', '/foo'],
+                '///foo'
             ],
             'group single slash with nested group segment with an empty route' => [
-                ['/', '/foo', ''], '//foo'
+                ['/', '/foo', ''],
+                '//foo'
             ],
             'group single slash with nested group segment with single slash route' => [
-                ['/', '/foo', '/'], '//foo/'
+                ['/', '/foo', '/'],
+                '//foo/'
             ],
             'group single slash with nested group segment with segment route' => [
-                ['/', '/foo', '/bar'], '//foo/bar'
+                ['/', '/foo', '/bar'],
+                '//foo/bar'
             ],
             'group single slash with nested group segment with segment route that has aTrailing slash' => [
-                ['/', '/foo', '/bar/'], '//foo/bar/'
+                ['/', '/foo', '/bar/'],
+                '//foo/bar/'
             ],
             'empty group with empty nested group and segment route without leading slash' => [
-                ['', '', 'foo'], 'foo'
+                ['', '', 'foo'],
+                'foo'
             ],
             'empty group with empty nested group and segment route' => [
-                ['', '', '/foo'], '/foo'
+                ['', '', '/foo'],
+                '/foo'
             ],
             'empty group with single slash group and segment route without leading slash' => [
-                ['', '/', 'foo'], '/foo'
+                ['', '/', 'foo'],
+                '/foo'
             ],
             'empty group with single slash nested group and segment route' => [
-                ['', '/', '/foo'], '//foo'
+                ['', '/', '/foo'],
+                '//foo'
             ],
             'empty group with nested group segment with segment route' => [
-                ['', '/foo', '/bar'], '/foo/bar'
+                ['', '/foo', '/bar'],
+                '/foo/bar'
             ],
             'empty group with nested group segment with segment route that has aTrailing slash' => [
-                ['', '/foo', '/bar/'], '/foo/bar/'
+                ['', '/foo', '/bar/'],
+                '/foo/bar/'
             ],
             'group segment with empty nested group and segment route without leading slash' => [
-                ['/foo', '', 'bar'], '/foobar'
+                ['/foo', '', 'bar'],
+                '/foobar'
             ],
             'group segment with empty nested group and segment route' => [
-                ['/foo', '', '/bar'], '/foo/bar'
+                ['/foo', '', '/bar'],
+                '/foo/bar'
             ],
             'group segment with single slash nested group and segment route' => [
-                ['/foo', '/', 'bar'], '/foo/bar'
+                ['/foo', '/', 'bar'],
+                '/foo/bar'
             ],
             'group segment with single slash nested group and slash segment route' => [
-                ['/foo', '/', '/bar'], '/foo//bar'
+                ['/foo', '/', '/bar'],
+                '/foo//bar'
             ],
             'two group segments with empty route' => [
-                ['/foo', '/bar', ''], '/foo/bar'
+                ['/foo', '/bar', ''],
+                '/foo/bar'
             ],
             'two group segments with single slash route' => [
-                ['/foo', '/bar', '/'], '/foo/bar/'
+                ['/foo', '/bar', '/'],
+                '/foo/bar/'
             ],
             'two group segments with segment route' => [
-                ['/foo', '/bar', '/baz'], '/foo/bar/baz'
+                ['/foo', '/bar', '/baz'],
+                '/foo/bar/baz'
             ],
             'two group segments with segment route that has aTrailing slash' => [
-                ['/foo', '/bar', '/baz/'], '/foo/bar/baz/'
+                ['/foo', '/bar', '/baz/'],
+                '/foo/bar/baz/'
             ],
         ];
     }
@@ -536,7 +572,7 @@ class AppTest extends TestCase
 
     /**
      * @dataProvider routeGroupsDataProvider
-     * @param array  $sequence
+     * @param array $sequence
      * @param string $expectedPath
      */
     public function testRouteGroupCombinations(array $sequence, string $expectedPath): void
@@ -682,7 +718,7 @@ class AppTest extends TestCase
         $requestProphecy->getUri()->willReturn($uriProphecy->reveal());
 
         $response = $app->handle($requestProphecy->reveal());
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testAddRoutingMiddleware(): void
@@ -1132,7 +1168,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithSetArgument(): void
@@ -1173,7 +1209,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithSetArguments(): void
@@ -1214,7 +1250,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithNamedParameterRequestResponseStrategy(): void
@@ -1255,7 +1291,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithNamedParameterRequestResponseArgStrategy(): void
@@ -1297,7 +1333,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithNamedParameterRequestResponseNamedArgsStrategy(): void
@@ -1346,7 +1382,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testInvokeWithMatchingRouteWithNamedParameterOverwritesSetArgument(): void
@@ -1387,7 +1423,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testInvokeWithoutMatchingRoute(): void
@@ -1423,8 +1459,7 @@ class AppTest extends TestCase
         $responseFactoryProphecy = $this->prophesize(ResponseFactoryInterface::class);
         $responseFactoryProphecy->createResponse()->willReturn($responseProphecy->reveal());
 
-        $handler = new Class
-        {
+        $handler = new class {
             public function foo(ServerRequestInterface $request, ResponseInterface $response)
             {
                 return $response;
@@ -1453,7 +1488,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testInvokeWithNonExistentMethodOnCallableRegisteredInContainer(): void
@@ -1465,8 +1500,7 @@ class AppTest extends TestCase
         $responseFactoryProphecy = $this->prophesize(ResponseFactoryInterface::class);
         $responseFactoryProphecy->createResponse()->willReturn($responseProphecy->reveal());
 
-        $handler = new Class
-        {
+        $handler = new class {
         };
 
         $containerProphecy = $this->prophesize(ContainerInterface::class);
@@ -1534,7 +1568,7 @@ class AppTest extends TestCase
 
         $expectedPayload = json_encode(['name' => 'foo', 'arguments' => []]);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame($expectedPayload, (string) $response->getBody());
+        $this->assertSame($expectedPayload, (string)$response->getBody());
     }
 
     public function testInvokeFunctionName(): void
@@ -1581,7 +1615,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testCurrentRequestAttributesAreNotLostWhenAddingRouteArguments(): void
@@ -1622,7 +1656,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal()->withAttribute('greeting', 'Hello'));
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testCurrentRequestAttributesAreNotLostWhenAddingRouteArgumentsRequestResponseArg(): void
@@ -1664,7 +1698,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal()->withAttribute('greeting', 'Hello'));
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testRun(): void
@@ -1815,7 +1849,7 @@ class AppTest extends TestCase
         $response = $app->handle($requestProphecy->reveal());
 
         $this->assertSame(1, $called);
-        $this->assertEmpty((string) $response->getBody());
+        $this->assertEmpty((string)$response->getBody());
     }
 
     public function testCanBeReExecutedRecursivelyDuringDispatch(): void
@@ -1931,7 +1965,7 @@ class AppTest extends TestCase
 
         $this->assertSame(204, $response->getStatusCode());
         $this->assertSame(['nested', 'outer'], $response->getHeader('X-TRACE'));
-        $this->assertSame('11', (string) $response->getBody());
+        $this->assertSame('11', (string)$response->getBody());
     }
 
     // TODO: Re-add testUnsupportedMethodWithoutRoute
@@ -1973,7 +2007,7 @@ class AppTest extends TestCase
 
         $response = $app->handle($requestProphecy->reveal());
 
-        $this->assertSame('Hello World', (string) $response->getBody());
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testAppIsARequestHandler(): void
@@ -2003,7 +2037,7 @@ class AppTest extends TestCase
 
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/Hello[/{name}]', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
-            $response->getBody()->write((string) count($args));
+            $response->getBody()->write((string)count($args));
             return $response;
         });
 
@@ -2020,7 +2054,7 @@ class AppTest extends TestCase
         });
 
         $response = $app->handle($requestProphecy->reveal());
-        $this->assertSame('1', (string) $response->getBody());
+        $this->assertSame('1', (string)$response->getBody());
 
         $uriProphecy2 = $this->prophesize(UriInterface::class);
         $uriProphecy2->getPath()->willReturn('/Hello');
@@ -2036,7 +2070,7 @@ class AppTest extends TestCase
 
         $streamProphecy->__toString()->willReturn('');
         $response = $app->handle($requestProphecy2->reveal());
-        $this->assertSame('0', (string) $response->getBody());
+        $this->assertSame('0', (string)$response->getBody());
     }
 
     public function testInvokeSequentialProcessToAPathWithOptionalArgsAndWithoutOptionalArgsAndKeepSetedArgs(): void
@@ -2058,7 +2092,7 @@ class AppTest extends TestCase
 
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/Hello[/{name}]', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
-            $response->getBody()->write((string) count($args));
+            $response->getBody()->write((string)count($args));
             return $response;
         })->setArgument('extra', 'value');
 
@@ -2075,7 +2109,7 @@ class AppTest extends TestCase
         });
 
         $response = $app->handle($requestProphecy->reveal());
-        $this->assertSame('2', (string) $response->getBody());
+        $this->assertSame('2', (string)$response->getBody());
 
         $uriProphecy2 = $this->prophesize(UriInterface::class);
         $uriProphecy2->getPath()->willReturn('/Hello');
@@ -2091,7 +2125,7 @@ class AppTest extends TestCase
 
         $streamProphecy->__toString()->willReturn('');
         $response = $app->handle($requestProphecy2->reveal());
-        $this->assertSame('1', (string) $response->getBody());
+        $this->assertSame('1', (string)$response->getBody());
     }
 
     public function testInvokeSequentialProcessAfterAddingAnotherRouteArgument(): void
@@ -2117,7 +2151,7 @@ class AppTest extends TestCase
             ResponseInterface $response,
             $args
         ) {
-            $response->getBody()->write((string) count($args));
+            $response->getBody()->write((string)count($args));
             return $response;
         })->setArgument('extra', 'value');
 
@@ -2135,12 +2169,12 @@ class AppTest extends TestCase
         });
 
         $response = $app->handle($requestProphecy->reveal());
-        $this->assertSame('2', (string) $response->getBody());
+        $this->assertSame('2', (string)$response->getBody());
 
         $route->setArgument('extra2', 'value2');
 
         $streamProphecy->__toString()->willReturn('');
         $response = $app->handle($requestProphecy->reveal());
-        $this->assertSame('3', (string) $response->getBody());
+        $this->assertSame('3', (string)$response->getBody());
     }
 }

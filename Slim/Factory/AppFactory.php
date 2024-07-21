@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -78,35 +78,35 @@ class AppFactory
     {
         $responseFactory = $container->has(ResponseFactoryInterface::class)
         && (
-            $responseFactoryFromContainer = $container->get(ResponseFactoryInterface::class)
+        $responseFactoryFromContainer = $container->get(ResponseFactoryInterface::class)
         ) instanceof ResponseFactoryInterface
             ? $responseFactoryFromContainer
             : self::determineResponseFactory();
 
         $callableResolver = $container->has(CallableResolverInterface::class)
         && (
-            $callableResolverFromContainer = $container->get(CallableResolverInterface::class)
+        $callableResolverFromContainer = $container->get(CallableResolverInterface::class)
         ) instanceof CallableResolverInterface
             ? $callableResolverFromContainer
             : null;
 
         $routeCollector = $container->has(RouteCollectorInterface::class)
         && (
-            $routeCollectorFromContainer = $container->get(RouteCollectorInterface::class)
+        $routeCollectorFromContainer = $container->get(RouteCollectorInterface::class)
         ) instanceof RouteCollectorInterface
             ? $routeCollectorFromContainer
             : null;
 
         $routeResolver = $container->has(RouteResolverInterface::class)
         && (
-            $routeResolverFromContainer = $container->get(RouteResolverInterface::class)
+        $routeResolverFromContainer = $container->get(RouteResolverInterface::class)
         ) instanceof RouteResolverInterface
             ? $routeResolverFromContainer
             : null;
 
         $middlewareDispatcher = $container->has(MiddlewareDispatcherInterface::class)
         && (
-            $middlewareDispatcherFromContainer = $container->get(MiddlewareDispatcherInterface::class)
+        $middlewareDispatcherFromContainer = $container->get(MiddlewareDispatcherInterface::class)
         ) instanceof MiddlewareDispatcherInterface
             ? $middlewareDispatcherFromContainer
             : null;

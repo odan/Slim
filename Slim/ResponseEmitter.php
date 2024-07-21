@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -91,7 +91,7 @@ class ResponseEmitter
             $body->rewind();
         }
 
-        $amountToRead = (int) $response->getHeaderLine('Content-Length');
+        $amountToRead = (int)$response->getHeaderLine('Content-Length');
         if (!$amountToRead) {
             $amountToRead = $body->getSize();
         }

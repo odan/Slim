@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -144,9 +144,12 @@ class MiddlewareDispatcherTest extends TestCase
             [MockMiddlewareSlimCallable::class . ':custom', new MockMiddlewareSlimCallable()],
             ['MiddlewareInstance', new MockMiddlewareWithoutConstructor()],
             ['NamedFunction', __NAMESPACE__ . '\testProcessRequest'],
-            ['Callable', function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
-                return $handler->handle($request);
-            }],
+            [
+                'Callable',
+                function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+                    return $handler->handle($request);
+                }
+            ],
             ['MiddlewareInterfaceNotImplemented', 'MiddlewareInterfaceNotImplemented']
         ];
     }

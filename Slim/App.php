@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -135,9 +135,9 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
     /**
      * Add the Slim built-in error middleware to the app middleware stack
      *
-     * @param bool                 $displayErrorDetails
-     * @param bool                 $logErrors
-     * @param bool                 $logErrorDetails
+     * @param bool $displayErrorDetails
+     * @param bool $logErrors
+     * @param bool $logErrorDetails
      * @param LoggerInterface|null $logger
      *
      * @return ErrorMiddleware

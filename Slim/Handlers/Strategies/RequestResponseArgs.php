@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -26,7 +26,7 @@ class RequestResponseArgs implements InvocationStrategyInterface
      * Invoke a route callable with request, response and all route parameters
      * as individual arguments.
      *
-     * @param array<string, string>  $routeArguments
+     * @param array<string, string> $routeArguments
      */
     public function __invoke(
         callable $callable,

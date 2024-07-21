@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -25,7 +25,7 @@ class ContentLengthMiddleware implements MiddlewareInterface
         // Add Content-Length header if not already added
         $size = $response->getBody()->getSize();
         if ($size !== null && !$response->hasHeader('Content-Length')) {
-            $response = $response->withHeader('Content-Length', (string) $size);
+            $response = $response->withHeader('Content-Length', (string)$size);
         }
 
         return $response;

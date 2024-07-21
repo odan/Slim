@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -19,7 +19,6 @@ use RuntimeException;
 use function count;
 use function explode;
 use function is_array;
-use function is_null;
 use function is_object;
 use function is_string;
 use function json_decode;
@@ -66,8 +65,8 @@ class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param string   $mediaType A HTTP media type (excluding content-type params).
-     * @param callable $callable  A callable that returns parsed contents for media type.
+     * @param string $mediaType A HTTP media type (excluding content-type params).
+     * @param callable $callable A callable that returns parsed contents for media type.
      */
     public function registerBodyParser(string $mediaType, callable $callable): self
     {
@@ -76,7 +75,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param string   $mediaType A HTTP media type (excluding content-type params).
+     * @param string $mediaType A HTTP media type (excluding content-type params).
      */
     public function hasBodyParser(string $mediaType): bool
     {
@@ -84,7 +83,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param string    $mediaType A HTTP media type (excluding content-type params).
+     * @param string $mediaType A HTTP media type (excluding content-type params).
      * @throws RuntimeException
      */
     public function getBodyParser(string $mediaType): callable

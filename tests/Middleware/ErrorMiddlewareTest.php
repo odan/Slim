@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -149,16 +149,22 @@ class ErrorMiddlewareTest extends TestCase
         $app->add(function ($request, $handler) {
             throw new LogicException('This is a LogicException...');
         });
-        $middleware->setErrorHandler(LogicException::class, (function (ServerRequestInterface $request, $exception) {
-            $response = $this->createResponse();
-            $response->getBody()->write($exception->getMessage());
-            return $response;
-        })->bindTo($this), true); // - true; handle subclass but also LogicException explicitly
-        $middleware->setDefaultErrorHandler((function () {
-            $response = $this->createResponse();
-            $response->getBody()->write('Oops..');
-            return $response;
-        })->bindTo($this));
+        $middleware->setErrorHandler(
+            LogicException::class,
+            (function (ServerRequestInterface $request, $exception) {
+                $response = $this->createResponse();
+                $response->getBody()->write($exception->getMessage());
+                return $response;
+            })->bindTo($this),
+            true
+        ); // - true; handle subclass but also LogicException explicitly
+        $middleware->setDefaultErrorHandler(
+            (function () {
+                $response = $this->createResponse();
+                $response->getBody()->write('Oops..');
+                return $response;
+            })->bindTo($this)
+        );
         $app->add($middleware);
         $app->get('/foo', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('...');
@@ -182,17 +188,23 @@ class ErrorMiddlewareTest extends TestCase
             throw new InvalidArgumentException('This is a subclass of LogicException...');
         });
 
-        $middleware->setErrorHandler(LogicException::class, (function (ServerRequestInterface $request, $exception) {
-            $response = $this->createResponse();
-            $response->getBody()->write($exception->getMessage());
-            return $response;
-        })->bindTo($this), true); // - true; handle subclass
+        $middleware->setErrorHandler(
+            LogicException::class,
+            (function (ServerRequestInterface $request, $exception) {
+                $response = $this->createResponse();
+                $response->getBody()->write($exception->getMessage());
+                return $response;
+            })->bindTo($this),
+            true
+        ); // - true; handle subclass
 
-        $middleware->setDefaultErrorHandler((function () {
-            $response = $this->createResponse();
-            $response->getBody()->write('Oops..');
-            return $response;
-        })->bindTo($this));
+        $middleware->setDefaultErrorHandler(
+            (function () {
+                $response = $this->createResponse();
+                $response->getBody()->write('Oops..');
+                return $response;
+            })->bindTo($this)
+        );
 
         $app->add($middleware);
 
@@ -220,17 +232,23 @@ class ErrorMiddlewareTest extends TestCase
             throw new InvalidArgumentException('This is a subclass of LogicException...');
         });
 
-        $middleware->setErrorHandler(LogicException::class, (function (ServerRequestInterface $request, $exception) {
-            $response = $this->createResponse();
-            $response->getBody()->write($exception->getMessage());
-            return $response;
-        })->bindTo($this), false); // - false; don't handle subclass
+        $middleware->setErrorHandler(
+            LogicException::class,
+            (function (ServerRequestInterface $request, $exception) {
+                $response = $this->createResponse();
+                $response->getBody()->write($exception->getMessage());
+                return $response;
+            })->bindTo($this),
+            false
+        ); // - false; don't handle subclass
 
-        $middleware->setDefaultErrorHandler((function () {
-            $response = $this->createResponse();
-            $response->getBody()->write('Oops..');
-            return $response;
-        })->bindTo($this));
+        $middleware->setDefaultErrorHandler(
+            (function () {
+                $response = $this->createResponse();
+                $response->getBody()->write('Oops..');
+                return $response;
+            })->bindTo($this)
+        );
 
         $app->add($middleware);
 
@@ -266,11 +284,13 @@ class ErrorMiddlewareTest extends TestCase
 
         $middleware->setErrorHandler([LogicException::class, InvalidArgumentException::class], $handler->bindTo($this));
 
-        $middleware->setDefaultErrorHandler((function () {
-            $response = $this->createResponse();
-            $response->getBody()->write('Oops..');
-            return $response;
-        })->bindTo($this));
+        $middleware->setDefaultErrorHandler(
+            (function () {
+                $response = $this->createResponse();
+                $response->getBody()->write('Oops..');
+                return $response;
+            })->bindTo($this)
+        );
 
         $app->add($middleware);
 
@@ -298,11 +318,13 @@ class ErrorMiddlewareTest extends TestCase
             throw new Error('Oops..');
         });
 
-        $middleware->setDefaultErrorHandler((function (ServerRequestInterface $request, $exception) {
-            $response = $this->createResponse();
-            $response->getBody()->write($exception->getMessage());
-            return $response;
-        })->bindTo($this));
+        $middleware->setDefaultErrorHandler(
+            (function (ServerRequestInterface $request, $exception) {
+                $response = $this->createResponse();
+                $response->getBody()->write($exception->getMessage());
+                return $response;
+            })->bindTo($this)
+        );
 
         $app->add($middleware);
 

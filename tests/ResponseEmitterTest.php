@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -205,7 +205,7 @@ class ResponseEmitterTest extends TestCase
         $responseEmitter->isResponseEmpty($response);
 
         $this->assertFalse($body->isSeekable());
-        $this->assertSame('12', trim((string) $body));
+        $this->assertSame('12', trim((string)$body));
     }
 
     public function testAvoidReadFromSlowStreamAccordingToStatus(): void

@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -105,11 +105,11 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * Invoke error handler
      *
-     * @param ServerRequestInterface $request             The most recent Request object
-     * @param Throwable              $exception           The caught Exception object
-     * @param bool                   $displayErrorDetails Whether or not to display the error details
-     * @param bool                   $logErrors           Whether or not to log errors
-     * @param bool                   $logErrorDetails     Whether or not to log error details
+     * @param ServerRequestInterface $request The most recent Request object
+     * @param Throwable $exception The caught Exception object
+     * @param bool $displayErrorDetails Whether or not to display the error details
+     * @param bool $logErrors Whether or not to log errors
+     * @param bool $logErrorDetails Whether or not to log error details
      */
     public function __invoke(
         ServerRequestInterface $request,
@@ -223,7 +223,7 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * Register an error renderer for a specific content-type
      *
-     * @param string  $contentType  The content-type this renderer should be registered to
+     * @param string $contentType The content-type this renderer should be registered to
      * @param ErrorRendererInterface|string|callable $errorRenderer The error renderer
      */
     public function registerErrorRenderer(string $contentType, $errorRenderer): void
@@ -234,7 +234,7 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * Set the default error renderer
      *
-     * @param string                                 $contentType   The content type of the default error renderer
+     * @param string $contentType The content type of the default error renderer
      * @param ErrorRendererInterface|string|callable $errorRenderer The default error renderer
      */
     public function setDefaultErrorRenderer(string $contentType, $errorRenderer): void

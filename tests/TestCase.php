@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -88,7 +88,7 @@ abstract class TestCase extends PhpUnitTestCase
     /**
      * @param string $uri
      * @param string $method
-     * @param array  $data
+     * @param array $data
      * @return ServerRequestInterface
      */
     protected function createServerRequest(
@@ -101,7 +101,7 @@ abstract class TestCase extends PhpUnitTestCase
     }
 
     /**
-     * @param int    $statusCode
+     * @param int $statusCode
      * @param string $reasonPhrase
      * @return ResponseInterface
      */

@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -35,8 +35,10 @@ class Psr17FactoryTest extends TestCase
     public function testGetServerRequestCreatorThrowsRuntimeException()
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Slim\\Tests\\Mocks\\MockPsr17Factory' .
-                                      ' could not instantiate a server request creator.');
+        $this->expectExceptionMessage(
+            'Slim\\Tests\\Mocks\\MockPsr17Factory' .
+            ' could not instantiate a server request creator.'
+        );
 
         MockPsr17Factory::getServerRequestCreator();
     }

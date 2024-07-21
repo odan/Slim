@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -11,8 +11,8 @@ declare(strict_types=1);
 namespace Slim\Tests\Factory;
 
 use GuzzleHttp\Psr7\HttpFactory;
-use Laminas\Diactoros\ResponseFactory as LaminasDiactorosResponseFactory;
 use HttpSoft\Message\ResponseFactory as HttpSoftResponseFactory;
+use Laminas\Diactoros\ResponseFactory as LaminasDiactorosResponseFactory;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -40,7 +40,6 @@ use Slim\Psr7\Factory\ResponseFactory as SlimResponseFactory;
 use Slim\Routing\RouteCollector;
 use Slim\Tests\Mocks\MockPsr17FactoryWithoutStreamFactory;
 use Slim\Tests\TestCase;
-use stdClass;
 
 class AppFactoryTest extends TestCase
 {

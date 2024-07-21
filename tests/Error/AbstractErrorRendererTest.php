@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -174,11 +174,11 @@ class AbstractErrorRendererTest extends TestCase
         /** @var stdClass $output */
         $output = simplexml_load_string($renderer->__invoke($exception, true));
 
-        $this->assertSame((string) $output->message[0], 'Slim Application Error');
-        $this->assertSame((string) $output->exception[0]->type, 'Exception');
-        $this->assertSame((string) $output->exception[0]->message, 'Ooops...');
-        $this->assertSame((string) $output->exception[1]->type, 'RuntimeException');
-        $this->assertSame((string) $output->exception[1]->message, 'Oops..');
+        $this->assertSame((string)$output->message[0], 'Slim Application Error');
+        $this->assertSame((string)$output->exception[0]->type, 'Exception');
+        $this->assertSame((string)$output->exception[0]->message, 'Ooops...');
+        $this->assertSame((string)$output->exception[1]->type, 'RuntimeException');
+        $this->assertSame((string)$output->exception[1]->message, 'Oops..');
     }
 
     public function testXMLErrorRendererRenderHttpException()
@@ -197,7 +197,7 @@ class AbstractErrorRendererTest extends TestCase
         /** @var stdClass $output */
         $output = simplexml_load_string($renderer->__invoke($httpExceptionProphecy->reveal(), true));
 
-        $this->assertSame((string) $output->message[0], $exceptionTitle, 'Should contain http exception title');
+        $this->assertSame((string)$output->message[0], $exceptionTitle, 'Should contain http exception title');
     }
 
     public function testPlainTextErrorRendererFormatFragmentMethod()

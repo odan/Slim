@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -141,8 +141,10 @@ class FastRouteDispatcherTest extends TestCase
     public function testShadowedStaticRoute()
     {
         $this->expectException(BadRouteException::class);
-        $this->expectExceptionMessage('Static route "/user/nikic" is shadowed by previously defined variable route' .
-                                      ' "/user/([^/]+)" for method "GET"');
+        $this->expectExceptionMessage(
+            'Static route "/user/nikic" is shadowed by previously defined variable route' .
+            ' "/user/([^/]+)" for method "GET"'
+        );
 
         simpleDispatcher(function (RouteCollector $r) {
             $r->addRoute('GET', '/user/{name}', 'handler0');

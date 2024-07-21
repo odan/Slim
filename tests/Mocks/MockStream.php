@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -56,16 +56,41 @@ class MockStream implements StreamInterface
     /** @var array Hash of readable and writable stream types */
     private static $readWriteHash = [
         'read' => [
-            'r' => true, 'w+' => true, 'r+' => true, 'x+' => true, 'c+' => true,
-            'rb' => true, 'w+b' => true, 'r+b' => true, 'x+b' => true,
-            'c+b' => true, 'rt' => true, 'w+t' => true, 'r+t' => true,
-            'x+t' => true, 'c+t' => true, 'a+' => true,
+            'r' => true,
+            'w+' => true,
+            'r+' => true,
+            'x+' => true,
+            'c+' => true,
+            'rb' => true,
+            'w+b' => true,
+            'r+b' => true,
+            'x+b' => true,
+            'c+b' => true,
+            'rt' => true,
+            'w+t' => true,
+            'r+t' => true,
+            'x+t' => true,
+            'c+t' => true,
+            'a+' => true,
         ],
         'write' => [
-            'w' => true, 'w+' => true, 'rw' => true, 'r+' => true, 'x+' => true,
-            'c+' => true, 'wb' => true, 'w+b' => true, 'r+b' => true,
-            'x+b' => true, 'c+b' => true, 'w+t' => true, 'r+t' => true,
-            'x+t' => true, 'c+t' => true, 'a' => true, 'a+' => true,
+            'w' => true,
+            'w+' => true,
+            'rw' => true,
+            'r+' => true,
+            'x+' => true,
+            'c+' => true,
+            'wb' => true,
+            'w+b' => true,
+            'r+b' => true,
+            'x+b' => true,
+            'c+b' => true,
+            'w+t' => true,
+            'r+t' => true,
+            'x+t' => true,
+            'c+t' => true,
+            'a' => true,
+            'a+' => true,
         ],
     ];
 

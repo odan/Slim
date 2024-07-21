@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -19,7 +19,6 @@ use Slim\Routing\RouteCollector;
 use Slim\Routing\RoutingResults;
 use Slim\Tests\TestCase;
 
-use function dirname;
 use function microtime;
 use function uniqid;
 use function unlink;
@@ -53,7 +52,7 @@ class DispatcherTest extends TestCase
         });
         $route->setName('foo');
 
-        $cacheFile = __DIR__ . '/' . uniqid((string) microtime(true));
+        $cacheFile = __DIR__ . '/' . uniqid((string)microtime(true));
         $routeCollector->setCacheFile($cacheFile);
 
         $method = new ReflectionMethod(Dispatcher::class, 'createDispatcher');

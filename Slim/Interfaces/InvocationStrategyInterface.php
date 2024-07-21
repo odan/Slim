@@ -3,7 +3,7 @@
 /**
  * Slim Framework (https://slimframework.com)
  *
- * @license https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
 declare(strict_types=1);
@@ -21,10 +21,10 @@ interface InvocationStrategyInterface
     /**
      * Invoke a route callable.
      *
-     * @param callable               $callable       The callable to invoke using the strategy.
-     * @param ServerRequestInterface $request        The request object.
-     * @param ResponseInterface      $response       The response object.
-     * @param array<string, string>  $routeArguments The route's placeholder arguments
+     * @param callable $callable The callable to invoke using the strategy.
+     * @param ServerRequestInterface $request The request object.
+     * @param ResponseInterface $response The response object.
+     * @param array<string, string> $routeArguments The route's placeholder arguments
      *
      * @return ResponseInterface The response from the callable.
      */
