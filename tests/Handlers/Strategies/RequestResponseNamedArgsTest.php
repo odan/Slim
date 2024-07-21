@@ -29,16 +29,6 @@ class RequestResponseNamedArgsTest extends TestCase
         $this->response = $this->createMock(ResponseInterface::class);
     }
 
-    public function testCreatingRequestResponseNamedArgsThrowsRuntimeExceptionForPHPOlderThan80()
-    {
-        if (PHP_VERSION_ID >= self::PHP_8_0_VERSION_ID) {
-            $this->markTestSkipped('Test only valid for PHP versions older than 8.0');
-        }
-
-        $this->expectException(RuntimeException::class);
-        new RequestResponseNamedArgs();
-    }
-
     public function testCallingWithEmptyArguments()
     {
         if (PHP_VERSION_ID < self::PHP_8_0_VERSION_ID) {
