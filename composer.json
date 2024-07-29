@@ -60,12 +60,14 @@
     },
     "require-dev": {
         "ext-simplexml": "*",
+        "friendsofphp/php-cs-fixer": "^3.60",
         "guzzlehttp/psr7": "^2.6",
         "httpsoft/http-message": "^1.1",
         "httpsoft/http-server-request": "^1.1",
         "laminas/laminas-diactoros": "^3",
         "nyholm/psr7": "^1.8",
         "nyholm/psr7-server": "^1.1",
+        "php-di/php-di": "^7.0",
         "phpspec/prophecy": "^1.19",
         "phpspec/prophecy-phpunit": "^2.1",
         "phpstan/phpstan": "^1.11",
@@ -94,6 +96,8 @@
         "sort-packages": true
     },
     "scripts": {
+        "cs:check": "php-cs-fixer fix --dry-run --format=txt --verbose --diff --config=.cs.php --ansi",
+        "cs:fix": "php-cs-fixer fix --config=.cs.php --ansi",
         "sniffer:check": "phpcs --standard=phpcs.xml",
         "sniffer:fix": "phpcbf --standard=phpcs.xml",
         "stan": "phpstan analyse -c phpstan.neon --no-progress --ansi",
