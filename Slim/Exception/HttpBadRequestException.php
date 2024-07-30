@@ -25,5 +25,5 @@ class HttpBadRequestException extends HttpSpecializedException
 
     protected string $title = '400 Bad Request';
     protected string $description = 'The server cannot or will not process ' .
-    'the request due to an apparent client error.';
+        'the request due to an apparent client error.';
 }

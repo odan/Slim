@@ -33,6 +33,8 @@ class RouteRunner implements RequestHandlerInterface
 
     /**
      * @param RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null> $routeCollectorProxy
+     * @param RouteResolverInterface $routeResolver
+     * @param RouteParserInterface $routeParser
      */
     public function __construct(
         RouteResolverInterface $routeResolver,
@@ -50,6 +52,8 @@ class RouteRunner implements RequestHandlerInterface
      * last and it detects whether or not routing has been performed in the user
      * defined middleware stack. In the event that the user did not perform routing
      * it is done here
+     *
+     * @param ServerRequestInterface $request
      *
      * @throws HttpNotFoundException
      * @throws HttpMethodNotAllowedException
@@ -71,6 +75,7 @@ class RouteRunner implements RequestHandlerInterface
 
         /** @var Route<\Psr\Container\ContainerInterface|null> $route */
         $route = $request->getAttribute(RouteContext::ROUTE);
+
         return $route->run($request);
     }
 }

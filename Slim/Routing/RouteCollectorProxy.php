@@ -20,6 +20,7 @@ use Slim\Interfaces\RouteInterface;
 
 /**
  * @template TContainerInterface of (ContainerInterface|null)
+ *
  * @template-implements RouteCollectorProxyInterface<TContainerInterface>
  */
 class RouteCollectorProxy implements RouteCollectorProxyInterface
@@ -37,6 +38,10 @@ class RouteCollectorProxy implements RouteCollectorProxyInterface
 
     /**
      * @param TContainerInterface $container
+     * @param ResponseFactoryInterface $responseFactory
+     * @param CallableResolverInterface $callableResolver
+     * @param ?RouteCollectorInterface $routeCollector
+     * @param string $groupPattern
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -70,6 +75,7 @@ class RouteCollectorProxy implements RouteCollectorProxyInterface
 
     /**
      * {@inheritdoc}
+     *
      * @return TContainerInterface
      */
     public function getContainer(): ?ContainerInterface
@@ -188,6 +194,7 @@ class RouteCollectorProxy implements RouteCollectorProxyInterface
 
         $handler = function () use ($to, $status, $responseFactory) {
             $response = $responseFactory->createResponse($status);
+
             return $response->withHeader('Location', (string)$to);
         };
 

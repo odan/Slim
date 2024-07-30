@@ -17,6 +17,7 @@ use Slim\Interfaces\InvocationStrategyInterface;
 
 /**
  * Route callback strategy with route parameters as individual arguments.
+ *
  * @api
  */
 class RequestResponseNamedArgs implements InvocationStrategyInterface
@@ -33,6 +34,9 @@ class RequestResponseNamedArgs implements InvocationStrategyInterface
      * as individual arguments.
      *
      * @param array<string, string> $routeArguments
+     * @param callable $callable
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      */
     public function __invoke(
         callable $callable,

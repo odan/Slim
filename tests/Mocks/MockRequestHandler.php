@@ -24,6 +24,7 @@ class MockRequestHandler implements RequestHandlerInterface
 
     /**
      * @param ServerRequestInterface $request
+     *
      * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -31,7 +32,8 @@ class MockRequestHandler implements RequestHandlerInterface
         $psr7ObjectProvider = new PSR7ObjectProvider();
         $responseFactory = $psr7ObjectProvider->getResponseFactory();
 
-        $this->calledCount += 1;
+        $this->calledCount++;
+
         return $responseFactory->createResponse();
     }
 

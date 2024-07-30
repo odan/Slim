@@ -30,6 +30,7 @@ use function sprintf;
 
 /**
  * @api
+ *
  * @template TContainerInterface of (ContainerInterface|null)
  */
 class MiddlewareDispatcher implements MiddlewareDispatcherInterface
@@ -41,11 +42,13 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 
     protected ?CallableResolverInterface $callableResolver;
 
-    /** @var TContainerInterface $container */
+    /** @var TContainerInterface */
     protected ?ContainerInterface $container;
 
     /**
      * @param TContainerInterface $container
+     * @param RequestHandlerInterface $kernel
+     * @param ?CallableResolverInterface $callableResolver
      */
     public function __construct(
         RequestHandlerInterface $kernel,
@@ -67,6 +70,8 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 
     /**
      * Invoke the middleware stack
+     *
+     * @param ServerRequestInterface $request
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -109,6 +114,8 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
      * Middleware are organized as a stack. That means middleware
      * that have been added before will be executed after the newly
      * added one (last in, first out).
+     *
+     * @param MiddlewareInterface $middleware
      */
     public function addMiddleware(MiddlewareInterface $middleware): MiddlewareDispatcherInterface
     {
@@ -139,17 +146,15 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
      * Middleware are organized as a stack. That means middleware
      * that have been added before will be executed after the newly
      * added one (last in, first out).
+     *
+     * @param string $middleware
+     *
      * @return MiddlewareDispatcher<TContainerInterface>
      */
     public function addDeferred(string $middleware): self
     {
         $next = $this->tip;
-        $this->tip = new class (
-            $middleware,
-            $next,
-            $this->container,
-            $this->callableResolver
-        ) implements RequestHandlerInterface {
+        $this->tip = new class ($middleware, $next, $this->container, $this->callableResolver) implements RequestHandlerInterface {
             private string $middleware;
 
             private RequestHandlerInterface $next;
@@ -174,6 +179,7 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
             {
                 if ($this->callableResolver instanceof AdvancedCallableResolverInterface) {
                     $callable = $this->callableResolver->resolveMiddleware($this->middleware);
+
                     return $callable($request, $this->next);
                 }
 
@@ -247,6 +253,9 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
      * Middleware are organized as a stack. That means middleware
      * that have been added before will be executed after the newly
      * added one (last in, first out).
+     *
+     * @param callable $middleware
+     *
      * @return MiddlewareDispatcher<TContainerInterface>
      */
     public function addCallable(callable $middleware): self

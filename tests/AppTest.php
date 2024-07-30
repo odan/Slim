@@ -189,6 +189,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -229,6 +230,7 @@ class AppTest extends TestCase
             $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
             $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
                 $this->getAttribute($args[0])->willReturn($args[1]);
+
                 return $this;
             });
 
@@ -276,6 +278,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -303,6 +306,7 @@ class AppTest extends TestCase
             Argument::type('string')
         )->will(function ($args) {
             $this->getHeader($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -320,6 +324,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -359,6 +364,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
         $response = $app->handle($requestProphecy->reveal());
@@ -406,147 +412,147 @@ class AppTest extends TestCase
         return [
             'empty group with empty route' => [
                 ['', ''],
-                ''
+                '',
             ],
             'empty group with single slash route' => [
                 ['', '/'],
-                '/'
+                '/',
             ],
             'empty group with segment route that does not end in aSlash' => [
                 ['', '/foo'],
-                '/foo'
+                '/foo',
             ],
             'empty group with segment route that ends in aSlash' => [
                 ['', '/foo/'],
-                '/foo/'
+                '/foo/',
             ],
             'group single slash with empty route' => [
                 ['/', ''],
-                '/'
+                '/',
             ],
             'group single slash with single slash route' => [
                 ['/', '/'],
-                '//'
+                '//',
             ],
             'group single slash with segment route that does not end in aSlash' => [
                 ['/', '/foo'],
-                '//foo'
+                '//foo',
             ],
             'group single slash with segment route that ends in aSlash' => [
                 ['/', '/foo/'],
-                '//foo/'
+                '//foo/',
             ],
             'group segment with empty route' => [
                 ['/foo', ''],
-                '/foo'
+                '/foo',
             ],
             'group segment with single slash route' => [
                 ['/foo', '/'],
-                '/foo/'
+                '/foo/',
             ],
             'group segment with segment route that does not end in aSlash' => [
                 ['/foo', '/bar'],
-                '/foo/bar'
+                '/foo/bar',
             ],
             'group segment with segment route that ends in aSlash' => [
                 ['/foo', '/bar/'],
-                '/foo/bar/'
+                '/foo/bar/',
             ],
             'empty group with nested group segment with an empty route' => [
                 ['', '/foo', ''],
-                '/foo'
+                '/foo',
             ],
             'empty group with nested group segment with single slash route' => [
                 ['', '/foo', '/'],
-                '/foo/'
+                '/foo/',
             ],
             'group single slash with empty nested group and segment route without leading slash' => [
                 ['/', '', 'foo'],
-                '/foo'
+                '/foo',
             ],
             'group single slash with empty nested group and segment route' => [
                 ['/', '', '/foo'],
-                '//foo'
+                '//foo',
             ],
             'group single slash with single slash group and segment route without leading slash' => [
                 ['/', '/', 'foo'],
-                '//foo'
+                '//foo',
             ],
             'group single slash with single slash nested group and segment route' => [
                 ['/', '/', '/foo'],
-                '///foo'
+                '///foo',
             ],
             'group single slash with nested group segment with an empty route' => [
                 ['/', '/foo', ''],
-                '//foo'
+                '//foo',
             ],
             'group single slash with nested group segment with single slash route' => [
                 ['/', '/foo', '/'],
-                '//foo/'
+                '//foo/',
             ],
             'group single slash with nested group segment with segment route' => [
                 ['/', '/foo', '/bar'],
-                '//foo/bar'
+                '//foo/bar',
             ],
             'group single slash with nested group segment with segment route that has aTrailing slash' => [
                 ['/', '/foo', '/bar/'],
-                '//foo/bar/'
+                '//foo/bar/',
             ],
             'empty group with empty nested group and segment route without leading slash' => [
                 ['', '', 'foo'],
-                'foo'
+                'foo',
             ],
             'empty group with empty nested group and segment route' => [
                 ['', '', '/foo'],
-                '/foo'
+                '/foo',
             ],
             'empty group with single slash group and segment route without leading slash' => [
                 ['', '/', 'foo'],
-                '/foo'
+                '/foo',
             ],
             'empty group with single slash nested group and segment route' => [
                 ['', '/', '/foo'],
-                '//foo'
+                '//foo',
             ],
             'empty group with nested group segment with segment route' => [
                 ['', '/foo', '/bar'],
-                '/foo/bar'
+                '/foo/bar',
             ],
             'empty group with nested group segment with segment route that has aTrailing slash' => [
                 ['', '/foo', '/bar/'],
-                '/foo/bar/'
+                '/foo/bar/',
             ],
             'group segment with empty nested group and segment route without leading slash' => [
                 ['/foo', '', 'bar'],
-                '/foobar'
+                '/foobar',
             ],
             'group segment with empty nested group and segment route' => [
                 ['/foo', '', '/bar'],
-                '/foo/bar'
+                '/foo/bar',
             ],
             'group segment with single slash nested group and segment route' => [
                 ['/foo', '/', 'bar'],
-                '/foo/bar'
+                '/foo/bar',
             ],
             'group segment with single slash nested group and slash segment route' => [
                 ['/foo', '/', '/bar'],
-                '/foo//bar'
+                '/foo//bar',
             ],
             'two group segments with empty route' => [
                 ['/foo', '/bar', ''],
-                '/foo/bar'
+                '/foo/bar',
             ],
             'two group segments with single slash route' => [
                 ['/foo', '/bar', '/'],
-                '/foo/bar/'
+                '/foo/bar/',
             ],
             'two group segments with segment route' => [
                 ['/foo', '/bar', '/baz'],
-                '/foo/bar/baz'
+                '/foo/bar/baz',
             ],
             'two group segments with segment route that has aTrailing slash' => [
                 ['/foo', '/bar', '/baz/'],
-                '/foo/bar/baz/'
+                '/foo/bar/baz/',
             ],
         ];
     }
@@ -657,9 +663,9 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
-
 
         $response = $app->handle($requestProphecy->reveal());
         $middlewareProphecy->process(
@@ -860,6 +866,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) use (&$output) {
             $output .= 'Center';
+
             return $response;
         })
             ->add($middlewareProphecy->reveal())
@@ -874,6 +881,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -941,6 +949,7 @@ class AppTest extends TestCase
         $app->group('/foo', function (RouteCollectorProxy $proxy) use (&$output) {
             $proxy->get('/bar', function (ServerRequestInterface $request, ResponseInterface $response) use (&$output) {
                 $output .= 'Center';
+
                 return $response;
             });
         })
@@ -956,6 +965,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1062,6 +1072,7 @@ class AppTest extends TestCase
                     ResponseInterface $response
                 ) use (&$output) {
                     $output .= 'Center';
+
                     return $response;
                 })->add($middlewareProphecy3->reveal());
             })->add($middlewareProphecy2->reveal());
@@ -1076,6 +1087,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1119,6 +1131,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1150,6 +1163,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1167,6 +1181,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1179,6 +1194,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
             $response->getBody()->write("Hello {$args['name']}");
+
             return $response;
         })->setArgument('name', 'World');
 
@@ -1191,6 +1207,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1208,6 +1225,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1220,6 +1238,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
             $response->getBody()->write("{$args['greeting']} {$args['name']}");
+
             return $response;
         })->setArguments(['greeting' => 'Hello', 'name' => 'World']);
 
@@ -1232,6 +1251,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1249,6 +1269,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1261,6 +1282,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/Hello/{name}', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
             $response->getBody()->write("Hello {$args['name']}");
+
             return $response;
         });
 
@@ -1273,6 +1295,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1290,6 +1313,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1303,6 +1327,7 @@ class AppTest extends TestCase
         $app->getRouteCollector()->setDefaultInvocationStrategy(new RequestResponseArgs());
         $app->get('/Hello/{name}', function (ServerRequestInterface $request, ResponseInterface $response, $name) {
             $response->getBody()->write("Hello {$name}");
+
             return $response;
         });
 
@@ -1315,6 +1340,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1336,6 +1362,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1351,6 +1378,7 @@ class AppTest extends TestCase
             '/{greeting}/{name}',
             function (ServerRequestInterface $request, ResponseInterface $response, $name, $greeting) {
                 $response->getBody()->write("{$greeting} {$name}");
+
                 return $response;
             }
         );
@@ -1364,6 +1392,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1381,6 +1410,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1393,6 +1423,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/Hello/{name}', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
             $response->getBody()->write("Hello {$args['name']}");
+
             return $response;
         })->setArgument('name', 'World!');
 
@@ -1405,6 +1436,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1430,6 +1462,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1447,7 +1480,7 @@ class AppTest extends TestCase
         $responseFactoryProphecy = $this->prophesize(ResponseFactoryInterface::class);
         $responseFactoryProphecy->createResponse()->willReturn($responseProphecy->reveal());
 
-        $handler = new class {
+        $handler = new class () {
             public function foo(ServerRequestInterface $request, ResponseInterface $response)
             {
                 return $response;
@@ -1470,6 +1503,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1488,7 +1522,7 @@ class AppTest extends TestCase
         $responseFactoryProphecy = $this->prophesize(ResponseFactoryInterface::class);
         $responseFactoryProphecy->createResponse()->willReturn($responseProphecy->reveal());
 
-        $handler = new class {
+        $handler = new class () {
         };
 
         $containerProphecy = $this->prophesize(ContainerInterface::class);
@@ -1508,6 +1542,7 @@ class AppTest extends TestCase
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())
             ->will(function ($args) {
                 $this->getAttribute($args[0])->willReturn($args[1]);
+
                 return $this;
             });
 
@@ -1522,6 +1557,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1549,6 +1585,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1567,6 +1604,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1580,6 +1618,7 @@ class AppTest extends TestCase
         function handle($request, ResponseInterface $response)
         {
             $response->getBody()->write('Hello World');
+
             return $response;
         }
 
@@ -1597,6 +1636,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1614,6 +1654,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1626,6 +1667,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/Hello/{name}', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
             $response->getBody()->write($request->getAttribute('greeting') . ' ' . $args['name']);
+
             return $response;
         });
 
@@ -1638,6 +1680,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1655,6 +1698,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1668,6 +1712,7 @@ class AppTest extends TestCase
         $app->getRouteCollector()->setDefaultInvocationStrategy(new RequestResponseArgs());
         $app->get('/Hello/{name}', function (ServerRequestInterface $request, ResponseInterface $response, $name) {
             $response->getBody()->write($request->getAttribute('greeting') . ' ' . $name);
+
             return $response;
         });
 
@@ -1680,6 +1725,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1697,11 +1743,13 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
         $streamProphecy->read(1)->willReturn('_');
         $streamProphecy->read('11')->will(function () {
             $this->eof()->willReturn(true);
+
             return $this->reveal()->__toString();
         });
         $streamProphecy->eof()->willReturn(false);
@@ -1722,6 +1770,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('Hello World');
+
             return $response;
         });
 
@@ -1734,6 +1783,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1750,11 +1800,13 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
         $streamProphecy->read(1)->willReturn('_');
         $streamProphecy->read(11)->will(function () {
             $this->eof()->willReturn(true);
+
             return $this->reveal()->__toString();
         });
         $streamProphecy->eof()->willReturn(false);
@@ -1775,6 +1827,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('Hello World');
+
             return $response;
         });
 
@@ -1791,6 +1844,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1800,6 +1854,7 @@ class AppTest extends TestCase
             ->withBody(Argument::type(StreamInterface::class))
             ->will(function ($args) {
                 $this->getBody()->willReturn($args[0]);
+
                 return $this;
             });
 
@@ -1819,6 +1874,7 @@ class AppTest extends TestCase
         $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) use (&$called) {
             $called++;
             $response->getBody()->write('Hello World');
+
             return $response;
         });
 
@@ -1831,6 +1887,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -1848,6 +1905,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -1868,6 +1926,7 @@ class AppTest extends TestCase
                 $responseHeaders[$key] = [];
             }
             $responseHeaders[$key][] = $value;
+
             return $this;
         });
 
@@ -1876,6 +1935,7 @@ class AppTest extends TestCase
             ->createResponse(Argument::type('integer'))
             ->will(function ($args) use ($responseProphecy) {
                 $responseProphecy->getStatusCode()->willReturn($args[0]);
+
                 return $responseProphecy->reveal();
             });
 
@@ -1898,6 +1958,7 @@ class AppTest extends TestCase
 
             /** @var ResponseInterface $response */
             $response = $app->handle($request->withAddedHeader('X-NESTED', '1'));
+
             return $response->withAddedHeader('X-TRACE', 'outer');
         });
 
@@ -1946,6 +2007,7 @@ class AppTest extends TestCase
                 $responseHeaders[$key] = [];
             }
             $responseHeaders[$key][] = $value;
+
             return $this;
         });
 
@@ -1990,6 +2052,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -2014,6 +2077,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -2026,6 +2090,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/Hello[/{name}]', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
             $response->getBody()->write((string)count($args));
+
             return $response;
         });
 
@@ -2038,6 +2103,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -2053,6 +2119,7 @@ class AppTest extends TestCase
         $requestProphecy2->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy2->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -2069,6 +2136,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -2081,6 +2149,7 @@ class AppTest extends TestCase
         $app = new App($responseFactoryProphecy->reveal());
         $app->get('/Hello[/{name}]', function (ServerRequestInterface $request, ResponseInterface $response, $args) {
             $response->getBody()->write((string)count($args));
+
             return $response;
         })->setArgument('extra', 'value');
 
@@ -2093,6 +2162,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -2108,6 +2178,7 @@ class AppTest extends TestCase
         $requestProphecy2->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy2->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 
@@ -2124,6 +2195,7 @@ class AppTest extends TestCase
             $body = $this->reveal()->__toString();
             $body .= $args[0];
             $this->__toString()->willReturn($body);
+
             return 0;
         });
 
@@ -2140,6 +2212,7 @@ class AppTest extends TestCase
             $args
         ) {
             $response->getBody()->write((string)count($args));
+
             return $response;
         })->setArgument('extra', 'value');
 
@@ -2153,6 +2226,7 @@ class AppTest extends TestCase
         $requestProphecy->getAttribute(RouteContext::ROUTING_RESULTS)->willReturn(null);
         $requestProphecy->withAttribute(Argument::type('string'), Argument::any())->will(function ($args) {
             $this->getAttribute($args[0])->willReturn($args[1]);
+
             return $this;
         });
 

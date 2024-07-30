@@ -97,6 +97,7 @@ class ErrorMiddleware implements MiddlewareInterface
      * occurs when processing the current request.
      *
      * @param string $type Exception/Throwable name. ie: RuntimeException::class
+     *
      * @return callable|ErrorHandler
      */
     public function getErrorHandler(string $type)
@@ -142,7 +143,8 @@ class ErrorMiddleware implements MiddlewareInterface
      * The callable signature MUST match the ErrorHandlerInterface
      *
      * @param string|callable|ErrorHandler $handler
-     * @see \Slim\Interfaces\ErrorHandlerInterface
+     *
+     * @see ErrorHandlerInterface
      *
      * 1. Instance of \Psr\Http\Message\ServerRequestInterface
      * 2. Instance of \Throwable
@@ -152,11 +154,11 @@ class ErrorMiddleware implements MiddlewareInterface
      *
      * The callable MUST return an instance of
      * \Psr\Http\Message\ResponseInterface.
-     *
      */
     public function setDefaultErrorHandler($handler): self
     {
         $this->defaultErrorHandler = $handler;
+
         return $this;
     }
 
@@ -173,7 +175,9 @@ class ErrorMiddleware implements MiddlewareInterface
      * ie: RuntimeException::class or an array of classes
      * ie: [HttpNotFoundException::class, HttpMethodNotAllowedException::class]
      * @param string|callable|ErrorHandlerInterface $handler
-     * @see \Slim\Interfaces\ErrorHandlerInterface
+     * @param bool $handleSubclasses
+     *
+     * @see ErrorHandlerInterface
      *
      * 1. Instance of \Psr\Http\Message\ServerRequestInterface
      * 2. Instance of \Throwable
@@ -183,7 +187,6 @@ class ErrorMiddleware implements MiddlewareInterface
      *
      * The callable MUST return an instance of
      * \Psr\Http\Message\ResponseInterface.
-     *
      */
     public function setErrorHandler($typeOrTypes, $handler, bool $handleSubclasses = false): self
     {
@@ -200,7 +203,10 @@ class ErrorMiddleware implements MiddlewareInterface
 
     /**
      * Used internally to avoid code repetition when passing multiple exceptions to setErrorHandler().
+     *
      * @param string|callable|ErrorHandlerInterface $handler
+     * @param string $type
+     * @param bool $handleSubclasses
      */
     private function addErrorHandler(string $type, $handler, bool $handleSubclasses): void
     {

@@ -12,7 +12,6 @@ namespace Slim\Tests\Handlers\Strategies;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 use Slim\Handlers\Strategies\RequestResponseNamedArgs;
 use Slim\Tests\TestCase;
 

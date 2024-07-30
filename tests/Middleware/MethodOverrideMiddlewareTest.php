@@ -23,6 +23,7 @@ class MethodOverrideMiddlewareTest extends TestCase
         $responseFactory = $this->getResponseFactory();
         $middleware = (function (Request $request, RequestHandler $handler) use ($responseFactory) {
             $this->assertSame('PUT', $request->getMethod());
+
             return $responseFactory->createResponse();
         })->bindTo($this);
         $methodOverrideMiddleware = new MethodOverrideMiddleware();
@@ -45,6 +46,7 @@ class MethodOverrideMiddlewareTest extends TestCase
         $responseFactory = $this->getResponseFactory();
         $middleware = (function (Request $request, RequestHandler $handler) use ($responseFactory) {
             $this->assertSame('PUT', $request->getMethod());
+
             return $responseFactory->createResponse();
         })->bindTo($this);
 
@@ -68,6 +70,7 @@ class MethodOverrideMiddlewareTest extends TestCase
         $responseFactory = $this->getResponseFactory();
         $middleware = (function (Request $request, RequestHandler $handler) use ($responseFactory) {
             $this->assertSame('DELETE', $request->getMethod());
+
             return $responseFactory->createResponse();
         })->bindTo($this);
 
@@ -92,6 +95,7 @@ class MethodOverrideMiddlewareTest extends TestCase
         $responseFactory = $this->getResponseFactory();
         $middleware = (function (Request $request, RequestHandler $handler) use ($responseFactory) {
             $this->assertSame('POST', $request->getMethod());
+
             return $responseFactory->createResponse();
         })->bindTo($this);
 
@@ -113,6 +117,7 @@ class MethodOverrideMiddlewareTest extends TestCase
         $responseFactory = $this->getResponseFactory();
         $middleware = (function (Request $request, RequestHandler $handler) use ($responseFactory) {
             $this->assertSame('POST', $request->getMethod());
+
             return $responseFactory->createResponse();
         })->bindTo($this);
 

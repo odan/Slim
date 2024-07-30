@@ -30,6 +30,7 @@ class BodyParsingMiddlewareTest extends TestCase
     protected function createRequestHandler(): RequestHandlerInterface
     {
         $response = $this->createResponse();
+
         return new class ($response) implements RequestHandlerInterface {
             private $response;
             public $request;
@@ -42,6 +43,7 @@ class BodyParsingMiddlewareTest extends TestCase
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 $this->request = $request;
+
                 return $this->response;
             }
         };
@@ -50,6 +52,7 @@ class BodyParsingMiddlewareTest extends TestCase
     /**
      * @param string $contentType
      * @param string $body
+     *
      * @return ServerRequestInterface
      */
     protected function createRequestWithBody($contentType, $body)
@@ -61,9 +64,9 @@ class BodyParsingMiddlewareTest extends TestCase
         if (is_string($body)) {
             $request = $request->withBody($this->createStream($body));
         }
+
         return $request;
     }
-
 
     public static function parsingProvider()
     {
@@ -74,7 +77,7 @@ class BodyParsingMiddlewareTest extends TestCase
                 ['foo' => 'bar'],
             ],
             'json' => [
-                "application/json",
+                'application/json',
                 '{"foo":"bar"}',
                 ['foo' => 'bar'],
             ],

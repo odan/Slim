@@ -13,11 +13,11 @@ namespace Slim\Tests\Mocks;
 use Exception;
 use Psr\Http\Message\StreamInterface;
 
+use const SEEK_SET;
+
 use function min;
 use function str_repeat;
 use function usleep;
-
-use const SEEK_SET;
 
 class SlowPokeStream implements StreamInterface
 {
@@ -40,6 +40,7 @@ class SlowPokeStream implements StreamInterface
         while (!$this->eof()) {
             $content .= $this->read(self::CHUNK_SIZE);
         }
+
         return $content;
     }
 
@@ -92,6 +93,7 @@ class SlowPokeStream implements StreamInterface
         usleep(1);
         $size = min($this->amountToRead, self::CHUNK_SIZE, $length);
         $this->amountToRead -= $size;
+
         return str_repeat('.', $size);
     }
 

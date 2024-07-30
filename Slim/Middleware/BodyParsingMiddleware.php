@@ -16,6 +16,8 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 
+use const LIBXML_VERSION;
+
 use function count;
 use function explode;
 use function is_array;
@@ -29,8 +31,6 @@ use function parse_str;
 use function simplexml_load_string;
 use function strtolower;
 use function trim;
-
-use const LIBXML_VERSION;
 
 /** @api */
 class BodyParsingMiddleware implements MiddlewareInterface
@@ -65,17 +65,18 @@ class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param string $mediaType A HTTP media type (excluding content-type params).
-     * @param callable $callable A callable that returns parsed contents for media type.
+     * @param string $mediaType a HTTP media type (excluding content-type params)
+     * @param callable $callable a callable that returns parsed contents for media type
      */
     public function registerBodyParser(string $mediaType, callable $callable): self
     {
         $this->bodyParsers[$mediaType] = $callable;
+
         return $this;
     }
 
     /**
-     * @param string $mediaType A HTTP media type (excluding content-type params).
+     * @param string $mediaType a HTTP media type (excluding content-type params)
      */
     public function hasBodyParser(string $mediaType): bool
     {
@@ -83,7 +84,8 @@ class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param string $mediaType A HTTP media type (excluding content-type params).
+     * @param string $mediaType a HTTP media type (excluding content-type params)
+     *
      * @throws RuntimeException
      */
     public function getBodyParser(string $mediaType): callable
@@ -91,6 +93,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
         if (!isset($this->bodyParsers[$mediaType])) {
             throw new RuntimeException('No parser for type ' . $mediaType);
         }
+
         return $this->bodyParsers[$mediaType];
     }
 
@@ -108,6 +111,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
 
         $this->registerBodyParser('application/x-www-form-urlencoded', static function ($input) {
             parse_str($input, $data);
+
             return $data;
         });
 
@@ -132,7 +136,9 @@ class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @return null|array<mixed>|object
+     * @param ServerRequestInterface $request
+     *
+     * @return array<mixed>|object|null
      */
     protected function parseBody(ServerRequestInterface $request)
     {
@@ -167,6 +173,8 @@ class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
+     * @param ServerRequestInterface $request
+     *
      * @return string|null The serverRequest media type, minus content-type params
      */
     protected function getMediaType(ServerRequestInterface $request): ?string
@@ -175,6 +183,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
 
         if (is_string($contentType) && trim($contentType) !== '') {
             $contentTypeParts = explode(';', $contentType);
+
             return strtolower(trim($contentTypeParts[0]));
         }
 

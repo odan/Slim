@@ -47,6 +47,7 @@ class HttpMethodNotAllowedException extends HttpSpecializedException
     {
         $this->allowedMethods = $methods;
         $this->message = 'Method not allowed. Must be one of: ' . implode(', ', $methods);
+
         return $this;
     }
 }

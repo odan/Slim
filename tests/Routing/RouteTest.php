@@ -46,6 +46,7 @@ class RouteTest extends TestCase
      * @param string|array $methods
      * @param string $pattern
      * @param Closure|string|null $callable
+     *
      * @return Route
      */
     public function createRoute($methods = 'GET', string $pattern = '/', $callable = null): Route
@@ -72,6 +73,7 @@ class RouteTest extends TestCase
             ->will(function ($args) use ($value) {
                 $value .= $args[0];
                 $this->__toString()->willReturn($value);
+
                 return strlen($value);
             });
 
@@ -89,6 +91,7 @@ class RouteTest extends TestCase
             ->withStatus(Argument::type('integer'))
             ->will(function ($args) {
                 $this->getStatusCode()->willReturn($args[0]);
+
                 return $this->reveal();
             });
 
@@ -98,6 +101,7 @@ class RouteTest extends TestCase
             ->willReturn($responseProphecy->reveal());
 
         $methods = is_string($methods) ? [$methods] : $methods;
+
         return new Route(
             $methods,
             $pattern,
@@ -274,6 +278,7 @@ class RouteTest extends TestCase
 
         $mw = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use (&$called) {
             $called++;
+
             return $handler->handle($request);
         };
         $route->add($mw);
@@ -310,6 +315,7 @@ class RouteTest extends TestCase
         $called = 0;
         $mw = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use (&$called) {
             $called++;
+
             return $handler->handle($request);
         };
 
@@ -346,6 +352,7 @@ class RouteTest extends TestCase
 
         $route->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use (&$called) {
             $called++;
+
             return $handler->handle($request);
         });
 
@@ -431,6 +438,7 @@ class RouteTest extends TestCase
                 $responseProphecy
             ) {
                 $self->assertSame($responseProphecy->reveal(), $response);
+
                 return $response;
             })
             ->shouldBeCalledOnce();
@@ -468,6 +476,7 @@ class RouteTest extends TestCase
     {
         $callable = function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('foo');
+
             return $response;
         };
         $route = $this->createRoute(['GET'], '/', $callable);
@@ -485,7 +494,8 @@ class RouteTest extends TestCase
     public function testRouteCallableDoesNotAppendEchoedOutput()
     {
         $callable = function (ServerRequestInterface $request, ResponseInterface $response) {
-            echo "foo";
+            echo 'foo';
+
             return $response->withStatus(201);
         };
         $route = $this->createRoute(['GET'], '/', $callable);
@@ -510,6 +520,7 @@ class RouteTest extends TestCase
     {
         $callable = function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('foo');
+
             return $response;
         };
         $route = $this->createRoute(['GET'], '/', $callable);
@@ -760,7 +771,7 @@ class RouteTest extends TestCase
             null,
             $strategy
         );
-        $route->setCallable('\Slim\Tests\Mocks\CallableTester:toCall'); //Then we fix it here.
+        $route->setCallable('\Slim\Tests\Mocks\CallableTester:toCall'); // Then we fix it here.
 
         $request = $this->createServerRequest('/');
         $response = $route->run($request);
@@ -799,7 +810,7 @@ class RouteTest extends TestCase
             $containerProphecy->reveal(),
             $strategy
         );
-        $route->setCallable('CallableTest2:toCall'); //Then we fix it here.
+        $route->setCallable('CallableTest2:toCall'); // Then we fix it here.
 
         $request = $this->createServerRequest('/');
         $response = $route->run($request);
@@ -821,6 +832,7 @@ class RouteTest extends TestCase
             ->will(function ($args) use ($value) {
                 $value .= $args[0];
                 $this->__toString()->willReturn($value);
+
                 return strlen($value);
             });
 
@@ -848,6 +860,7 @@ class RouteTest extends TestCase
         $containerProphecy->get('ClosureMiddleware')->willReturn(function () use ($responseFactoryProphecy) {
             $response = $responseFactoryProphecy->reveal()->createResponse();
             $response->getBody()->write('Hello');
+
             return $response;
         });
 

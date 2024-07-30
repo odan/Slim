@@ -36,6 +36,7 @@ class RouteResolver implements RouteResolverInterface
 
     /**
      * @param string $uri Should be $request->getUri()->getPath()
+     * @param string $method
      */
     public function computeRoutingResults(string $uri, string $method): RoutingResults
     {
@@ -43,10 +44,13 @@ class RouteResolver implements RouteResolverInterface
         if ($uri === '' || $uri[0] !== '/') {
             $uri = '/' . $uri;
         }
+
         return $this->dispatcher->dispatch($method, $uri);
     }
 
     /**
+     * @param string $identifier
+     *
      * @throws RuntimeException
      */
     public function resolveRoute(string $identifier): RouteInterface

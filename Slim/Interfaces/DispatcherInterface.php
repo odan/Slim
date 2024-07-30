@@ -16,11 +16,16 @@ interface DispatcherInterface
 {
     /**
      * Get routing results for a given request method and uri
+     *
+     * @param string $method
+     * @param string $uri
      */
     public function dispatch(string $method, string $uri): RoutingResults;
 
     /**
      * Get allowed methods for a given uri
+     *
+     * @param string $uri
      *
      * @return string[]
      */

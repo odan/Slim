@@ -41,7 +41,7 @@ class FastRouteDispatcherTest extends TestCase
     {
         return [
             'dataGenerator' => $this->getDataGeneratorClass(),
-            'dispatcher' => $this->getDispatcherClass()
+            'dispatcher' => $this->getDispatcherClass(),
         ];
     }
 
@@ -122,6 +122,7 @@ class FastRouteDispatcherTest extends TestCase
 
     /**
      * @codingStandardsIgnoreStart
+     *
      * @codingStandardsIgnoreEnd
      */
     public function testShadowedStaticRoute()

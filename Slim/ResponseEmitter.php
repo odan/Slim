@@ -12,6 +12,8 @@ namespace Slim;
 
 use Psr\Http\Message\ResponseInterface;
 
+use const CONNECTION_NORMAL;
+
 use function connection_status;
 use function header;
 use function headers_sent;
@@ -20,8 +22,6 @@ use function min;
 use function sprintf;
 use function strlen;
 use function strtolower;
-
-use const CONNECTION_NORMAL;
 
 class ResponseEmitter
 {
@@ -34,6 +34,8 @@ class ResponseEmitter
 
     /**
      * Send the response the client
+     *
+     * @param ResponseInterface $response
      */
     public function emit(ResponseInterface $response): void
     {
@@ -54,6 +56,8 @@ class ResponseEmitter
 
     /**
      * Emit Response Headers
+     *
+     * @param ResponseInterface $response
      */
     private function emitHeaders(ResponseInterface $response): void
     {
@@ -69,6 +73,8 @@ class ResponseEmitter
 
     /**
      * Emit Status Line
+     *
+     * @param ResponseInterface $response
      */
     private function emitStatusLine(ResponseInterface $response): void
     {
@@ -83,6 +89,8 @@ class ResponseEmitter
 
     /**
      * Emit Body
+     *
+     * @param ResponseInterface $response
      */
     private function emitBody(ResponseInterface $response): void
     {
@@ -120,6 +128,8 @@ class ResponseEmitter
 
     /**
      * Asserts response body is empty or status code is 204, 205 or 304
+     *
+     * @param ResponseInterface $response
      */
     public function isResponseEmpty(ResponseInterface $response): bool
     {
@@ -131,6 +141,7 @@ class ResponseEmitter
         if ($seekable) {
             $stream->rewind();
         }
+
         return $seekable ? $stream->read(1) === '' : $stream->eof();
     }
 }

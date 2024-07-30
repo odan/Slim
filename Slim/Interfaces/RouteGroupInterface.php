@@ -27,11 +27,14 @@ interface RouteGroupInterface
 
     /**
      * Add middleware to the route group
+     *
+     * @param MiddlewareInterface $middleware
      */
     public function addMiddleware(MiddlewareInterface $middleware): RouteGroupInterface;
 
     /**
      * Append the group's middleware to the MiddlewareDispatcher
+     *
      * @param MiddlewareDispatcher<\Psr\Container\ContainerInterface|null> $dispatcher
      */
     public function appendMiddlewareToDispatcher(MiddlewareDispatcher $dispatcher): RouteGroupInterface;

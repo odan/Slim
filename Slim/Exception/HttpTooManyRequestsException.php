@@ -25,5 +25,5 @@ class HttpTooManyRequestsException extends HttpSpecializedException
 
     protected string $title = '429 Too Many Requests';
     protected string $description = 'The client application has surpassed its rate limit, ' .
-    'or number of requests they can send in a given period of time.';
+        'or number of requests they can send in a given period of time.';
 }

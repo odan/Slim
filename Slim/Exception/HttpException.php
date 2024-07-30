@@ -16,6 +16,7 @@ use Throwable;
 
 /**
  * @api
+ *
  * @method int getCode()
  */
 class HttpException extends RuntimeException
@@ -49,6 +50,7 @@ class HttpException extends RuntimeException
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -60,6 +62,7 @@ class HttpException extends RuntimeException
     public function setDescription(string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
 }

@@ -24,8 +24,6 @@ use function time;
 
 /**
  * Class PSR7ObjectProvider
- *
- * @package Slim\Tests\Providers
  */
 class PSR7ObjectProvider implements PSR7ObjectProviderInterface
 {
@@ -33,6 +31,7 @@ class PSR7ObjectProvider implements PSR7ObjectProviderInterface
      * @param string $uri
      * @param string $method
      * @param array $data
+     *
      * @return ServerRequestInterface
      */
     public function createServerRequest(
@@ -74,6 +73,7 @@ class PSR7ObjectProvider implements PSR7ObjectProviderInterface
     /**
      * @param int $statusCode
      * @param string $reasonPhrase
+     *
      * @return ResponseInterface
      */
     public function createResponse(int $statusCode = 200, string $reasonPhrase = ''): ResponseInterface
@@ -93,6 +93,7 @@ class PSR7ObjectProvider implements PSR7ObjectProviderInterface
 
     /**
      * @param string $contents
+     *
      * @return StreamInterface
      */
     public function createStream(string $contents = ''): StreamInterface

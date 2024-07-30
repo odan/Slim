@@ -33,11 +33,15 @@ interface MiddlewareDispatcherInterface extends RequestHandlerInterface
      * Middleware are organized as a stack. That means middleware
      * that have been added before will be executed after the newly
      * added one (last in, first out).
+     *
+     * @param MiddlewareInterface $middleware
      */
     public function addMiddleware(MiddlewareInterface $middleware): self;
 
     /**
      * Seed the middleware stack with the inner request handler
+     *
+     * @param RequestHandlerInterface $kernel
      */
     public function seedMiddlewareStack(RequestHandlerInterface $kernel): void;
 }

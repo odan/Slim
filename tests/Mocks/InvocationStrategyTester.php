@@ -21,12 +21,12 @@ class InvocationStrategyTester implements InvocationStrategyInterface
     /**
      * Invoke a route callable.
      *
-     * @param callable $callable The callable to invoke using the strategy.
-     * @param ServerRequestInterface $request The request object.
-     * @param ResponseInterface $response The response object.
+     * @param callable $callable the callable to invoke using the strategy
+     * @param ServerRequestInterface $request the request object
+     * @param ResponseInterface $response the response object
      * @param array $routeArguments The route's placeholder arguments
      *
-     * @return ResponseInterface The response from the callable.
+     * @return ResponseInterface the response from the callable
      */
     public function __invoke(
         callable $callable,
@@ -35,6 +35,7 @@ class InvocationStrategyTester implements InvocationStrategyInterface
         array $routeArguments
     ): ResponseInterface {
         static::$LastCalledFor = $callable;
+
         return $response;
     }
 }

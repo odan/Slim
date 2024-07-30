@@ -44,6 +44,11 @@ class RoutingResults
 
     /**
      * @param array<string, string> $routeArguments
+     * @param DispatcherInterface $dispatcher
+     * @param string $method
+     * @param string $uri
+     * @param int $routeStatus
+     * @param ?string $routeIdentifier
      */
     public function __construct(
         DispatcherInterface $dispatcher,
@@ -87,6 +92,8 @@ class RoutingResults
     }
 
     /**
+     * @param bool $urlDecode
+     *
      * @return array<string, string>
      */
     public function getRouteArguments(bool $urlDecode = true): array

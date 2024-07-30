@@ -35,6 +35,7 @@ use function is_array;
 
 /**
  * @api
+ *
  * @template TContainerInterface of (ContainerInterface|null)
  */
 class Route implements RouteInterface, RequestHandlerInterface
@@ -81,11 +82,12 @@ class Route implements RouteInterface, RequestHandlerInterface
 
     /**
      * Container
-     * @var TContainerInterface $container
+     *
+     * @var TContainerInterface
      */
     protected ?ContainerInterface $container = null;
 
-    /** @var MiddlewareDispatcher<TContainerInterface> $middlewareDispatcher */
+    /** @var MiddlewareDispatcher<TContainerInterface> */
     protected MiddlewareDispatcher $middlewareDispatcher;
 
     /**
@@ -159,6 +161,7 @@ class Route implements RouteInterface, RequestHandlerInterface
     public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): RouteInterface
     {
         $this->invocationStrategy = $invocationStrategy;
+
         return $this;
     }
 
@@ -184,6 +187,7 @@ class Route implements RouteInterface, RequestHandlerInterface
     public function setPattern(string $pattern): RouteInterface
     {
         $this->pattern = $pattern;
+
         return $this;
     }
 
@@ -201,6 +205,7 @@ class Route implements RouteInterface, RequestHandlerInterface
     public function setCallable($callable): RouteInterface
     {
         $this->callable = $callable;
+
         return $this;
     }
 
@@ -218,6 +223,7 @@ class Route implements RouteInterface, RequestHandlerInterface
     public function setName(string $name): RouteInterface
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -237,6 +243,7 @@ class Route implements RouteInterface, RequestHandlerInterface
         if (array_key_exists($name, $this->arguments)) {
             return $this->arguments[$name];
         }
+
         return $default;
     }
 
@@ -258,6 +265,7 @@ class Route implements RouteInterface, RequestHandlerInterface
         }
 
         $this->arguments = $arguments;
+
         return $this;
     }
 
@@ -275,6 +283,7 @@ class Route implements RouteInterface, RequestHandlerInterface
     public function add($middleware): RouteInterface
     {
         $this->middlewareDispatcher->add($middleware);
+
         return $this;
     }
 
@@ -284,6 +293,7 @@ class Route implements RouteInterface, RequestHandlerInterface
     public function addMiddleware(MiddlewareInterface $middleware): RouteInterface
     {
         $this->middlewareDispatcher->addMiddleware($middleware);
+
         return $this;
     }
 
@@ -293,6 +303,7 @@ class Route implements RouteInterface, RequestHandlerInterface
     public function prepare(array $arguments): RouteInterface
     {
         $this->arguments = array_replace($this->savedArguments, $arguments);
+
         return $this;
     }
 
@@ -306,6 +317,7 @@ class Route implements RouteInterface, RequestHandlerInterface
         }
 
         $this->arguments[$name] = $value;
+
         return $this;
     }
 
@@ -360,6 +372,7 @@ class Route implements RouteInterface, RequestHandlerInterface
         }
 
         $response = $this->responseFactory->createResponse();
+
         return $strategy($callable, $request, $response, $this->arguments);
     }
 }

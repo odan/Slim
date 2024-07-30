@@ -36,6 +36,7 @@ class RoutingMiddlewareTest extends TestCase
         $responseFactory = $this->getResponseFactory();
         $routeCollector = new RouteCollector($responseFactory, $callableResolver);
         $routeCollector->map(['GET'], '/hello/{name}', null);
+
         return $routeCollector;
     }
 
@@ -56,6 +57,7 @@ class RoutingMiddlewareTest extends TestCase
             // routingResults is available
             $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
             $this->assertInstanceOf(RoutingResults::class, $routingResults);
+
             return $responseFactory->createResponse();
         })->bindTo($this);
 

@@ -54,6 +54,7 @@ class Dispatcher implements DispatcherInterface
         }
 
         $this->dispatcher = $dispatcher;
+
         return $this->dispatcher;
     }
 
@@ -64,6 +65,7 @@ class Dispatcher implements DispatcherInterface
     {
         $dispatcher = $this->createDispatcher();
         $results = $dispatcher->dispatch($method, $uri);
+
         return new RoutingResults($this, $method, $uri, $results[0], $results[1], $results[2]);
     }
 
@@ -73,6 +75,7 @@ class Dispatcher implements DispatcherInterface
     public function getAllowedMethods(string $uri): array
     {
         $dispatcher = $this->createDispatcher();
+
         return $dispatcher->getAllowedMethods($uri);
     }
 }

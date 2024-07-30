@@ -32,6 +32,7 @@ use function sprintf;
 /**
  * RouteCollector is used to collect routes and route groups
  * as well as generate paths and URLs relative to its environment
+ *
  * @template TContainerInterface of (ContainerInterface|null)
  */
 class RouteCollector implements RouteCollectorInterface
@@ -84,6 +85,11 @@ class RouteCollector implements RouteCollectorInterface
 
     /**
      * @param TContainerInterface $container
+     * @param ResponseFactoryInterface $responseFactory
+     * @param CallableResolverInterface $callableResolver
+     * @param ?InvocationStrategyInterface $defaultInvocationStrategy
+     * @param ?RouteParserInterface $routeParser
+     * @param ?string $cacheFile
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -120,6 +126,7 @@ class RouteCollector implements RouteCollectorInterface
     public function setDefaultInvocationStrategy(InvocationStrategyInterface $strategy): RouteCollectorInterface
     {
         $this->defaultInvocationStrategy = $strategy;
+
         return $this;
     }
 
@@ -149,6 +156,7 @@ class RouteCollector implements RouteCollectorInterface
         }
 
         $this->cacheFile = $cacheFile;
+
         return $this;
     }
 
@@ -162,6 +170,8 @@ class RouteCollector implements RouteCollectorInterface
 
     /**
      * Set the base path used in urlFor()
+     *
+     * @param string $basePath
      */
     public function setBasePath(string $basePath): RouteCollectorInterface
     {
@@ -187,6 +197,7 @@ class RouteCollector implements RouteCollectorInterface
 
         /** @psalm-suppress PossiblyNullArrayOffset */
         unset($this->routesByName[$route->getName()], $this->routes[$route->getIdentifier()]);
+
         return $this;
     }
 
@@ -207,6 +218,7 @@ class RouteCollector implements RouteCollectorInterface
         foreach ($this->routes as $route) {
             if ($name === $route->getName()) {
                 $this->routesByName[$name] = $route;
+
                 return $route;
             }
         }
@@ -222,6 +234,7 @@ class RouteCollector implements RouteCollectorInterface
         if (!isset($this->routes[$identifier])) {
             throw new RuntimeException('Route not found, looks like your route cache is stale.');
         }
+
         return $this->routes[$identifier];
     }
 
@@ -241,14 +254,18 @@ class RouteCollector implements RouteCollectorInterface
 
     /**
      * @param string|callable $callable
+     * @param string $pattern
      */
     protected function createGroup(string $pattern, $callable): RouteGroupInterface
     {
         $routeCollectorProxy = $this->createProxy($pattern);
+
         return new RouteGroup($pattern, $callable, $this->callableResolver, $routeCollectorProxy);
     }
 
     /**
+     * @param string $pattern
+     *
      * @return RouteCollectorProxyInterface<TContainerInterface>
      */
     protected function createProxy(string $pattern): RouteCollectorProxyInterface
@@ -284,6 +301,7 @@ class RouteCollector implements RouteCollectorInterface
     /**
      * @param string[] $methods
      * @param callable|string $callable
+     * @param string $pattern
      */
     protected function createRoute(array $methods, string $pattern, $callable): RouteInterface
     {

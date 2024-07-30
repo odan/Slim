@@ -33,7 +33,9 @@ use function strtoupper;
 
 /**
  * @api
+ *
  * @template TContainerInterface of (ContainerInterface|null)
+ *
  * @template-extends RouteCollectorProxy<TContainerInterface>
  */
 class App extends RouteCollectorProxy implements RequestHandlerInterface
@@ -51,6 +53,11 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
 
     /**
      * @param TContainerInterface $container
+     * @param ResponseFactoryInterface $responseFactory
+     * @param ?CallableResolverInterface $callableResolver
+     * @param ?RouteCollectorInterface $routeCollector
+     * @param ?RouteResolverInterface $routeResolver
+     * @param ?MiddlewareDispatcherInterface $middlewareDispatcher
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -97,21 +104,25 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
 
     /**
      * @param MiddlewareInterface|string|callable $middleware
+     *
      * @return App<TContainerInterface>
      */
     public function add($middleware): self
     {
         $this->middlewareDispatcher->add($middleware);
+
         return $this;
     }
 
     /**
      * @param MiddlewareInterface $middleware
+     *
      * @return App<TContainerInterface>
      */
     public function addMiddleware(MiddlewareInterface $middleware): self
     {
         $this->middlewareDispatcher->addMiddleware($middleware);
+
         return $this;
     }
 
@@ -129,6 +140,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
             $this->getRouteCollector()->getRouteParser()
         );
         $this->add($routingMiddleware);
+
         return $routingMiddleware;
     }
 
@@ -157,6 +169,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
             $logger
         );
         $this->add($errorMiddleware);
+
         return $errorMiddleware;
     }
 
@@ -171,6 +184,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
     {
         $bodyParsingMiddleware = new BodyParsingMiddleware($bodyParsers);
         $this->add($bodyParsingMiddleware);
+
         return $bodyParsingMiddleware;
     }
 
@@ -181,6 +195,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
      * resultant Response object to the HTTP client.
      *
      * @param ServerRequestInterface|null $request
+     *
      * @return void
      */
     public function run(?ServerRequestInterface $request = null): void
@@ -202,6 +217,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
      * resultant Response object.
      *
      * @param ServerRequestInterface $request
+     *
      * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -218,6 +234,7 @@ class App extends RouteCollectorProxy implements RequestHandlerInterface
         $method = strtoupper($request->getMethod());
         if ($method === 'HEAD') {
             $emptyBody = $this->responseFactory->createResponse()->getBody();
+
             return $response->withBody($emptyBody);
         }
 

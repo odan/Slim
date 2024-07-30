@@ -28,6 +28,8 @@ interface RouteCollectorInterface
 
     /**
      * Set default route invocation strategy
+     *
+     * @param InvocationStrategyInterface $strategy
      */
     public function setDefaultInvocationStrategy(InvocationStrategyInterface $strategy): RouteCollectorInterface;
 
@@ -38,6 +40,8 @@ interface RouteCollectorInterface
 
     /**
      * Set path to FastRoute cache file
+     *
+     * @param string $cacheFile
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
@@ -51,6 +55,8 @@ interface RouteCollectorInterface
 
     /**
      * Set the base path used in pathFor()
+     *
+     * @param string $basePath
      */
     public function setBasePath(string $basePath): RouteCollectorInterface;
 
@@ -82,13 +88,17 @@ interface RouteCollectorInterface
     /**
      * Lookup a route via the route's unique identifier
      *
+     * @param string $identifier
+     *
      * @throws RuntimeException   If route of identifier does not exist
      */
     public function lookupRoute(string $identifier): RouteInterface;
 
     /**
      * Add route group
+     *
      * @param string|callable $callable
+     * @param string $pattern
      */
     public function group(string $pattern, $callable): RouteGroupInterface;
 

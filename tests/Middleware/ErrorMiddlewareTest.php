@@ -49,6 +49,7 @@ class ErrorMiddlewareTest extends TestCase
         $handler = (function () {
             $response = $this->createResponse(500);
             $response->getBody()->write('Oops..');
+
             return $response;
         })->bindTo($this);
 
@@ -85,6 +86,7 @@ class ErrorMiddlewareTest extends TestCase
         $handler = (function () {
             $response = $this->createResponse();
             $response->getBody()->write('Oops..');
+
             return $response;
         })->bindTo($this);
 
@@ -154,6 +156,7 @@ class ErrorMiddlewareTest extends TestCase
             (function (ServerRequestInterface $request, $exception) {
                 $response = $this->createResponse();
                 $response->getBody()->write($exception->getMessage());
+
                 return $response;
             })->bindTo($this),
             true
@@ -162,12 +165,14 @@ class ErrorMiddlewareTest extends TestCase
             (function () {
                 $response = $this->createResponse();
                 $response->getBody()->write('Oops..');
+
                 return $response;
             })->bindTo($this)
         );
         $app->add($middleware);
         $app->get('/foo', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('...');
+
             return $response;
         });
         $request = $this->createServerRequest('/foo');
@@ -193,6 +198,7 @@ class ErrorMiddlewareTest extends TestCase
             (function (ServerRequestInterface $request, $exception) {
                 $response = $this->createResponse();
                 $response->getBody()->write($exception->getMessage());
+
                 return $response;
             })->bindTo($this),
             true
@@ -202,6 +208,7 @@ class ErrorMiddlewareTest extends TestCase
             (function () {
                 $response = $this->createResponse();
                 $response->getBody()->write('Oops..');
+
                 return $response;
             })->bindTo($this)
         );
@@ -210,6 +217,7 @@ class ErrorMiddlewareTest extends TestCase
 
         $app->get('/foo', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('...');
+
             return $response;
         });
 
@@ -237,6 +245,7 @@ class ErrorMiddlewareTest extends TestCase
             (function (ServerRequestInterface $request, $exception) {
                 $response = $this->createResponse();
                 $response->getBody()->write($exception->getMessage());
+
                 return $response;
             })->bindTo($this),
             false
@@ -246,6 +255,7 @@ class ErrorMiddlewareTest extends TestCase
             (function () {
                 $response = $this->createResponse();
                 $response->getBody()->write('Oops..');
+
                 return $response;
             })->bindTo($this)
         );
@@ -254,6 +264,7 @@ class ErrorMiddlewareTest extends TestCase
 
         $app->get('/foo', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('...');
+
             return $response;
         });
 
@@ -279,6 +290,7 @@ class ErrorMiddlewareTest extends TestCase
         $handler = (function (ServerRequestInterface $request, $exception) {
             $response = $this->createResponse();
             $response->getBody()->write($exception->getMessage());
+
             return $response;
         });
 
@@ -288,6 +300,7 @@ class ErrorMiddlewareTest extends TestCase
             (function () {
                 $response = $this->createResponse();
                 $response->getBody()->write('Oops..');
+
                 return $response;
             })->bindTo($this)
         );
@@ -296,6 +309,7 @@ class ErrorMiddlewareTest extends TestCase
 
         $app->get('/foo', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('...');
+
             return $response;
         });
 
@@ -322,6 +336,7 @@ class ErrorMiddlewareTest extends TestCase
             (function (ServerRequestInterface $request, $exception) {
                 $response = $this->createResponse();
                 $response->getBody()->write($exception->getMessage());
+
                 return $response;
             })->bindTo($this)
         );
@@ -330,6 +345,7 @@ class ErrorMiddlewareTest extends TestCase
 
         $app->get('/foo', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('...');
+
             return $response;
         });
 

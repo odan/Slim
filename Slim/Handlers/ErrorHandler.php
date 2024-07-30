@@ -43,6 +43,7 @@ use function preg_match;
  *
  * It outputs the error message and diagnostic information in one of the following formats:
  * JSON, XML, Plain Text or HTML based on the Accept header.
+ *
  * @api
  */
 class ErrorHandler implements ErrorHandlerInterface
@@ -165,6 +166,8 @@ class ErrorHandler implements ErrorHandlerInterface
      * Note: This method is a bare-bones implementation designed specifically for
      * Slim's error handling requirements. Consider a fully-feature solution such
      * as willdurand/negotiation for any other situation.
+     *
+     * @param ServerRequestInterface $request
      */
     protected function determineContentType(ServerRequestInterface $request): ?string
     {
@@ -269,6 +272,8 @@ class ErrorHandler implements ErrorHandlerInterface
 
     /**
      * Wraps the error_log function so that this can be easily tested
+     *
+     * @param string $error
      */
     protected function logError(string $error): void
     {

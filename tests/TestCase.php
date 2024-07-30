@@ -25,7 +25,7 @@ use Slim\Interfaces\CallableResolverInterface;
 use Slim\MiddlewareDispatcher;
 use Slim\Tests\Providers\PSR7ObjectProvider;
 
-abstract class TestCase extends PhpUnitTestCase
+abstract class TestCase extends PHPUnitTestCase
 {
     use ProphecyTrait;
 
@@ -35,6 +35,7 @@ abstract class TestCase extends PhpUnitTestCase
     protected function getServerRequestFactory(): ServerRequestFactoryInterface
     {
         $psr7ObjectProvider = new PSR7ObjectProvider();
+
         return $psr7ObjectProvider->getServerRequestFactory();
     }
 
@@ -44,6 +45,7 @@ abstract class TestCase extends PhpUnitTestCase
     protected function getResponseFactory(): ResponseFactoryInterface
     {
         $psr7ObjectProvider = new PSR7ObjectProvider();
+
         return $psr7ObjectProvider->getResponseFactory();
     }
 
@@ -53,6 +55,7 @@ abstract class TestCase extends PhpUnitTestCase
     protected function getStreamFactory(): StreamFactoryInterface
     {
         $psr7ObjectProvider = new PSR7ObjectProvider();
+
         return $psr7ObjectProvider->getStreamFactory();
     }
 
@@ -89,6 +92,7 @@ abstract class TestCase extends PhpUnitTestCase
      * @param string $uri
      * @param string $method
      * @param array $data
+     *
      * @return ServerRequestInterface
      */
     protected function createServerRequest(
@@ -97,27 +101,32 @@ abstract class TestCase extends PhpUnitTestCase
         array $data = []
     ): ServerRequestInterface {
         $psr7ObjectProvider = new PSR7ObjectProvider();
+
         return $psr7ObjectProvider->createServerRequest($uri, $method, $data);
     }
 
     /**
      * @param int $statusCode
      * @param string $reasonPhrase
+     *
      * @return ResponseInterface
      */
     protected function createResponse(int $statusCode = 200, string $reasonPhrase = ''): ResponseInterface
     {
         $psr7ObjectProvider = new PSR7ObjectProvider();
+
         return $psr7ObjectProvider->createResponse($statusCode, $reasonPhrase);
     }
 
     /**
      * @param string $contents
+     *
      * @return StreamInterface
      */
     protected function createStream(string $contents = ''): StreamInterface
     {
         $psr7ObjectProvider = new PSR7ObjectProvider();
+
         return $psr7ObjectProvider->createStream($contents);
     }
 }

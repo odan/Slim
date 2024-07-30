@@ -28,7 +28,7 @@ use function unlink;
 class RouteCollectorTest extends TestCase
 {
     /**
-     * @var null|string
+     * @var string|null
      */
     protected $cacheFile;
 

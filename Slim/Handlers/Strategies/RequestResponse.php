@@ -24,6 +24,9 @@ class RequestResponse implements InvocationStrategyInterface
      * as an array of arguments.
      *
      * @param array<string, string> $routeArguments
+     * @param callable $callable
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      */
     public function __invoke(
         callable $callable,

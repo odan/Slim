@@ -24,6 +24,8 @@ interface RouteInterface
 
     /**
      * Set route invocation strategy
+     *
+     * @param InvocationStrategyInterface $invocationStrategy
      */
     public function setInvocationStrategy(InvocationStrategyInterface $invocationStrategy): RouteInterface;
 
@@ -41,6 +43,8 @@ interface RouteInterface
 
     /**
      * Set route pattern
+     *
+     * @param string $pattern
      */
     public function setPattern(string $pattern): RouteInterface;
 
@@ -66,6 +70,8 @@ interface RouteInterface
     /**
      * Set route name
      *
+     * @param string $name
+     *
      * @return static
      */
     public function setName(string $name): RouteInterface;
@@ -77,6 +83,9 @@ interface RouteInterface
 
     /**
      * Retrieve a specific route argument
+     *
+     * @param string $name
+     * @param ?string $default
      */
     public function getArgument(string $name, ?string $default = null): ?string;
 
@@ -89,6 +98,9 @@ interface RouteInterface
 
     /**
      * Set a route argument
+     *
+     * @param string $name
+     * @param string $value
      */
     public function setArgument(string $name, string $value): RouteInterface;
 
@@ -119,6 +131,8 @@ interface RouteInterface
      * This method traverses the middleware stack, including the route's callable
      * and captures the resultant HTTP response object. It then sends the response
      * back to the Application.
+     *
+     * @param ServerRequestInterface $request
      */
     public function run(ServerRequestInterface $request): ResponseInterface;
 }

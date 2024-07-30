@@ -149,9 +149,9 @@ class MiddlewareDispatcherTest extends TestCase
                 'Callable',
                 function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
                     return $handler->handle($request);
-                }
+                },
             ],
-            ['MiddlewareInterfaceNotImplemented', 'MiddlewareInterfaceNotImplemented']
+            ['MiddlewareInterfaceNotImplemented', 'MiddlewareInterfaceNotImplemented'],
         ];
     }
 
@@ -221,6 +221,7 @@ class MiddlewareDispatcherTest extends TestCase
             RequestHandlerInterface $handler
         ) use ($self) {
             $self->assertInstanceOf(ContainerInterface::class, $this);
+
             return $handler->handle($request);
         };
 
@@ -248,6 +249,7 @@ class MiddlewareDispatcherTest extends TestCase
             $containerProphecy
         ) {
             $self->assertSame($containerProphecy->reveal(), $this);
+
             return $handler->handle($request);
         };
 
@@ -361,6 +363,7 @@ class MiddlewareDispatcherTest extends TestCase
             $headers[] = $args[1];
             $this->getHeader($args[0])->willReturn($headers);
             $this->hasHeader($args[0])->willReturn(true);
+
             return $this;
         });
 
@@ -369,6 +372,7 @@ class MiddlewareDispatcherTest extends TestCase
         $responseProphecy->withHeader(Argument::type('string'), Argument::type('array'))->will(function ($args) {
             $this->getHeader($args[0])->willReturn($args[1]);
             $this->hasHeader($args[0])->willReturn(true);
+
             return $this;
         });
         $responseProphecy->withAddedHeader(Argument::type('string'), Argument::type('string'))->will(function ($args) {
@@ -377,10 +381,12 @@ class MiddlewareDispatcherTest extends TestCase
             $headers[] = $args[1];
             $this->getHeader($args[0])->willReturn($headers);
             $this->hasHeader($args[0])->willReturn(true);
+
             return $this;
         });
         $responseProphecy->withStatus(Argument::type('int'))->will(function ($args) {
             $this->getStatusCode()->willReturn($args[0]);
+
             return $this;
         });
 
@@ -388,6 +394,7 @@ class MiddlewareDispatcherTest extends TestCase
         $kernelProphecy->handle(Argument::type(ServerRequestInterface::class))
             ->will(function ($args) use ($responseProphecy): ResponseInterface {
                 $request = $args[0];
+
                 return $responseProphecy->reveal()
                     ->withStatus(204)
                     ->withHeader('X-SEQ-PRE-REQ-HANDLER', $request->getHeader('X-SEQ-PRE-REQ-HANDLER'));
@@ -511,6 +518,7 @@ class MiddlewareDispatcherTest extends TestCase
         $requestProphecy->hasHeader('X-NESTED')->willReturn(false);
         $requestProphecy->withAddedHeader('X-NESTED', '1')->will(function () {
             $this->hasHeader('X-NESTED')->willReturn(true);
+
             return $this;
         });
 
@@ -521,6 +529,7 @@ class MiddlewareDispatcherTest extends TestCase
             $headers[] = $args[1];
             $this->getHeader($args[0])->willReturn($headers);
             $this->hasHeader($args[0])->willReturn(true);
+
             return $this;
         });
 

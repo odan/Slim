@@ -35,6 +35,9 @@ class RoutingMiddleware implements MiddlewareInterface
     }
 
     /**
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     *
      * @throws HttpNotFoundException
      * @throws HttpMethodNotAllowedException
      * @throws RuntimeException
@@ -42,6 +45,7 @@ class RoutingMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $request = $this->performRouting($request);
+
         return $handler->handle($request);
     }
 
@@ -70,16 +74,15 @@ class RoutingMiddleware implements MiddlewareInterface
                 $route = $this->routeResolver
                     ->resolveRoute($routeIdentifier)
                     ->prepare($routeArguments);
+
                 return $request->withAttribute(RouteContext::ROUTE, $route);
 
             case RoutingResults::NOT_FOUND:
                 throw new HttpNotFoundException($request);
-
             case RoutingResults::METHOD_NOT_ALLOWED:
                 $exception = new HttpMethodNotAllowedException($request);
                 $exception->setAllowedMethods($routingResults->getAllowedMethods());
                 throw $exception;
-
             default:
                 throw new RuntimeException('An unexpected error occurred while performing routing.');
         }
@@ -87,6 +90,8 @@ class RoutingMiddleware implements MiddlewareInterface
 
     /**
      * Resolves the route from the given request
+     *
+     * @param ServerRequestInterface $request
      */
     protected function resolveRoutingResultsFromRequest(ServerRequestInterface $request): RoutingResults
     {

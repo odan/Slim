@@ -15,6 +15,8 @@ use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
+use const SEEK_SET;
+
 use function clearstatcache;
 use function fclose;
 use function feof;
@@ -31,8 +33,6 @@ use function stream_get_contents;
 use function stream_get_meta_data;
 use function var_export;
 
-use const SEEK_SET;
-
 class MockStream implements StreamInterface
 {
     /** @var resource A resource reference */
@@ -47,7 +47,7 @@ class MockStream implements StreamInterface
     /** @var bool */
     private $writable;
 
-    /** @var array|mixed|null|void */
+    /** @var array|mixed|void|null */
     private $uri;
 
     /** @var int|null */
@@ -96,6 +96,7 @@ class MockStream implements StreamInterface
 
     /**
      * MockStream constructor.
+     *
      * @param string|resource $body
      */
     public function __construct($body = '')

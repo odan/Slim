@@ -33,7 +33,7 @@ final class CallableResolver implements AdvancedCallableResolverInterface
 {
     public static string $callablePattern = '!^([^\:]+)\:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$!';
 
-    /** @var TContainerInterface $container */
+    /** @var TContainerInterface */
     private ?ContainerInterface $container;
 
     /**
@@ -59,6 +59,7 @@ final class CallableResolver implements AdvancedCallableResolverInterface
             $resolved[1] ??= '__invoke';
         }
         $callable = $this->assertCallable($resolved, $toResolve);
+
         return $this->bindToContainer($callable);
     }
 
@@ -80,6 +81,8 @@ final class CallableResolver implements AdvancedCallableResolverInterface
 
     /**
      * @param string|callable $toResolve
+     * @param callable $predicate
+     * @param string $defaultMethod
      *
      * @throws RuntimeException
      */
@@ -101,6 +104,7 @@ final class CallableResolver implements AdvancedCallableResolverInterface
             $resolved = [$instance, $method ?? '__invoke'];
         }
         $callable = $this->assertCallable($resolved, $toResolve);
+
         return $this->bindToContainer($callable);
     }
 
@@ -121,6 +125,8 @@ final class CallableResolver implements AdvancedCallableResolverInterface
     }
 
     /**
+     * @param string $toResolve
+     *
      * @throws RuntimeException
      *
      * @return array{object, string|null} [Instance, Method Name]
@@ -145,6 +151,7 @@ final class CallableResolver implements AdvancedCallableResolverInterface
             }
             $instance = new $class($this->container);
         }
+
         return [$instance, $method];
     }
 
@@ -164,6 +171,7 @@ final class CallableResolver implements AdvancedCallableResolverInterface
             }
             throw new RuntimeException(sprintf('%s is not resolvable', $formatedToResolve));
         }
+
         return $resolved;
     }
 
@@ -176,11 +184,13 @@ final class CallableResolver implements AdvancedCallableResolverInterface
             /** @var Closure $callable */
             $callable = $callable->bindTo($this->container);
         }
+
         return $callable;
     }
 
     /**
      * @param string|callable $toResolve
+     *
      * @return string|callable
      */
     private function prepareToResolve($toResolve)
@@ -194,6 +204,7 @@ final class CallableResolver implements AdvancedCallableResolverInterface
         if (is_string($class) && is_string($method)) {
             return $class . ':' . $method;
         }
+
         return $toResolve;
     }
 }

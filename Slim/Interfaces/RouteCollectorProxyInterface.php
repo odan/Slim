@@ -16,6 +16,7 @@ use Psr\Http\Message\UriInterface;
 
 /**
  * @api
+ *
  * @template TContainerInterface of (ContainerInterface|null)
  */
 interface RouteCollectorProxyInterface
@@ -38,6 +39,9 @@ interface RouteCollectorProxyInterface
 
     /**
      * Set the RouteCollectorProxy's base path
+     *
+     * @param string $basePath
+     *
      * @return RouteCollectorProxyInterface<TContainerInterface>
      */
     public function setBasePath(string $basePath): RouteCollectorProxyInterface;
@@ -113,7 +117,9 @@ interface RouteCollectorProxyInterface
      * This method accepts a route pattern and a callback. All route
      * declarations in the callback will be prepended by the group(s)
      * that it is in.
+     *
      * @param string|callable $callable
+     * @param string $pattern
      */
     public function group(string $pattern, $callable): RouteGroupInterface;
 
@@ -121,6 +127,8 @@ interface RouteCollectorProxyInterface
      * Add a route that sends an HTTP redirect
      *
      * @param string|UriInterface $to
+     * @param string $from
+     * @param int $status
      */
     public function redirect(string $from, $to, int $status = 302): RouteInterface;
 }

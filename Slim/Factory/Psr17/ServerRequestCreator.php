@@ -25,6 +25,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
 
     /**
      * @param object|string $serverRequestCreator
+     * @param string $serverRequestCreatorMethod
      */
     public function __construct($serverRequestCreator, string $serverRequestCreatorMethod)
     {
@@ -39,6 +40,7 @@ class ServerRequestCreator implements ServerRequestCreatorInterface
     {
         /** @var callable $callable */
         $callable = [$this->serverRequestCreator, $this->serverRequestCreatorMethod];
+
         return (Closure::fromCallable($callable))();
     }
 }

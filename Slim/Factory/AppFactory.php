@@ -47,7 +47,14 @@ class AppFactory
 
     /**
      * @template TContainerInterface of (ContainerInterface|null)
+     *
      * @param TContainerInterface $container
+     * @param ?ResponseFactoryInterface $responseFactory
+     * @param ?CallableResolverInterface $callableResolver
+     * @param ?RouteCollectorInterface $routeCollector
+     * @param ?RouteResolverInterface $routeResolver
+     * @param ?MiddlewareDispatcherInterface $middlewareDispatcher
+     *
      * @return (TContainerInterface is ContainerInterface ? App<TContainerInterface> : App<ContainerInterface|null>)
      */
     public static function create(
@@ -59,6 +66,7 @@ class AppFactory
         ?MiddlewareDispatcherInterface $middlewareDispatcher = null
     ): App {
         static::$responseFactory = $responseFactory ?? static::$responseFactory;
+
         return new App(
             self::determineResponseFactory(),
             $container ?? static::$container,
@@ -71,42 +79,44 @@ class AppFactory
 
     /**
      * @template TContainerInterface of (ContainerInterface)
+     *
      * @param TContainerInterface $container
+     *
      * @return App<TContainerInterface>
      */
     public static function createFromContainer(ContainerInterface $container): App
     {
         $responseFactory = $container->has(ResponseFactoryInterface::class)
         && (
-        $responseFactoryFromContainer = $container->get(ResponseFactoryInterface::class)
+            $responseFactoryFromContainer = $container->get(ResponseFactoryInterface::class)
         ) instanceof ResponseFactoryInterface
             ? $responseFactoryFromContainer
             : self::determineResponseFactory();
 
         $callableResolver = $container->has(CallableResolverInterface::class)
         && (
-        $callableResolverFromContainer = $container->get(CallableResolverInterface::class)
+            $callableResolverFromContainer = $container->get(CallableResolverInterface::class)
         ) instanceof CallableResolverInterface
             ? $callableResolverFromContainer
             : null;
 
         $routeCollector = $container->has(RouteCollectorInterface::class)
         && (
-        $routeCollectorFromContainer = $container->get(RouteCollectorInterface::class)
+            $routeCollectorFromContainer = $container->get(RouteCollectorInterface::class)
         ) instanceof RouteCollectorInterface
             ? $routeCollectorFromContainer
             : null;
 
         $routeResolver = $container->has(RouteResolverInterface::class)
         && (
-        $routeResolverFromContainer = $container->get(RouteResolverInterface::class)
+            $routeResolverFromContainer = $container->get(RouteResolverInterface::class)
         ) instanceof RouteResolverInterface
             ? $routeResolverFromContainer
             : null;
 
         $middlewareDispatcher = $container->has(MiddlewareDispatcherInterface::class)
         && (
-        $middlewareDispatcherFromContainer = $container->get(MiddlewareDispatcherInterface::class)
+            $middlewareDispatcherFromContainer = $container->get(MiddlewareDispatcherInterface::class)
         ) instanceof MiddlewareDispatcherInterface
             ? $middlewareDispatcherFromContainer
             : null;
@@ -130,6 +140,7 @@ class AppFactory
             if (static::$streamFactory) {
                 return static::attemptResponseFactoryDecoration(static::$responseFactory, static::$streamFactory);
             }
+
             return static::$responseFactory;
         }
 
@@ -142,6 +153,7 @@ class AppFactory
 
                 if (static::$streamFactory || $psr17factory::isStreamFactoryAvailable()) {
                     $streamFactory = static::$streamFactory ?? $psr17factory::getStreamFactory();
+
                     return static::attemptResponseFactoryDecoration($responseFactory, $streamFactory);
                 }
 
@@ -150,9 +162,9 @@ class AppFactory
         }
 
         throw new RuntimeException(
-            "Could not detect any PSR-17 ResponseFactory implementations. " .
-            "Please install a supported implementation in order to use `AppFactory::create()`. " .
-            "See https://github.com/slimphp/Slim/blob/4.x/README.md for a list of supported implementations."
+            'Could not detect any PSR-17 ResponseFactory implementations. ' .
+            'Please install a supported implementation in order to use `AppFactory::create()`. ' .
+            'See https://github.com/slimphp/Slim/blob/4.x/README.md for a list of supported implementations.'
         );
     }
 

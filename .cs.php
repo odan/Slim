@@ -60,6 +60,8 @@ return (new Config())
             'class_definition' => [
                 'space_before_parenthesis' => true,
             ],
+            'declare_equal_normalize' => false,
+            'phpdoc_summary' => false,
         ]
     )
     ->setFinder(
