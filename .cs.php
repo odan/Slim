@@ -62,6 +62,8 @@ return (new Config())
             ],
             'declare_equal_normalize' => false,
             'phpdoc_summary' => false,
+            'phpdoc_add_missing_param_annotation' => false,
+            'no_useless_concat_operator' => false,
         ]
     )
     ->setFinder(
