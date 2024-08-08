@@ -7,106 +7,100 @@
 
 Slim is a PHP micro-framework that helps you quickly write simple yet powerful web applications and APIs.
 
+## Requirements
+
+* PHP 8.2
+
 ## Installation
 
 It's recommended that you use [Composer](https://getcomposer.org/) to install Slim.
 
-```bash
-$ composer require slim/slim
+To install the Slim 5 microframework package, run:
+
+```
+composer require slim/slim 5.x-dev
 ```
 
-This will install Slim and all required dependencies. Slim requires PHP 7.4 or newer.
+Then install a DI container (PSR-11) package for dependency injection, e.g. PHP-DI:
 
-## Choose a PSR-7 Implementation & ServerRequest Creator
+```
+composer require php-di/php-di
+```
 
-Before you can get up and running with Slim you will need to choose a PSR-7 implementation that best fits your application. A few notable ones:
+PHP-DI is the recommended DI container implementation.
+Of course, you can install any other [PSR-11](https://packagist.org/search/?tags=PSR-11) compatible package.
+
+## Choose a PSR-7 HTTP Implementation
+
+Before you can get up and running with Slim you will need to choose a 
+PSR-7 implementation that best fits your application. 
+
+A few notable ones:
+
 - [Slim-Psr7](https://github.com/slimphp/Slim-Psr7) - This is the Slim Framework PSR-7 implementation
 - [httpsoft/http-message](https://github.com/httpsoft/http-message) & [httpsoft/http-server-request](https://github.com/httpsoft/http-server-request) - This is the fastest, strictest and most lightweight implementation available
 - [Nyholm/psr7](https://github.com/Nyholm/psr7) & [Nyholm/psr7-server](https://github.com/Nyholm/psr7-server) - Performance is almost the same as the HttpSoft implementation
 - [Guzzle/psr7](https://github.com/guzzle/psr7) - This is the implementation used by the Guzzle Client, featuring extra functionality for stream and file handling
 - [laminas-diactoros](https://github.com/laminas/laminas-diactoros) - This is the Laminas (Zend) PSR-7 implementation
 
+**Example:** To install the Slim PSR-7 package, run:
 
-## Slim-Http Decorators
-
-[Slim-Http](https://github.com/slimphp/Slim-Http) is a set of decorators for any PSR-7 implementation that we recommend is used with Slim Framework.
-To install the Slim-Http library simply run the following command:
-
-```bash
-composer require slim/http
+```
+composer require slim/psr7
 ```
 
-The `ServerRequest` and `Response` object decorators are automatically detected and applied by the internal factories. If you have installed Slim-Http and wish to turn off automatic object decoration then you can use the following statements:
+Then create file `public/index.php`.
+
 ```php
 <?php
 
-use Slim\Factory\AppFactory;
-use Slim\Factory\ServerRequestCreatorFactory;
-
-AppFactory::setSlimHttpDecoratorsAutomaticDetection(false);
-ServerRequestCreatorFactory::setSlimHttpDecoratorsAutomaticDetection(false);
-
-$app = AppFactory::create();
-
-// ...
-```
-
-## Hello World using AppFactory with PSR-7 auto-detection
-In order for auto-detection to work and enable you to use `AppFactory::create()` and `App::run()` without having to manually create a `ServerRequest` you need to install one of the following implementations:
-- [Slim-Psr7](https://github.com/slimphp/Slim-Psr7) - Install using `composer require slim/psr7`
-- [httpsoft/http-message](https://github.com/httpsoft/http-message) & [httpsoft/http-server-request](https://github.com/httpsoft/http-server-request) - Install using:
-`composer require httpsoft/http-message httpsoft/http-server-request`
-- [Nyholm/psr7](https://github.com/Nyholm/psr7) & [Nyholm/psr7-server](https://github.com/Nyholm/psr7-server) - Install using `composer require nyholm/psr7 nyholm/psr7-server`
-- [Guzzle/psr7](https://github.com/guzzle/psr7) - Install using `composer require guzzlehttp/psr7`
-- [laminas-diactoros](https://github.com/laminas/laminas-diactoros) - Install using `composer require laminas/laminas-diactoros`
-
-Then create file _public/index.php_.
-
-```php
-<?php
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Factory\AppFactory;
+use Slim\Builder\AppBuilder;
+use Slim\Middleware\EndpointMiddleware;
+use Slim\Middleware\ExceptionHandlingMiddleware;
+use Slim\Middleware\RoutingMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-// Instantiate App
-$app = AppFactory::create();
+// Instantiate App using the builder
+$builder = new AppBuilder();
+$app = $builder->build();
 
-// Add error middleware
-$app->addErrorMiddleware(true, true, true);
+// Add middleware
+$app->add(ExceptionHandlingMiddleware::class);
+$app->add(RoutingMiddleware::class);
+$app->add(EndpointMiddleware::class);
 
 // Add routes
 $app->get('/', function (Request $request, Response $response) {
-    $response->getBody()->write('<a href="/hello/world">Try /hello/world</a>');
+    $response->getBody()->write('Hello, World!');
+    
     return $response;
 });
 
-$app->get('/hello/{name}', function (Request $request, Response $response, $args) {
-    $name = $args['name'];
-    $response->getBody()->write("Hello, $name");
-    return $response;
-});
-
+// Run the request handler
 $app->run();
 ```
 
 You may quickly test this using the built-in PHP server:
 ```bash
-$ php -S localhost:8000 -t public
+php -S localhost:8000 -t public
 ```
 
-Going to http://localhost:8000/hello/world will now display "Hello, world".
+Going to http://localhost:8000/ will now display "Hello, World".
 
-For more information on how to configure your web server, see the [Documentation](https://www.slimframework.com/docs/v4/start/web-servers.html).
+For more information on how to configure your web server, 
+see the [Documentation](https://www.slimframework.com/docs/v5/start/web-servers.html).
 
 ## Tests
+
 To execute the test suite, you'll need to install all development dependencies.
 
 ```bash
-$ git clone https://github.com/slimphp/Slim
-$ composer install
-$ composer test
+git clone https://github.com/slimphp/Slim
+composer install
+composer test
 ```
 
 ## Contributing
@@ -118,21 +112,26 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 Learn more at these links:
 
 - [Website](https://www.slimframework.com)
-- [Documentation](https://www.slimframework.com/docs/v4/start/installation.html)
+- [Documentation](https://www.slimframework.com/docs/v5/start/installation.html)
 - [Slack](https://slimphp.slack.com)
 - [Support Forum](https://discourse.slimframework.com)
 - [Twitter](https://twitter.com/slimphp)
-- [Resources](https://github.com/xssc/awesome-slim)
 
 ## Security
 
-If you discover security related issues, please email security@slimframework.com instead of using the issue tracker.
+If you discover security related issues, please email security@slimframework.com instead 
+of using the issue tracker.
 
 ## For enterprise
 
 Available as part of the Tidelift Subscription.
 
-The maintainers of `Slim` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/packagist-slim-slim?utm_source=packagist-slim-slim&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+The maintainers of `Slim` and thousands of other packages are working with Tidelift 
+to deliver commercial support and maintenance for the open source dependencies 
+you use to build your applications. Save time, reduce risk, and improve code health, 
+while paying the maintainers of the exact dependencies you use. 
+
+[Learn more.](https://tidelift.com/subscription/pkg/packagist-slim-slim?utm_source=packagist-slim-slim&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
 
 ## Contributors
 
