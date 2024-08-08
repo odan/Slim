@@ -28,7 +28,7 @@ composer require php-di/php-di
 ```
 
 PHP-DI is the recommended DI container implementation.
-Of course, you can install any other [PSR-11](https://packagist.org/search/?tags=PSR-11) compatible package.
+Of course you can install any other [PSR-11](https://packagist.org/search/?tags=PSR-11) compatible package.
 
 ## Choose a PSR-7 HTTP Implementation
 
@@ -37,11 +37,11 @@ PSR-7 implementation that best fits your application.
 
 A few notable ones:
 
-- [Slim-Psr7](https://github.com/slimphp/Slim-Psr7) - This is the Slim Framework PSR-7 implementation
-- [httpsoft/http-message](https://github.com/httpsoft/http-message) & [httpsoft/http-server-request](https://github.com/httpsoft/http-server-request) - This is the fastest, strictest and most lightweight implementation available
-- [Nyholm/psr7](https://github.com/Nyholm/psr7) & [Nyholm/psr7-server](https://github.com/Nyholm/psr7-server) - Performance is almost the same as the HttpSoft implementation
-- [Guzzle/psr7](https://github.com/guzzle/psr7) - This is the implementation used by the Guzzle Client, featuring extra functionality for stream and file handling
-- [laminas-diactoros](https://github.com/laminas/laminas-diactoros) - This is the Laminas (Zend) PSR-7 implementation
+- [Slim-Psr7](https://github.com/slimphp/Slim-Psr7) - This is the Slim Framework PSR-7 implementation.
+- [Nyholm/psr7](https://github.com/Nyholm/psr7) & [Nyholm/psr7-server](https://github.com/Nyholm/psr7-server) - A super lightweight and strict PSR-7 implementation.
+- [httpsoft/http-message](https://github.com/httpsoft/http-message) & [httpsoft/http-server-request](https://github.com/httpsoft/http-server-request) - Also a strict and very fast implementation of PSR-7 and PSR-17.
+- [Guzzle/psr7](https://github.com/guzzle/psr7) - This is the implementation used by the Guzzle Client, featuring extra functionality for stream and file handling.
+- [laminas-diactoros](https://github.com/laminas/laminas-diactoros) - This is the Laminas (Zend) PSR-7 implementation.
 
 **Example:** To install the Slim PSR-7 package, run:
 
