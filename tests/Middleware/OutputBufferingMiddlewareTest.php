@@ -10,15 +10,14 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Middleware;
 
-use DI\Container;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use ReflectionProperty;
 use Slim\Builder\AppBuilder;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\OutputBufferingMiddleware;
@@ -31,45 +30,36 @@ final class OutputBufferingMiddlewareTest extends TestCase
 {
     use AppTestTrait;
 
-    public function testStyleDefaultValid()
-    {
-        $middleware = new OutputBufferingMiddleware($this->getStreamFactory());
-
-        $reflectionProperty = new ReflectionProperty($middleware, 'style');
-        $reflectionProperty->setAccessible(true);
-        $value = $reflectionProperty->getValue($middleware);
-
-        $this->assertSame('append', $value);
-    }
-
     public function testStyleCustomValid()
     {
-        $middleware = new OutputBufferingMiddleware($this->getStreamFactory(), 'prepend');
+        $this->expectNotToPerformAssertions();
 
-        $reflectionProperty = new ReflectionProperty($middleware, 'style');
-        $reflectionProperty->setAccessible(true);
-        $value = $reflectionProperty->getValue($middleware);
+        $builder = new AppBuilder();
+        $streamFactory = $builder->build()->getContainer()->get(StreamFactoryInterface::class);
 
-        $this->assertSame('prepend', $value);
+        new OutputBufferingMiddleware($streamFactory, OutputBufferingMiddleware::APPEND);
+        new OutputBufferingMiddleware($streamFactory, OutputBufferingMiddleware::PREPEND);
     }
 
     public function testStyleCustomInvalid()
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new OutputBufferingMiddleware($this->getStreamFactory(), 'foo');
+        $builder = new AppBuilder();
+        $streamFactory = $builder->build()->getContainer()->get(StreamFactoryInterface::class);
+
+        new OutputBufferingMiddleware($streamFactory, 'foo');
     }
 
     public function testAppend()
     {
         $builder = new AppBuilder();
-        $builder->setSettings(['display_error_details' => true]);
         $app = $builder->build();
 
         $responseFactory = $app->getContainer()->get(ResponseFactoryInterface::class);
         $streamFactory = $app->getContainer()->get(StreamFactoryInterface::class);
 
-        $outputBufferingMiddleware = new OutputBufferingMiddleware($streamFactory, 'append');
+        $outputBufferingMiddleware = new OutputBufferingMiddleware($streamFactory, OutputBufferingMiddleware::APPEND);
         $app->add($outputBufferingMiddleware);
 
         $middleware = function () use ($responseFactory) {
@@ -95,7 +85,12 @@ final class OutputBufferingMiddlewareTest extends TestCase
 
     public function testPrepend()
     {
-        $responseFactory = $this->getResponseFactory();
+        $builder = new AppBuilder();
+        $app = $builder->build();
+
+        $responseFactory = $app->getContainer()->get(ResponseFactoryInterface::class);
+        $streamFactory = $app->getContainer()->get(StreamFactoryInterface::class);
+
         $middleware = function ($request, $handler) use ($responseFactory) {
             $response = $responseFactory->createResponse();
             $response->getBody()->write('Body');
@@ -103,43 +98,58 @@ final class OutputBufferingMiddlewareTest extends TestCase
 
             return $response;
         };
-        $outputBufferingMiddleware = new OutputBufferingMiddleware($this->getStreamFactory(), 'prepend');
 
-        $request = $this->createServerRequest('/', 'GET');
+        $outputBufferingMiddleware = new OutputBufferingMiddleware($streamFactory, OutputBufferingMiddleware::PREPEND);
 
-        $middlewareDispatcher = $this->createMiddlewareDispatcher(
-            $this->createMock(RequestHandlerInterface::class),
-            null
-        );
-        $middlewareDispatcher->addCallable($middleware);
-        $middlewareDispatcher->addMiddleware($outputBufferingMiddleware);
-        $response = $middlewareDispatcher->handle($request);
+        $app->add($outputBufferingMiddleware);
+        $app->add($middleware);
+        $app->add(RoutingMiddleware::class);
+        $app->add(EndpointMiddleware::class);
+
+        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
+            return $response;
+        });
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
+        $response = $app->handle($request);
 
         $this->assertSame('TestBody', (string)$response->getBody());
     }
 
     public function testOutputBufferIsCleanedWhenThrowableIsCaught()
     {
-        $this->getResponseFactory();
+        $builder = new AppBuilder();
+        $app = $builder->build();
+
+        $streamFactory = $app->getContainer()->get(StreamFactoryInterface::class);
+
         $test = $this;
         $middleware = (function ($request, $handler) use ($test) {
             echo 'Test';
             $test->assertSame('Test', ob_get_contents());
             throw new Exception('Oops...');
         });
-        $outputBufferingMiddleware = new OutputBufferingMiddleware($this->getStreamFactory(), 'prepend');
 
-        $request = $this->createServerRequest('/', 'GET');
+        $outputBufferingMiddleware = new OutputBufferingMiddleware($streamFactory, OutputBufferingMiddleware::PREPEND);
 
-        $middlewareDispatcher = $this->createMiddlewareDispatcher(
-            $this->createMock(RequestHandlerInterface::class),
-            new Container()
-        );
-        $middlewareDispatcher->addCallable($middleware);
-        $middlewareDispatcher->addMiddleware($outputBufferingMiddleware);
+        $app->add($outputBufferingMiddleware);
+        $app->add($middleware);
+        $app->add(RoutingMiddleware::class);
+        $app->add(EndpointMiddleware::class);
+
+        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
+            return $response;
+        });
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
 
         try {
-            $middlewareDispatcher->handle($request);
+            $app->handle($request);
         } catch (Exception $e) {
             $this->assertSame('', ob_get_contents());
         }
