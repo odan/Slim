@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Router cache file support (File IO was never sufficient. PHP OpCache is much faster)
 * Remove `$app->redirect()` method because it was not aware of the basePath. Use the `UrlGenerator` instead.
 * Removed route `setArguments` and `setArgument` methods. Use a middleware for custom route arguments now.
+* Removed `RouteContext::ROUTE`. Use `$route = $request->getAttribute(RouteContext::ROUTING_RESULTS)->getRoute();` instead.
 * Old tests for PHP 7
 
 Dev dependencies:
