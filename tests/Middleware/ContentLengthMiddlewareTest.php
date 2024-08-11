@@ -11,40 +11,41 @@ declare(strict_types=1);
 namespace Slim\Tests\Middleware;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Builder\AppBuilder;
 use Slim\Middleware\ContentLengthMiddleware;
+use Slim\Middleware\EndpointMiddleware;
+use Slim\Middleware\RoutingMiddleware;
 use Slim\Tests\Traits\AppTestTrait;
 
 final class ContentLengthMiddlewareTest extends TestCase
 {
     use AppTestTrait;
 
-    public function setUp(): void
-    {
-        $this->setUpApp();
-    }
-
     public function testAddsContentLength()
     {
-        $request = $this->createServerRequest();
-        $responseFactory = $this->getResponseFactory();
+        $builder = new AppBuilder();
+        $app = $builder->build();
 
-        $mw = function ($request, $handler) use ($responseFactory) {
-            $response = $responseFactory->createResponse();
+        $app->add(new ContentLengthMiddleware());
+        $app->add(RoutingMiddleware::class);
+        $app->add(EndpointMiddleware::class);
+
+        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('Body');
 
             return $response;
-        };
-        $mw2 = new ContentLengthMiddleware();
+        });
 
-        $middlewareDispatcher = $this->createMiddlewareDispatcher(
-            $this->createMock(RequestHandlerInterface::class),
-            null
-        );
-        $middlewareDispatcher->addCallable($mw);
-        $middlewareDispatcher->addMiddleware($mw2);
-        $response = $middlewareDispatcher->handle($request);
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
+        $response = $app->handle($request);
 
         $this->assertSame('4', $response->getHeaderLine('Content-Length'));
+        $this->assertSame('Body', (string)$response->getBody());
     }
 }
