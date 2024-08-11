@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Slim;
 
-use Closure;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

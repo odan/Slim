@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Slim\Routing;
 
-use Closure;
 use Psr\Http\Server\MiddlewareInterface;
 
 trait MiddlewareAwareTrait
