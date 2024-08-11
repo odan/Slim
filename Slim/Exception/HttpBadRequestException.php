@@ -10,8 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Exception;
 
-/** @api */
-class HttpBadRequestException extends HttpSpecializedException
+final class HttpBadRequestException extends HttpSpecializedException
 {
     /**
      * @var int

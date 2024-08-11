@@ -10,14 +10,22 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Exception;
 
+use PHPUnit\Framework\TestCase;
 use Slim\Exception\HttpUnauthorizedException;
-use Slim\Tests\TestCase;
+use Slim\Tests\Traits\AppTestTrait;
 
-class HttpUnauthorizedExceptionTest extends TestCase
+final class HttpUnauthorizedExceptionTest extends TestCase
 {
+    use AppTestTrait;
+
+    public function setUp(): void
+    {
+        $this->setUpApp();
+    }
+
     public function testHttpUnauthorizedException()
     {
-        $request = $this->createServerRequest('/');
+        $request = $this->createServerRequest('GET', '/');
         $exception = new HttpUnauthorizedException($request);
 
         $this->assertInstanceOf(HttpUnauthorizedException::class, $exception);
@@ -25,7 +33,7 @@ class HttpUnauthorizedExceptionTest extends TestCase
 
     public function testHttpUnauthorizedExceptionWithMessage()
     {
-        $request = $this->createServerRequest('/');
+        $request = $this->createServerRequest('GET', '/');
         $exception = new HttpUnauthorizedException($request, 'Hello World');
 
         $this->assertSame('Hello World', $exception->getMessage());

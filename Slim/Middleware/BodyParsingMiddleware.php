@@ -25,15 +25,13 @@ use function is_object;
 use function is_string;
 use function json_decode;
 use function libxml_clear_errors;
-use function libxml_disable_entity_loader;
 use function libxml_use_internal_errors;
 use function parse_str;
 use function simplexml_load_string;
 use function strtolower;
 use function trim;
 
-/** @api */
-class BodyParsingMiddleware implements MiddlewareInterface
+final class BodyParsingMiddleware implements MiddlewareInterface
 {
     /**
      * @var callable[]
@@ -75,28 +73,6 @@ class BodyParsingMiddleware implements MiddlewareInterface
         return $this;
     }
 
-    /**
-     * @param string $mediaType a HTTP media type (excluding content-type params)
-     */
-    public function hasBodyParser(string $mediaType): bool
-    {
-        return isset($this->bodyParsers[$mediaType]);
-    }
-
-    /**
-     * @param string $mediaType a HTTP media type (excluding content-type params)
-     *
-     * @throws RuntimeException
-     */
-    public function getBodyParser(string $mediaType): callable
-    {
-        if (!isset($this->bodyParsers[$mediaType])) {
-            throw new RuntimeException('No parser for type ' . $mediaType);
-        }
-
-        return $this->bodyParsers[$mediaType];
-    }
-
     protected function registerDefaultBodyParsers(): void
     {
         $this->registerBodyParser('application/json', static function ($input) {
@@ -109,18 +85,19 @@ class BodyParsingMiddleware implements MiddlewareInterface
             return $result;
         });
 
-        $this->registerBodyParser('application/x-www-form-urlencoded', static function ($input) {
+        $this->registerBodyParser('application/x-www-form-urlencoded', function ($input) {
             parse_str($input, $data);
 
             return $data;
         });
 
-        $xmlCallable = static function ($input) {
-            $backup = self::disableXmlEntityLoader(true);
+        $self = $this;
+        $xmlCallable = function ($input) use ($self) {
+            $backup = $self->disableXmlEntityLoader(true);
             $backup_errors = libxml_use_internal_errors(true);
             $result = simplexml_load_string($input);
 
-            self::disableXmlEntityLoader($backup);
+            $self->disableXmlEntityLoader($backup);
             libxml_clear_errors();
             libxml_use_internal_errors($backup_errors);
 
@@ -140,7 +117,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
      *
      * @return array<mixed>|object|null
      */
-    protected function parseBody(ServerRequestInterface $request)
+    protected function parseBody(ServerRequestInterface $request): array|object|null
     {
         $mediaType = $this->getMediaType($request);
         if ($mediaType === null) {
@@ -173,8 +150,6 @@ class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param ServerRequestInterface $request
-     *
      * @return string|null The serverRequest media type, minus content-type params
      */
     protected function getMediaType(ServerRequestInterface $request): ?string
@@ -190,7 +165,7 @@ class BodyParsingMiddleware implements MiddlewareInterface
         return null;
     }
 
-    protected static function disableXmlEntityLoader(bool $disable): bool
+    protected function disableXmlEntityLoader(bool $disable): bool
     {
         if (LIBXML_VERSION >= 20900) {
             // libxml >= 2.9.0 disables entity loading by default, so it is
@@ -198,8 +173,6 @@ class BodyParsingMiddleware implements MiddlewareInterface
             return true;
         }
 
-        // @codeCoverageIgnoreStart
         return libxml_disable_entity_loader($disable);
-        // @codeCoverageIgnoreEnd
     }
 }

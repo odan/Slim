@@ -1,36 +1,43 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Slim Framework (https://slimframework.com).
+ *
+ * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
+ */
+
+declare(strict_types = 1);
 
 namespace Slim\Factory\Psr17;
 
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7Server\ServerRequestCreator;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
 
-class NyholmPsr17Factory extends Psr17Factory
+final class NyholmPsr17Factory implements ServerRequestFactoryInterface, ServerRequestCreatorInterface
 {
-    protected static string $responseFactoryClass = 'Nyholm\Psr7\Factory\Psr17Factory';
-    protected static string $streamFactoryClass = 'Nyholm\Psr7\Factory\Psr17Factory';
-    protected static string $serverRequestCreatorClass = 'Nyholm\Psr7Server\ServerRequestCreator';
-    protected static string $serverRequestCreatorMethod = 'fromGlobals';
+    private Psr17Factory $psr17Factory;
+
+    private ServerRequestCreator $serverRequestCreator;
+
+    public function __construct(Psr17Factory $psr17Factory, ServerRequestCreator $serverRequestCreator)
+    {
+        $this->psr17Factory = $psr17Factory;
+        $this->serverRequestCreator = $serverRequestCreator;
+    }
 
     /**
-     * {@inheritdoc}
+     * @param array<string, mixed> $serverParams
      */
-    public static function getServerRequestCreator(): ServerRequestCreatorInterface
+    public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
     {
-        /*
-         * Nyholm Psr17Factory implements all factories in one unified
-         * factory which implements all of the PSR-17 factory interfaces
-         */
-        $psr17Factory = new static::$responseFactoryClass();
+        return $this->psr17Factory->createServerRequest($method, $uri, $serverParams);
+    }
 
-        $serverRequestCreator = new static::$serverRequestCreatorClass(
-            $psr17Factory,
-            $psr17Factory,
-            $psr17Factory,
-            $psr17Factory
-        );
-
-        return new ServerRequestCreator($serverRequestCreator, static::$serverRequestCreatorMethod);
+    public function createServerRequestFromGlobals(): ServerRequestInterface
+    {
+        return $this->serverRequestCreator->fromGlobals();
     }
 }

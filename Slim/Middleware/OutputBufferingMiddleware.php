@@ -23,10 +23,10 @@ use function ob_end_clean;
 use function ob_get_clean;
 use function ob_start;
 
-/** @api */
-class OutputBufferingMiddleware implements MiddlewareInterface
+final class OutputBufferingMiddleware implements MiddlewareInterface
 {
     public const APPEND = 'append';
+
     public const PREPEND = 'prepend';
 
     protected StreamFactoryInterface $streamFactory;
@@ -35,7 +35,6 @@ class OutputBufferingMiddleware implements MiddlewareInterface
 
     /**
      * @param string $style Either "append" or "prepend"
-     * @param StreamFactoryInterface $streamFactory
      */
     public function __construct(StreamFactoryInterface $streamFactory, string $style = 'append')
     {
@@ -43,14 +42,11 @@ class OutputBufferingMiddleware implements MiddlewareInterface
         $this->style = $style;
 
         if (!in_array($style, [static::APPEND, static::PREPEND], true)) {
-            throw new InvalidArgumentException("Invalid style `{$style}`. Must be `append` or `prepend`");
+            throw new InvalidArgumentException(sprintf('Invalid style `%s`. Must be `append` or `prepend`', $style));
         }
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     *
      * @throws Throwable
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

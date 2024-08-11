@@ -10,8 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Exception;
 
-/** @api */
-class HttpUnauthorizedException extends HttpSpecializedException
+final class HttpUnauthorizedException extends HttpSpecializedException
 {
     /**
      * @var int

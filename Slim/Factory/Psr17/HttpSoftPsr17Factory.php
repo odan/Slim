@@ -1,19 +1,43 @@
 <?php
 
 /**
- * Slim Framework (https://slimframework.com)
+ * Slim Framework (https://slimframework.com).
  *
  * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Slim\Factory\Psr17;
 
-class HttpSoftPsr17Factory extends Psr17Factory
+use HttpSoft\Message\ServerRequestFactory;
+use HttpSoft\ServerRequest\ServerRequestCreator;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Interfaces\ServerRequestCreatorInterface;
+
+final class HttpSoftPsr17Factory implements ServerRequestFactoryInterface, ServerRequestCreatorInterface
 {
-    protected static string $responseFactoryClass = 'HttpSoft\Message\ResponseFactory';
-    protected static string $streamFactoryClass = 'HttpSoft\Message\StreamFactory';
-    protected static string $serverRequestCreatorClass = 'HttpSoft\ServerRequest\ServerRequestCreator';
-    protected static string $serverRequestCreatorMethod = 'createFromGlobals';
+    private ServerRequestFactory $serverRequestFactory;
+
+    private ServerRequestCreator $serverRequestCreator;
+
+    public function __construct(ServerRequestFactory $serverRequestFactory, ServerRequestCreator $serverRequestCreator)
+    {
+        $this->serverRequestFactory = $serverRequestFactory;
+        $this->serverRequestCreator = $serverRequestCreator;
+    }
+
+    /**
+     * @param array<string, mixed> $serverParams
+     */
+    public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
+    {
+        return $this->serverRequestFactory->createServerRequest($method, $uri, $serverParams);
+    }
+
+    public function createServerRequestFromGlobals(): ServerRequestInterface
+    {
+        return $this->serverRequestCreator->createFromGlobals();
+    }
 }

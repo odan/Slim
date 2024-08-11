@@ -12,14 +12,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### New Features
 
 - New `AppBuilder` to create a Slim App instance for different scenarios. Replaces the `AppFactory`.
-- Unified DI container resolution. All the factory logic has been removed and moved to the DI container.
-- Add new `RoutingMiddleware` and the new `EndpointMiddleware` for better separation of concern and flexibility.
-- Optimize middleware execution pipeline. Provide FIFO middleware order support. FIFO by default. Can be changed to LIFO using the AppBuilder.
-- New `BasePathMiddleware` for dealing with Apache sub-directories.
+- Unified DI container resolution. All the factory logic has been removed and moved to the DI container. This reduces the internal complexity by delegating the building logic into the DI container.
+- Provide FIFO (first in, first out) middleware order support. FIFO is used as default but can be changed to LIFO using the AppBuilder.
+- Optimized internal routing concept for better separation of concern and flexibility.
+    - `RoutingMiddleware` handles the routing process.
+    - `EndpointMiddleware` processes the routing results and invokes the controller/action handler.
 - Simplified Error handling concept. Relates to #3287.
   - Separation of Exceptions handling, PHP Error handling and Exception logging into different middleware.
+  - `ExceptionLoggingMiddleware` for custom error logging.
+  - `ExceptionHandlingMiddleware` delegates exceptions to a custom error handler.
+  - `ErrorHandlingMiddleware` converts errors into `ErrorException` instances that can then be handled by the `ExceptionHandlingMiddleware` and `ExceptionLoggingMiddleware`.
   - New custom error handlers using a new `ExceptionHandlerInterface`. See new `ExceptionHandlingMiddleware`.
-  - New `ExceptionLoggingMiddleware` for custom error logging.
+  - New `JsonExceptionRenderer` generates a JSON problem details (rfc7807) response
+  - New `XmlExceptionRenderer` generates a XML problem details (rfc7807) response
+- New `BasePathMiddleware` for dealing with Apache sub-directories.
+- New `HeadMethodMiddleware` ensures that the response body is empty for HEAD requests.
+- New `JsonRenderer` utility class for rendering JSON responses.
+- New `RequestResponseTypedArgs` invocation strategy for route parameters with type declarations.
+- New `UrlGeneratorMiddleware` injects the `UrlGenerator` into the request attributes.
 - Support to build a custom middleware pipeline without the Slim App class. See new `ResponseFactoryMiddleware`
 
 ### Changed
@@ -33,12 +43,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PSR-7 and PSR-15 compliance: Require at least psr/http-message 2.0.
 - PSR-11 compliance: Require at least psr/container 2.0.
 - PSR-3 compliance: Require at least psr/log 3.0
+- The `App` class is not a request handler that implements the `RequestHandlerInterface` because the request handler is now used internally and must be "unique" within the DI container.
 
 ### Removed
 
-* Psalm
-* Old tests for PHP 7
 * Router cache file support (File IO was never sufficient. PHP OpCache is much faster)
+* Remove `$app->redirect()` method because it was not aware of the basePath. Use the `UrlGenerator` instead.
+* Removed route `setArguments` and `setArgument` methods. Use a middleware for custom route arguments now.
+* Old tests for PHP 7
+
+Dev dependencies:
+
+* Psalm
+* phpspec/prophecy
+* phpspec/prophecy-phpunit
 
 ### Fixed
 
@@ -77,7 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Slim/RequestHandler/MiddlewareResolver.php`: Resolves middleware for handling requests.
 - `Slim/RequestHandler/Runner.php`: Handles the execution flow of requests.
 - `Slim/Strategies/RequestResponseNamedArgs.php`: New strategy for named arguments in RequestResponse.
-- `Slim/Strategies/RequestResponseTypedArgs.php`: New strategy for typed arguments in RequestResponse.
+- `Slim/Strategies/RequestResponseTypedArgs.php`: New strategy for typed arguments in RequestResponse. Requires `php-di/invoker`.
 
 New files for routing, middleware, and factories, including:
 
@@ -92,11 +110,6 @@ New files for routing, middleware, and factories, including:
 - `Slim/Handlers/Strategies/RequestResponse.php` renamed to `Slim/Strategies/RequestResponse.php`.
 - `Slim/Handlers/Strategies/RequestResponseArgs.php` renamed to `Slim/Strategies/RequestResponseArgs.php`.
 - `Slim/Error/Renderers/PlainTextErrorRenderer.php` renamed to `Slim/Handlers/PlainTextExceptionRenderer.php`.
-
-Various exceptions and middleware were modified, including but not limited to:
-
-- `Slim/Exception/HttpBadRequestException.php`
-- `Slim/Middleware/BodyParsingMiddleware.php`
 - `Slim/Routing/RouteContext.php`
 
 ### Removed
@@ -108,5 +121,5 @@ Various exceptions and middleware were modified, including but not limited to:
 - `Slim/Interfaces/RouteCollectorInterface.php`, 
 - `RouteCollectorProxyInterface.php`, 
 - `RouteGroupInterface.php`, and other route-related interfaces.
-- `Slim/Routing/Dispatcher.php`, `FastRouteDispatcher.php`, `Route.php`, and related routing classes.
+- `Slim/Routing/Dispatcher.php`, `FastRouteDispatcher.php` and related routing classes.
 

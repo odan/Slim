@@ -12,10 +12,8 @@ namespace Slim\Tests\Mocks;
 
 class InvokableTester
 {
-    public static $CalledCount = 0;
-
     public function __invoke()
     {
-        return static::$CalledCount++;
+        return true;
     }
 }

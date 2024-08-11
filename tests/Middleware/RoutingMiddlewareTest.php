@@ -10,31 +10,33 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Middleware;
 
+use DI\Container;
 use FastRoute\Dispatcher;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Slim\CallableResolver;
+use Slim\Container\ContainerResolver;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Interfaces\RouteParserInterface;
 use Slim\Interfaces\RouteResolverInterface;
+use Slim\Interfaces\UrlGeneratorInterface;
 use Slim\Middleware\RoutingMiddleware;
 use Slim\Routing\RouteCollector;
 use Slim\Routing\RouteContext;
 use Slim\Routing\RouteParser;
 use Slim\Routing\RouteResolver;
 use Slim\Routing\RoutingResults;
-use Slim\Tests\TestCase;
+use Slim\Strategies\RequestResponseTypedArgs;
 
-class RoutingMiddlewareTest extends TestCase
+final class RoutingMiddlewareTest extends TestCase
 {
     protected function getRouteCollector()
     {
-        $callableResolver = new CallableResolver();
+        $callableResolver = new ContainerResolver(new Container());
         $responseFactory = $this->getResponseFactory();
-        $routeCollector = new RouteCollector($responseFactory, $callableResolver);
+        $routeCollector = new RouteCollector($responseFactory, $callableResolver, new Container(), new RequestResponseTypedArgs());
         $routeCollector->map(['GET'], '/hello/{name}', null);
 
         return $routeCollector;
@@ -43,23 +45,24 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteIsStoredOnSuccessfulMatch()
     {
         $responseFactory = $this->getResponseFactory();
-        $middleware = (function (ServerRequestInterface $request) use ($responseFactory) {
+        $test = $this;
+        $middleware = (function (ServerRequestInterface $request) use ($responseFactory, $test) {
             // route is available
             $route = $request->getAttribute(RouteContext::ROUTE);
-            $this->assertNotNull($route);
-            $this->assertSame('foo', $route->getArgument('name'));
+            $test->assertNotNull($route);
+            $test->assertSame('foo', $route->getArgument('name'));
 
             // routeParser is available
-            $routeParser = $request->getAttribute(RouteContext::ROUTE_PARSER);
-            $this->assertNotNull($routeParser);
-            $this->assertInstanceOf(RouteParserInterface::class, $routeParser);
+            $routeParser = $request->getAttribute(RouteContext::URL_GENERATOR);
+            $test->assertNotNull($routeParser);
+            $test->assertInstanceOf(UrlGeneratorInterface::class, $routeParser);
 
             // routingResults is available
             $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
-            $this->assertInstanceOf(RoutingResults::class, $routingResults);
+            $test->assertInstanceOf(RoutingResults::class, $routingResults);
 
             return $responseFactory->createResponse();
-        })->bindTo($this);
+        });
 
         $routeCollector = $this->getRouteCollector();
         $routeParser = new RouteParser($routeCollector);
@@ -70,7 +73,7 @@ class RoutingMiddlewareTest extends TestCase
 
         $middlewareDispatcher = $this->createMiddlewareDispatcher(
             $this->createMock(RequestHandlerInterface::class),
-            null
+            new Container()
         );
         $middlewareDispatcher->addCallable($middleware);
         $middlewareDispatcher->addMiddleware($routingMiddleware);
@@ -103,9 +106,9 @@ class RoutingMiddlewareTest extends TestCase
             $this->assertNull($route);
 
             // routeParser is available
-            $routeParser = $request->getAttribute(RouteContext::ROUTE_PARSER);
+            $routeParser = $request->getAttribute(RouteContext::URL_GENERATOR);
             $this->assertNotNull($routeParser);
-            $this->assertInstanceOf(RouteParserInterface::class, $routeParser);
+            $this->assertInstanceOf(UrlGeneratorInterface::class, $routeParser);
 
             // routingResults is available
             $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
@@ -140,9 +143,9 @@ class RoutingMiddlewareTest extends TestCase
             $this->assertNull($route);
 
             // routeParser is available
-            $routeParser = $request->getAttribute(RouteContext::ROUTE_PARSER);
+            $routeParser = $request->getAttribute(RouteContext::URL_GENERATOR);
             $this->assertNotNull($routeParser);
-            $this->assertInstanceOf(RouteParserInterface::class, $routeParser);
+            $this->assertInstanceOf(UrlGeneratorInterface::class, $routeParser);
 
             // routingResults is available
             $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
@@ -168,7 +171,7 @@ class RoutingMiddlewareTest extends TestCase
 
         // Prophesize the `RouteParserInterface` instance will be created.
         $routeParserProphecy = $this->prophesize(RouteParser::class);
-        /** @var RouteParserInterface $routeParser */
+        /** @var UrlGeneratorInterface $routeParser */
         $routeParser = $routeParserProphecy->reveal();
 
         // Prophesize the `RouteResolverInterface` that would return the `RoutingResults`

@@ -14,11 +14,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Throwable;
 
-/**
- * @api
- *
- * @method int getCode()
- */
 class HttpException extends RuntimeException
 {
     protected ServerRequestInterface $request;

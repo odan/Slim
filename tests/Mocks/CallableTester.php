@@ -10,25 +10,10 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Mocks;
 
-use Slim\Tests\Providers\PSR7ObjectProvider;
-
 class CallableTester
 {
-    public static $CalledCount = 0;
-
-    public static $CalledContainer = null;
-
-    public function __construct($container = null)
+    public function toCall(): true
     {
-        static::$CalledContainer = $container;
-    }
-
-    public function toCall()
-    {
-        static::$CalledCount++;
-
-        $psr7ObjectProvider = new PSR7ObjectProvider();
-
-        return $psr7ObjectProvider->createResponse();
+        return true;
     }
 }

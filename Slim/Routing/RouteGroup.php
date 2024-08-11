@@ -1,115 +1,79 @@
 <?php
 
-/**
- * Slim Framework (https://slimframework.com)
- *
- * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
- */
-
 declare(strict_types=1);
 
 namespace Slim\Routing;
 
-use Psr\Http\Server\MiddlewareInterface;
-use Slim\Interfaces\AdvancedCallableResolverInterface;
-use Slim\Interfaces\CallableResolverInterface;
-use Slim\Interfaces\RouteCollectorProxyInterface;
-use Slim\Interfaces\RouteGroupInterface;
-use Slim\MiddlewareDispatcher;
+use FastRoute\RouteCollector;
+use Slim\Interfaces\MiddlewareCollectionInterface;
+use Slim\Interfaces\RouteCollectionInterface;
 
-class RouteGroup implements RouteGroupInterface
+final class RouteGroup implements MiddlewareCollectionInterface, RouteCollectionInterface
 {
-    /**
-     * @var callable|string
-     */
-    protected $callable;
+    use MiddlewareAwareTrait;
 
-    protected CallableResolverInterface $callableResolver;
+    use RouteCollectionTrait;
 
     /**
-     * @var RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null>
+     * @var callable
      */
-    protected RouteCollectorProxyInterface $routeCollectorProxy;
+    private $callback;
 
-    /**
-     * @var MiddlewareInterface[]|string[]|callable[]
-     */
-    protected array $middleware = [];
+    private RouteCollector $routeCollector;
 
-    protected string $pattern;
+    private string $prefix;
 
-    /**
-     * @param callable|string $callable
-     * @param RouteCollectorProxyInterface<\Psr\Container\ContainerInterface|null> $routeCollectorProxy
-     * @param string $pattern
-     * @param CallableResolverInterface $callableResolver
-     */
-    public function __construct(
-        string $pattern,
-        $callable,
-        CallableResolverInterface $callableResolver,
-        RouteCollectorProxyInterface $routeCollectorProxy
-    ) {
-        $this->pattern = $pattern;
-        $this->callable = $callable;
-        $this->callableResolver = $callableResolver;
-        $this->routeCollectorProxy = $routeCollectorProxy;
+    private Router $router;
+
+    private ?RouteGroup $group;
+
+    public function __construct(string $prefix, callable $callback, Router $router, RouteGroup $group = null)
+    {
+        $this->prefix = sprintf('/%s', ltrim($prefix, '/'));
+        $this->callback = $callback;
+        $this->router = $router;
+        $this->routeCollector = $router->getRouteCollector();
+        $this->group = $group;
+    }
+
+    public function __invoke(): void
+    {
+        // This will be invoked by FastRoute to collect the route groups
+        ($this->callback)($this);
+    }
+
+    public function getPrefix(): string
+    {
+        return $this->prefix;
     }
 
     /**
-     * {@inheritdoc}
+     * Get parent route group.
      */
-    public function collectRoutes(): RouteGroupInterface
+    public function getRouteGroup(): ?RouteGroup
     {
-        if ($this->callableResolver instanceof AdvancedCallableResolverInterface) {
-            $callable = $this->callableResolver->resolveRoute($this->callable);
-        } else {
-            $callable = $this->callableResolver->resolve($this->callable);
-        }
-        $callable($this->routeCollectorProxy);
-
-        return $this;
+        return $this->group;
     }
 
     /**
-     * {@inheritdoc}
+     * @param array<string> $methods
      */
-    public function add($middleware): RouteGroupInterface
+    public function map(array $methods, string $path, callable|string $handler): Route
     {
-        $this->middleware[] = $middleware;
+        $routePath = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
+        $route = new Route($methods, $routePath, $handler, $this);
+        $this->routeCollector->addRoute($methods, $path, $route);
 
-        return $this;
+        return $route;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function addMiddleware(MiddlewareInterface $middleware): RouteGroupInterface
+    public function group(string $path, callable $handler): RouteGroup
     {
-        $this->middleware[] = $middleware;
+        $routePath = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
+        $routeGroup = new RouteGroup($routePath, $handler, $this->router, $this);
 
-        return $this;
-    }
+        $this->routeCollector->addGroup($path, $routeGroup);
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param MiddlewareDispatcher<\Psr\Container\ContainerInterface|null> $dispatcher
-     */
-    public function appendMiddlewareToDispatcher(MiddlewareDispatcher $dispatcher): RouteGroupInterface
-    {
-        foreach ($this->middleware as $middleware) {
-            $dispatcher->add($middleware);
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPattern(): string
-    {
-        return $this->pattern;
+        return $routeGroup;
     }
 }

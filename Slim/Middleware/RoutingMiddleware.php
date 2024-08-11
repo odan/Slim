@@ -10,94 +10,74 @@ declare(strict_types=1);
 
 namespace Slim\Middleware;
 
+use FastRoute\Dispatcher\GroupCountBased;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Slim\Exception\HttpMethodNotAllowedException;
-use Slim\Exception\HttpNotFoundException;
-use Slim\Interfaces\RouteParserInterface;
-use Slim\Interfaces\RouteResolverInterface;
 use Slim\Routing\RouteContext;
+use Slim\Routing\Router;
 use Slim\Routing\RoutingResults;
 
-class RoutingMiddleware implements MiddlewareInterface
+/**
+ * Middleware for resolving routes.
+ *
+ * This middleware handles the routing process by dispatching the request to the appropriate route
+ * based on the HTTP method and URI. It then stores the routing results in the request attributes.
+ */
+final class RoutingMiddleware implements MiddlewareInterface
 {
-    protected RouteResolverInterface $routeResolver;
+    private Router $router;
 
-    protected RouteParserInterface $routeParser;
-
-    public function __construct(RouteResolverInterface $routeResolver, RouteParserInterface $routeParser)
+    public function __construct(Router $router)
     {
-        $this->routeResolver = $routeResolver;
-        $this->routeParser = $routeParser;
+        $this->router = $router;
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     *
-     * @throws HttpNotFoundException
-     * @throws HttpMethodNotAllowedException
-     * @throws RuntimeException
-     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $request = $this->performRouting($request);
+        // Dispatch
+        $dispatcher = new GroupCountBased($this->router->getRouteCollector()->getData());
 
-        return $handler->handle($request);
-    }
+        $httpMethod = $request->getMethod();
+        $uri = $request->getUri()->getPath();
+        $uri = rawurldecode($uri);
 
-    /**
-     * Perform routing
-     *
-     * @param ServerRequestInterface $request PSR7 Server Request
-     *
-     * @throws HttpNotFoundException
-     * @throws HttpMethodNotAllowedException
-     * @throws RuntimeException
-     */
-    public function performRouting(ServerRequestInterface $request): ServerRequestInterface
-    {
-        $request = $request->withAttribute(RouteContext::ROUTE_PARSER, $this->routeParser);
+        $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+        $routeStatus = (int)$routeInfo[0];
+        $routingResults = null;
 
-        $routingResults = $this->resolveRoutingResultsFromRequest($request);
-        $routeStatus = $routingResults->getRouteStatus();
+        if ($routeStatus === RoutingResults::FOUND) {
+            $routingResults = new RoutingResults(
+                $routeStatus,
+                $routeInfo[1],
+                $request->getMethod(),
+                $uri,
+                $routeInfo[2]
+            );
+        }
+
+        if ($routeStatus === RoutingResults::METHOD_NOT_ALLOWED) {
+            $routingResults = new RoutingResults(
+                $routeStatus,
+                null,
+                $request->getMethod(),
+                $uri,
+                $routeInfo[1],
+            );
+        }
+
+        if ($routeStatus === RoutingResults::NOT_FOUND) {
+            $routingResults = new RoutingResults($routeStatus, null, $request->getMethod(), $uri);
+        }
+
+        if (!$routingResults) {
+            throw new RuntimeException('An unexpected error occurred while performing routing.');
+        }
 
         $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
 
-        switch ($routeStatus) {
-            case RoutingResults::FOUND:
-                $routeArguments = $routingResults->getRouteArguments();
-                $routeIdentifier = $routingResults->getRouteIdentifier() ?? '';
-                $route = $this->routeResolver
-                    ->resolveRoute($routeIdentifier)
-                    ->prepare($routeArguments);
-
-                return $request->withAttribute(RouteContext::ROUTE, $route);
-
-            case RoutingResults::NOT_FOUND:
-                throw new HttpNotFoundException($request);
-            case RoutingResults::METHOD_NOT_ALLOWED:
-                $exception = new HttpMethodNotAllowedException($request);
-                $exception->setAllowedMethods($routingResults->getAllowedMethods());
-                throw $exception;
-            default:
-                throw new RuntimeException('An unexpected error occurred while performing routing.');
-        }
-    }
-
-    /**
-     * Resolves the route from the given request
-     *
-     * @param ServerRequestInterface $request
-     */
-    protected function resolveRoutingResultsFromRequest(ServerRequestInterface $request): RoutingResults
-    {
-        return $this->routeResolver->computeRoutingResults(
-            $request->getUri()->getPath(),
-            $request->getMethod()
-        );
+        return $handler->handle($request);
     }
 }

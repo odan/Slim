@@ -10,41 +10,42 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Handlers;
 
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 use RuntimeException;
-use Slim\Error\Renderers\HtmlErrorRenderer;
-use Slim\Error\Renderers\JsonErrorRenderer;
-use Slim\Error\Renderers\PlainTextErrorRenderer;
-use Slim\Error\Renderers\XmlErrorRenderer;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Handlers\ErrorHandler;
-use Slim\Interfaces\CallableResolverInterface;
+use Slim\Handlers\ExceptionHandler;
+use Slim\Handlers\HtmlExceptionRenderer;
+use Slim\Handlers\JsonExceptionRenderer;
+use Slim\Handlers\PlainTextExceptionRenderer;
+use Slim\Handlers\XmlExceptionRenderer;
+use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Tests\Mocks\MockCustomException;
-use Slim\Tests\TestCase;
+use Slim\Tests\Traits\AppTestTrait;
 
-class ErrorHandlerTest extends TestCase
+final class ErrorHandlerTest extends TestCase
 {
-    private function getMockLogger(): LoggerInterface
+    use AppTestTrait;
+
+    public function setUp(): void
+    {
+        $this->setUpApp();
+    }
+
+    private function createMockLogger(): LoggerInterface
     {
         return $this->createMock(LoggerInterface::class);
     }
 
     public function testDetermineRenderer()
     {
-        $handler = $this
-            ->getMockBuilder(ErrorHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $class = new ReflectionClass(ErrorHandler::class);
-
-        $callableResolverProperty = $class->getProperty('callableResolver');
-        $callableResolverProperty->setAccessible(true);
-        $callableResolverProperty->setValue($handler, $this->getCallableResolver());
+        $handler = $this->container->get(ExceptionHandler::class);
+        $class = new ReflectionClass(ExceptionHandler::class);
 
         $reflectionProperty = $class->getProperty('contentType');
         $reflectionProperty->setAccessible(true);
@@ -55,33 +56,30 @@ class ErrorHandlerTest extends TestCase
 
         $renderer = $method->invoke($handler);
         $this->assertIsCallable($renderer);
-        $this->assertInstanceOf(JsonErrorRenderer::class, $renderer[0]);
+        $this->assertInstanceOf(JsonExceptionRenderer::class, $renderer[0]);
 
         $reflectionProperty->setValue($handler, 'application/xml');
         $renderer = $method->invoke($handler);
         $this->assertIsCallable($renderer);
-        $this->assertInstanceOf(XmlErrorRenderer::class, $renderer[0]);
+        $this->assertInstanceOf(XmlExceptionRenderer::class, $renderer[0]);
 
         $reflectionProperty->setValue($handler, 'text/plain');
         $renderer = $method->invoke($handler);
         $this->assertIsCallable($renderer);
-        $this->assertInstanceOf(PlainTextErrorRenderer::class, $renderer[0]);
+        $this->assertInstanceOf(PlainTextExceptionRenderer::class, $renderer[0]);
 
         // Test the default error renderer
         $reflectionProperty->setValue($handler, 'text/unknown');
         $renderer = $method->invoke($handler);
         $this->assertIsCallable($renderer);
-        $this->assertInstanceOf(HtmlErrorRenderer::class, $renderer[0]);
+        $this->assertInstanceOf(HtmlExceptionRenderer::class, $renderer[0]);
     }
 
     public function testDetermineStatusCode()
     {
-        $request = $this->createServerRequest('/');
-        $handler = $this
-            ->getMockBuilder(ErrorHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $class = new ReflectionClass(ErrorHandler::class);
+        $request = $this->createServerRequest('GET', '/');
+        $handler = $this->container->get(ExceptionHandler::class);
+        $class = new ReflectionClass(ExceptionHandler::class);
 
         $reflectionProperty = $class->getProperty('responseFactory');
         $reflectionProperty->setAccessible(true);
@@ -109,10 +107,10 @@ class ErrorHandlerTest extends TestCase
     public function testForceContentType()
     {
         $request = $this
-            ->createServerRequest('/not-defined', 'GET')
+            ->createServerRequest('GET', '/not-defined')
             ->withHeader('Accept', 'text/plain,text/xml');
 
-        $handler = new ErrorHandler($this->getCallableResolver(), $this->getResponseFactory());
+        $handler = $this->container->get(ExceptionHandler::class);
         $handler->forceContentType('application/json');
 
         $exception = new HttpNotFoundException($request);
@@ -126,20 +124,17 @@ class ErrorHandlerTest extends TestCase
     public function testHalfValidContentType()
     {
         $request = $this
-            ->createServerRequest('/', 'GET')
+            ->createServerRequest('GET', '/')
             ->withHeader('Content-Type', 'unknown/json+');
 
-        $handler = $this
-            ->getMockBuilder(ErrorHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $handler = $this->container->get(ExceptionHandler::class);
         $newErrorRenderers = [
-            'application/xml' => XmlErrorRenderer::class,
-            'text/xml' => XmlErrorRenderer::class,
-            'text/html' => HtmlErrorRenderer::class,
+            'application/xml' => XmlExceptionRenderer::class,
+            'text/xml' => XmlExceptionRenderer::class,
+            'text/html' => HtmlExceptionRenderer::class,
         ];
 
-        $class = new ReflectionClass(ErrorHandler::class);
+        $class = new ReflectionClass(ExceptionHandler::class);
 
         $reflectionProperty = $class->getProperty('responseFactory');
         $reflectionProperty->setAccessible(true);
@@ -160,21 +155,18 @@ class ErrorHandlerTest extends TestCase
     public function testDetermineContentTypeTextPlainMultiAcceptHeader()
     {
         $request = $this
-            ->createServerRequest('/', 'GET')
+            ->createServerRequest('GET', '/')
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('Accept', 'text/plain,text/xml');
 
-        $handler = $this
-            ->getMockBuilder(ErrorHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $handler = $this->container->get(ExceptionHandler::class);
 
         $errorRenderers = [
-            'text/plain' => PlainTextErrorRenderer::class,
-            'text/xml' => XmlErrorRenderer::class,
+            'text/plain' => PlainTextExceptionRenderer::class,
+            'text/xml' => XmlExceptionRenderer::class,
         ];
 
-        $class = new ReflectionClass(ErrorHandler::class);
+        $class = new ReflectionClass(ExceptionHandler::class);
 
         $reflectionProperty = $class->getProperty('responseFactory');
         $reflectionProperty->setAccessible(true);
@@ -195,20 +187,17 @@ class ErrorHandlerTest extends TestCase
     public function testDetermineContentTypeApplicationJsonOrXml()
     {
         $request = $this
-            ->createServerRequest('/', 'GET')
+            ->createServerRequest('GET', '/')
             ->withHeader('Content-Type', 'text/json')
             ->withHeader('Accept', 'application/xhtml+xml');
 
-        $handler = $this
-            ->getMockBuilder(ErrorHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $handler = $this->container->get(ExceptionHandler::class);
 
         $errorRenderers = [
-            'application/xml' => XmlErrorRenderer::class,
+            'application/xml' => XmlExceptionRenderer::class,
         ];
 
-        $class = new ReflectionClass(ErrorHandler::class);
+        $class = new ReflectionClass(ExceptionHandler::class);
 
         $reflectionProperty = $class->getProperty('responseFactory');
         $reflectionProperty->setAccessible(true);
@@ -233,19 +222,16 @@ class ErrorHandlerTest extends TestCase
     public function testAcceptableMediaTypeIsNotFirstInList()
     {
         $request = $this
-            ->createServerRequest('/', 'GET')
+            ->createServerRequest('GET', '/')
             ->withHeader('Accept', 'text/plain,text/html');
 
         // provide access to the determineContentType() as it's a protected method
-        $class = new ReflectionClass(ErrorHandler::class);
+        $class = new ReflectionClass(ExceptionHandler::class);
         $method = $class->getMethod('determineContentType');
         $method->setAccessible(true);
 
         // use a mock object here as ErrorHandler cannot be directly instantiated
-        $handler = $this
-            ->getMockBuilder(ErrorHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $handler = $this->container->get(ExceptionHandler::class);
 
         // call determineContentType()
         $return = $method->invoke($handler, $request);
@@ -255,10 +241,10 @@ class ErrorHandlerTest extends TestCase
 
     public function testRegisterErrorRenderer()
     {
-        $handler = new ErrorHandler($this->getCallableResolver(), $this->getResponseFactory());
-        $handler->registerErrorRenderer('application/slim', PlainTextErrorRenderer::class);
+        $handler = new ExceptionHandler($this->getCallableResolver(), $this->getResponseFactory());
+        $handler->registerErrorRenderer('application/slim', PlainTextExceptionRenderer::class);
 
-        $reflectionClass = new ReflectionClass(ErrorHandler::class);
+        $reflectionClass = new ReflectionClass(ExceptionHandler::class);
         $reflectionProperty = $reflectionClass->getProperty('errorRenderers');
         $reflectionProperty->setAccessible(true);
         $errorRenderers = $reflectionProperty->getValue($handler);
@@ -269,9 +255,9 @@ class ErrorHandlerTest extends TestCase
     public function testSetDefaultErrorRenderer()
     {
         $handler = new ErrorHandler($this->getCallableResolver(), $this->getResponseFactory());
-        $handler->setDefaultErrorRenderer('text/plain', PlainTextErrorRenderer::class);
+        $handler->setDefaultErrorRenderer('text/plain', PlainTextExceptionRenderer::class);
 
-        $reflectionClass = new ReflectionClass(ErrorHandler::class);
+        $reflectionClass = new ReflectionClass(ExceptionHandler::class);
         $reflectionProperty = $reflectionClass->getProperty('defaultErrorRenderer');
         $reflectionProperty->setAccessible(true);
         $defaultErrorRenderer = $reflectionProperty->getValue($handler);
@@ -280,14 +266,14 @@ class ErrorHandlerTest extends TestCase
         $defaultErrorRendererContentTypeProperty->setAccessible(true);
         $defaultErrorRendererContentType = $defaultErrorRendererContentTypeProperty->getValue($handler);
 
-        $this->assertSame(PlainTextErrorRenderer::class, $defaultErrorRenderer);
+        $this->assertSame(PlainTextExceptionRenderer::class, $defaultErrorRenderer);
         $this->assertSame('text/plain', $defaultErrorRendererContentType);
     }
 
     public function testOptions()
     {
         $request = $this->createServerRequest('/', 'OPTIONS');
-        $handler = new ErrorHandler($this->getCallableResolver(), $this->getResponseFactory());
+        $handler = new ExceptionHandler($this->getCallableResolver(), $this->getResponseFactory());
         $exception = new HttpMethodNotAllowedException($request);
         $exception->setAllowedMethods(['POST', 'PUT']);
 
@@ -302,16 +288,12 @@ class ErrorHandlerTest extends TestCase
     public function testWriteToErrorLog()
     {
         $request = $this
-            ->createServerRequest('/', 'GET')
+            ->createServerRequest('GET', '/')
             ->withHeader('Accept', 'application/json');
 
-        $logger = $this->getMockLogger();
+        $logger = $this->createMockLogger();
 
-        $handler = new ErrorHandler(
-            $this->getCallableResolver(),
-            $this->getResponseFactory(),
-            $logger
-        );
+        $handler = $this->container->get(ExceptionHandler::class);
 
         $logger->expects(self::once())
             ->method('error')
@@ -323,7 +305,7 @@ class ErrorHandlerTest extends TestCase
             });
 
         $exception = new HttpNotFoundException($request);
-        $handler->__invoke($request, $exception, true, true, true);
+        $handler->__invoke($request, $exception);
     }
 
     public function testWriteToErrorLogShowTip()
@@ -332,13 +314,9 @@ class ErrorHandlerTest extends TestCase
             ->createServerRequest('/', 'GET')
             ->withHeader('Accept', 'application/json');
 
-        $logger = $this->getMockLogger();
+        $logger = $this->createMockLogger();
 
-        $handler = new ErrorHandler(
-            $this->getCallableResolver(),
-            $this->getResponseFactory(),
-            $logger
-        );
+        $handler = $this->container->get(ExceptionHandler::class);
 
         $logger->expects(self::once())
             ->method('error')
@@ -356,18 +334,18 @@ class ErrorHandlerTest extends TestCase
     public function testWriteToErrorLogDoesNotShowTipIfErrorLogRendererIsNotPlainText()
     {
         $request = $this
-            ->createServerRequest('/', 'GET')
+            ->createServerRequest('GET', '/')
             ->withHeader('Accept', 'application/json');
 
-        $logger = $this->getMockLogger();
-
+        $logger = $this->createMockLogger();
+        $handler = $this->container->get(ExceptionHandler::class);
         $handler = new ErrorHandler(
             $this->getCallableResolver(),
             $this->getResponseFactory(),
             $logger
         );
 
-        $handler->setLogErrorRenderer(HtmlErrorRenderer::class);
+        $handler->setLogErrorRenderer(HtmlExceptionRenderer::class);
 
         $logger->expects(self::once())
             ->method('error')
@@ -385,10 +363,10 @@ class ErrorHandlerTest extends TestCase
     public function testDefaultErrorRenderer()
     {
         $request = $this
-            ->createServerRequest('/', 'GET')
+            ->createServerRequest('GET', '/')
             ->withHeader('Accept', 'application/unknown');
 
-        $handler = new ErrorHandler($this->getCallableResolver(), $this->getResponseFactory());
+        $handler = $this->container->get(ExceptionHandler::class);
         $exception = new RuntimeException();
 
         /** @var ResponseInterface $res */
@@ -404,13 +382,15 @@ class ErrorHandlerTest extends TestCase
             return '';
         };
 
-        $callableResolverProphecy = $this->prophesize(CallableResolverInterface::class);
+        $callableResolverProphecy = $this->prophesize(ContainerResolverInterface::class);
         $callableResolverProphecy
-            ->resolve('logErrorRenderer')
+            ->resolveCallable('logErrorRenderer')
             ->willReturn($renderer)
             ->shouldBeCalledOnce();
 
         $handler = new ErrorHandler($callableResolverProphecy->reveal(), $this->getResponseFactory());
+        $handler = $this->container->get(ExceptionHandler::class);
+
         $handler->setLogErrorRenderer('logErrorRenderer');
 
         $displayErrorDetailsProperty = new ReflectionProperty($handler, 'displayErrorDetails');

@@ -1,31 +1,12 @@
 <?php
 
-/**
- * Slim Framework (https://slimframework.com)
- *
- * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
- */
-
-declare(strict_types=1);
-
 namespace Slim\Routing;
 
-use Slim\Interfaces\DispatcherInterface;
-
-use function rawurldecode;
-
-/** @api */
-class RoutingResults
+final class RoutingResults
 {
     public const NOT_FOUND = 0;
     public const FOUND = 1;
     public const METHOD_NOT_ALLOWED = 2;
-
-    protected DispatcherInterface $dispatcher;
-
-    protected string $method;
-
-    protected string $uri;
 
     /**
      * The status is one of the constants shown above
@@ -33,42 +14,40 @@ class RoutingResults
      * FOUND = 1
      * METHOD_NOT_ALLOWED = 2
      */
-    protected int $routeStatus;
+    private int $routeStatus;
 
-    protected ?string $routeIdentifier = null;
+    private ?Route $route;
+    private string $method;
+    private string $uri;
 
     /**
      * @var array<string, string>
      */
-    protected array $routeArguments;
+    private array $routeArguments;
+    private array $allowedMethods;
 
     /**
      * @param array<string, string> $routeArguments
-     * @param DispatcherInterface $dispatcher
-     * @param string $method
-     * @param string $uri
-     * @param int $routeStatus
-     * @param ?string $routeIdentifier
      */
     public function __construct(
-        DispatcherInterface $dispatcher,
+        int $routeStatus,
+        ?Route $route,
         string $method,
         string $uri,
-        int $routeStatus,
-        ?string $routeIdentifier = null,
-        array $routeArguments = []
+        array $routeArguments = [],
+        array $allowedMethods = [],
     ) {
-        $this->dispatcher = $dispatcher;
+        $this->route = $route;
         $this->method = $method;
         $this->uri = $uri;
         $this->routeStatus = $routeStatus;
-        $this->routeIdentifier = $routeIdentifier;
         $this->routeArguments = $routeArguments;
+        $this->allowedMethods = $allowedMethods;
     }
 
-    public function getDispatcher(): DispatcherInterface
+    public function getRoute(): ?Route
     {
-        return $this->dispatcher;
+        return $this->route;
     }
 
     public function getMethod(): string
@@ -86,28 +65,12 @@ class RoutingResults
         return $this->routeStatus;
     }
 
-    public function getRouteIdentifier(): ?string
-    {
-        return $this->routeIdentifier;
-    }
-
     /**
-     * @param bool $urlDecode
-     *
      * @return array<string, string>
      */
-    public function getRouteArguments(bool $urlDecode = true): array
+    public function getRouteArguments(): array
     {
-        if (!$urlDecode) {
-            return $this->routeArguments;
-        }
-
-        $routeArguments = [];
-        foreach ($this->routeArguments as $key => $value) {
-            $routeArguments[$key] = rawurldecode($value);
-        }
-
-        return $routeArguments;
+        return $this->routeArguments;
     }
 
     /**
@@ -115,6 +78,6 @@ class RoutingResults
      */
     public function getAllowedMethods(): array
     {
-        return $this->dispatcher->getAllowedMethods($this->uri);
+        return $this->allowedMethods;
     }
 }

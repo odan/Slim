@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Exception;
 
-class HttpNotFoundException extends HttpSpecializedException
+final class HttpNotFoundException extends HttpSpecializedException
 {
     /**
      * @var int

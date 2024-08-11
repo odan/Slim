@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Slim Framework (https://slimframework.com)
+ * Slim Framework (https://slimframework.com).
  *
  * @license https://github.com/slimphp/Slim/blob/5.x/LICENSE.md (MIT License)
  */
@@ -10,234 +10,150 @@ declare(strict_types=1);
 
 namespace Slim;
 
+use Closure;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
-use Slim\Factory\ServerRequestCreatorFactory;
-use Slim\Interfaces\CallableResolverInterface;
-use Slim\Interfaces\MiddlewareDispatcherInterface;
-use Slim\Interfaces\RouteCollectorInterface;
-use Slim\Interfaces\RouteResolverInterface;
-use Slim\Middleware\BodyParsingMiddleware;
-use Slim\Middleware\ErrorMiddleware;
-use Slim\Middleware\RoutingMiddleware;
-use Slim\Routing\RouteCollectorProxy;
-use Slim\Routing\RouteResolver;
-use Slim\Routing\RouteRunner;
-
-use function strtoupper;
+use Slim\Interfaces\EmitterInterface;
+use Slim\Interfaces\MiddlewareCollectionInterface;
+use Slim\Interfaces\RouteCollectionInterface;
+use Slim\Interfaces\ServerRequestCreatorInterface;
+use Slim\RequestHandler\MiddlewareRequestHandler;
+use Slim\Routing\MiddlewareAwareTrait;
+use Slim\Routing\Route;
+use Slim\Routing\RouteCollectionTrait;
+use Slim\Routing\RouteGroup;
+use Slim\Routing\Router;
 
 /**
- * @api
+ * App
+ *
+ * The main application class for Slim framework, responsible for routing, middleware handling, and
+ * running the application. It provides methods for defining routes, adding middleware, and managing
+ * the application's lifecycle, including handling HTTP requests and emitting responses.
  *
  * @template TContainerInterface of (ContainerInterface|null)
  *
- * @template-extends RouteCollectorProxy<TContainerInterface>
+ * @api
  */
-class App extends RouteCollectorProxy implements RequestHandlerInterface
+final class App implements RouteCollectionInterface, MiddlewareCollectionInterface
 {
+    use MiddlewareAwareTrait;
+    use RouteCollectionTrait;
+
     /**
-     * Current version
+     * Current version.
      *
      * @var string
      */
-    public const VERSION = '4.12.0';
+    public const VERSION = '5.0.0-alpha';
 
-    protected RouteResolverInterface $routeResolver;
+    private ContainerInterface $container;
 
-    protected MiddlewareDispatcherInterface $middlewareDispatcher;
+    private ServerRequestCreatorInterface $serverRequestCreator;
 
-    /**
-     * @param TContainerInterface $container
-     * @param ResponseFactoryInterface $responseFactory
-     * @param ?CallableResolverInterface $callableResolver
-     * @param ?RouteCollectorInterface $routeCollector
-     * @param ?RouteResolverInterface $routeResolver
-     * @param ?MiddlewareDispatcherInterface $middlewareDispatcher
-     */
+    private RequestHandlerInterface $requestHandler;
+
+    private Router $router;
+
+    private EmitterInterface $emitter;
+
     public function __construct(
-        ResponseFactoryInterface $responseFactory,
-        ?ContainerInterface $container = null,
-        ?CallableResolverInterface $callableResolver = null,
-        ?RouteCollectorInterface $routeCollector = null,
-        ?RouteResolverInterface $routeResolver = null,
-        ?MiddlewareDispatcherInterface $middlewareDispatcher = null
+        ContainerInterface $container,
+        ServerRequestCreatorInterface $serverRequestCreator,
+        RequestHandlerInterface $requestHandler,
+        Router $router,
+        EmitterInterface $emitter
     ) {
-        parent::__construct(
-            $responseFactory,
-            $callableResolver ?? new CallableResolver($container),
-            $container,
-            $routeCollector
-        );
+        $this->container = $container;
+        $this->serverRequestCreator = $serverRequestCreator;
+        $this->requestHandler = $requestHandler;
+        $this->router = $router;
+        $this->emitter = $emitter;
+    }
 
-        $this->routeResolver = $routeResolver ?? new RouteResolver($this->routeCollector);
-        $routeRunner = new RouteRunner($this->routeResolver, $this->routeCollector->getRouteParser(), $this);
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
 
-        if (!$middlewareDispatcher) {
-            $middlewareDispatcher = new MiddlewareDispatcher($routeRunner, $this->callableResolver, $container);
-        } else {
-            $middlewareDispatcher->seedMiddlewareStack($routeRunner);
-        }
+    public function map(array $methods, string $pattern, callable|string $handler): Route
+    {
+        return $this->router->map($methods, $pattern, $handler);
+    }
 
-        $this->middlewareDispatcher = $middlewareDispatcher;
+    public function group(string $pattern, callable $handler): RouteGroup
+    {
+        return $this->router->group($pattern, $handler);
     }
 
     /**
-     * @return RouteResolverInterface
+     * Get the routing base path
      */
-    public function getRouteResolver(): RouteResolverInterface
+    public function getBasePath(): string
     {
-        return $this->routeResolver;
+        return $this->router->getBasePath();
     }
 
     /**
-     * @return MiddlewareDispatcherInterface
+     * Set the routing base path
      */
-    public function getMiddlewareDispatcher(): MiddlewareDispatcherInterface
+    public function setBasePath(string $basePath): self
     {
-        return $this->middlewareDispatcher;
-    }
-
-    /**
-     * @param MiddlewareInterface|string|callable $middleware
-     *
-     * @return App<TContainerInterface>
-     */
-    public function add($middleware): self
-    {
-        $this->middlewareDispatcher->add($middleware);
+        $this->router->setBasePath($basePath);
 
         return $this;
     }
 
     /**
-     * @param MiddlewareInterface $middleware
-     *
-     * @return App<TContainerInterface>
+     * Add a new middleware to the stack.
      */
-    public function addMiddleware(MiddlewareInterface $middleware): self
+    public function add(MiddlewareInterface|callable|string|array $middleware): self
     {
-        $this->middlewareDispatcher->addMiddleware($middleware);
+        $this->router->addMiddleware($middleware);
 
         return $this;
     }
 
     /**
-     * Add the Slim built-in routing middleware to the app middleware stack
-     *
-     * This method can be used to control middleware order and is not required for default routing operation.
-     *
-     * @return RoutingMiddleware
+     * Add a new middleware to the stack.
      */
-    public function addRoutingMiddleware(): RoutingMiddleware
+    public function addMiddleware(MiddlewareInterface|callable|string|array $middleware): self
     {
-        $routingMiddleware = new RoutingMiddleware(
-            $this->getRouteResolver(),
-            $this->getRouteCollector()->getRouteParser()
-        );
-        $this->add($routingMiddleware);
+        $this->router->addMiddleware($middleware);
 
-        return $routingMiddleware;
+        return $this;
     }
 
     /**
-     * Add the Slim built-in error middleware to the app middleware stack
-     *
-     * @param bool $displayErrorDetails
-     * @param bool $logErrors
-     * @param bool $logErrorDetails
-     * @param LoggerInterface|null $logger
-     *
-     * @return ErrorMiddleware
-     */
-    public function addErrorMiddleware(
-        bool $displayErrorDetails,
-        bool $logErrors,
-        bool $logErrorDetails,
-        ?LoggerInterface $logger = null
-    ): ErrorMiddleware {
-        $errorMiddleware = new ErrorMiddleware(
-            $this->getCallableResolver(),
-            $this->getResponseFactory(),
-            $displayErrorDetails,
-            $logErrors,
-            $logErrorDetails,
-            $logger
-        );
-        $this->add($errorMiddleware);
-
-        return $errorMiddleware;
-    }
-
-    /**
-     * Add the Slim body parsing middleware to the app middleware stack
-     *
-     * @param callable[] $bodyParsers
-     *
-     * @return BodyParsingMiddleware
-     */
-    public function addBodyParsingMiddleware(array $bodyParsers = []): BodyParsingMiddleware
-    {
-        $bodyParsingMiddleware = new BodyParsingMiddleware($bodyParsers);
-        $this->add($bodyParsingMiddleware);
-
-        return $bodyParsingMiddleware;
-    }
-
-    /**
-     * Run application
+     * Run application.
      *
      * This method traverses the application middleware stack and then sends the
      * resultant Response object to the HTTP client.
-     *
-     * @param ServerRequestInterface|null $request
-     *
-     * @return void
      */
     public function run(?ServerRequestInterface $request = null): void
     {
         if (!$request) {
-            $serverRequestCreator = ServerRequestCreatorFactory::create();
-            $request = $serverRequestCreator->createServerRequestFromGlobals();
+            $request = $this->serverRequestCreator->createServerRequestFromGlobals();
         }
 
         $response = $this->handle($request);
-        $responseEmitter = new ResponseEmitter();
-        $responseEmitter->emit($response);
+
+        $this->emitter->emit($response);
     }
 
     /**
-     * Handle a request
+     * Handle a request.
      *
      * This method traverses the application middleware stack and then returns the
      * resultant Response object.
-     *
-     * @param ServerRequestInterface $request
-     *
-     * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $response = $this->middlewareDispatcher->handle($request);
+        $request = $request->withAttribute(MiddlewareRequestHandler::MIDDLEWARE, $this->router->getMiddlewareStack());
 
-        /**
-         * This is to be in compliance with RFC 2616, Section 9.
-         * If the incoming request method is HEAD, we need to ensure that the response body
-         * is empty as the request may fall back on a GET route handler due to FastRoute's
-         * routing logic which could potentially append content to the response body
-         * https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
-         */
-        $method = strtoupper($request->getMethod());
-        if ($method === 'HEAD') {
-            $emptyBody = $this->responseFactory->createResponse()->getBody();
-
-            return $response->withBody($emptyBody);
-        }
-
-        return $response;
+        return $this->requestHandler->handle($request);
     }
 }

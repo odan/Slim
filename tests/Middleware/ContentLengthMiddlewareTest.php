@@ -10,15 +10,23 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Middleware;
 
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Middleware\ContentLengthMiddleware;
-use Slim\Tests\TestCase;
+use Slim\Tests\Traits\AppTestTrait;
 
-class ContentLengthMiddlewareTest extends TestCase
+final class ContentLengthMiddlewareTest extends TestCase
 {
+    use AppTestTrait;
+
+    public function setUp(): void
+    {
+        $this->setUpApp();
+    }
+
     public function testAddsContentLength()
     {
-        $request = $this->createServerRequest('/');
+        $request = $this->createServerRequest();
         $responseFactory = $this->getResponseFactory();
 
         $mw = function ($request, $handler) use ($responseFactory) {
