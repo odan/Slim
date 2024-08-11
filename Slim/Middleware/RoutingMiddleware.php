@@ -15,7 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 use Slim\Routing\RouteContext;
 use Slim\Routing\Router;
 use Slim\Routing\RoutingResults;
@@ -72,11 +71,9 @@ final class RoutingMiddleware implements MiddlewareInterface
             $routingResults = new RoutingResults($routeStatus, null, $request->getMethod(), $uri);
         }
 
-        if (!$routingResults) {
-            throw new RuntimeException('An unexpected error occurred while performing routing.');
+        if ($routingResults) {
+            $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
         }
-
-        $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
 
         return $handler->handle($request);
     }
