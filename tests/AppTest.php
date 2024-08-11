@@ -52,11 +52,6 @@ final class AppTest extends TestCase
 {
     use AppTestTrait;
 
-    public function setUp(): void
-    {
-        //$this->setUpApp();
-    }
-
     public function testApp5(): void
     {
         $builder = new AppBuilder();
