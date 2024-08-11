@@ -10,187 +10,165 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Middleware;
 
-use DI\Container;
 use FastRoute\Dispatcher;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
-use Slim\Container\ContainerResolver;
+use Slim\Builder\AppBuilder;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Interfaces\RouteResolverInterface;
 use Slim\Interfaces\UrlGeneratorInterface;
+use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\RoutingMiddleware;
-use Slim\Routing\RouteCollector;
+use Slim\Middleware\UrlGeneratorMiddleware;
 use Slim\Routing\RouteContext;
-use Slim\Routing\RouteParser;
-use Slim\Routing\RouteResolver;
 use Slim\Routing\RoutingResults;
-use Slim\Strategies\RequestResponseTypedArgs;
 
 final class RoutingMiddlewareTest extends TestCase
 {
-    protected function getRouteCollector()
-    {
-        $callableResolver = new ContainerResolver(new Container());
-        $responseFactory = $this->getResponseFactory();
-        $routeCollector = new RouteCollector($responseFactory, $callableResolver, new Container(), new RequestResponseTypedArgs());
-        $routeCollector->map(['GET'], '/hello/{name}', null);
-
-        return $routeCollector;
-    }
-
     public function testRouteIsStoredOnSuccessfulMatch()
     {
-        $responseFactory = $this->getResponseFactory();
+        $builder = new AppBuilder();
+        $app = $builder->build();
+
         $test = $this;
-        $middleware = (function (ServerRequestInterface $request) use ($responseFactory, $test) {
-            // route is available
-            $route = $request->getAttribute(RouteContext::ROUTE);
-            $test->assertNotNull($route);
-            $test->assertSame('foo', $route->getArgument('name'));
-
-            // routeParser is available
-            $routeParser = $request->getAttribute(RouteContext::URL_GENERATOR);
-            $test->assertNotNull($routeParser);
-            $test->assertInstanceOf(UrlGeneratorInterface::class, $routeParser);
-
+        $middleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($test) {
             // routingResults is available
+            /** @var RoutingResults $routingResults */
             $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
             $test->assertInstanceOf(RoutingResults::class, $routingResults);
 
-            return $responseFactory->createResponse();
+            // route is available
+            $route = $routingResults->getRoute();
+            $test->assertNotNull($route);
+
+            // routeParser is available
+            $urlGenerator = $request->getAttribute(RouteContext::URL_GENERATOR);
+            $test->assertNotNull($urlGenerator);
+            $test->assertInstanceOf(UrlGeneratorInterface::class, $urlGenerator);
+
+            return $handler->handle($request);
+        };
+
+        $app->add(RoutingMiddleware::class);
+        $app->add(UrlGeneratorMiddleware::class);
+        $app->add($middleware);
+        $app->add(EndpointMiddleware::class);
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', 'https://example.com:443/hello/foo');
+
+        $app->get('/hello/foo', function (ServerRequestInterface $request, ResponseInterface $response) {
+            $response->getBody()->write('Hello World');
+
+            return $response;
         });
 
-        $routeCollector = $this->getRouteCollector();
-        $routeParser = new RouteParser($routeCollector);
-        $routeResolver = new RouteResolver($routeCollector);
-        $routingMiddleware = new RoutingMiddleware($routeResolver, $routeParser);
+        $response = $app->handle($request);
 
-        $request = $this->createServerRequest('https://example.com:443/hello/foo', 'GET');
-
-        $middlewareDispatcher = $this->createMiddlewareDispatcher(
-            $this->createMock(RequestHandlerInterface::class),
-            new Container()
-        );
-        $middlewareDispatcher->addCallable($middleware);
-        $middlewareDispatcher->addMiddleware($routingMiddleware);
-        $middlewareDispatcher->handle($request);
+        $this->assertSame('Hello World', (string)$response->getBody());
     }
 
     public function testRouteIsNotStoredOnMethodNotAllowed()
     {
-        $routeCollector = $this->getRouteCollector();
-        $routeParser = new RouteParser($routeCollector);
-        $routeResolver = new RouteResolver($routeCollector);
-        $routingMiddleware = new RoutingMiddleware($routeResolver, $routeParser);
+        $this->expectException(HttpMethodNotAllowedException::class);
 
-        $request = $this->createServerRequest('https://example.com:443/hello/foo', 'POST');
-        $requestHandlerProphecy = $this->prophesize(RequestHandlerInterface::class);
-        /** @var RequestHandlerInterface $requestHandler */
-        $requestHandler = $requestHandlerProphecy->reveal();
+        $builder = new AppBuilder();
+        $app = $builder->build();
 
-        $middlewareDispatcher = $this->createMiddlewareDispatcher($requestHandler, null);
-        $middlewareDispatcher->addMiddleware($routingMiddleware);
+        $test = $this;
+        $middleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($test) {
+            try {
+                return $handler->handle($request);
+            } catch (HttpMethodNotAllowedException $exception) {
+                $request = $exception->getRequest();
 
-        try {
-            $middlewareDispatcher->handle($request);
-            $this->fail('HTTP method should not have been allowed');
-        } catch (HttpMethodNotAllowedException $exception) {
-            $request = $exception->getRequest();
+                // routingResults is available
+                /** @var RoutingResults $routingResults */
+                $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
+                $test->assertInstanceOf(RoutingResults::class, $routingResults);
+                $test->assertSame(Dispatcher::METHOD_NOT_ALLOWED, $routingResults->getRouteStatus());
 
-            // route is not available
-            $route = $request->getAttribute(RouteContext::ROUTE);
-            $this->assertNull($route);
+                // route is not available
+                $route = $routingResults->getRoute();
+                $test->assertNull($route);
 
-            // routeParser is available
-            $routeParser = $request->getAttribute(RouteContext::URL_GENERATOR);
-            $this->assertNotNull($routeParser);
-            $this->assertInstanceOf(UrlGeneratorInterface::class, $routeParser);
+                // routeParser is available
+                $urlParser = $request->getAttribute(RouteContext::URL_GENERATOR);
+                $test->assertNotNull($urlParser);
+                $test->assertInstanceOf(UrlGeneratorInterface::class, $urlParser);
 
-            // routingResults is available
-            $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
-            $this->assertInstanceOf(RoutingResults::class, $routingResults);
-            $this->assertSame(Dispatcher::METHOD_NOT_ALLOWED, $routingResults->getRouteStatus());
-        }
+                // Re-throw to keep the behavior consistent
+                throw $exception;
+            }
+        };
+
+        $app->add(RoutingMiddleware::class);
+        $app->add(UrlGeneratorMiddleware::class);
+        $app->add($middleware);
+        $app->add(EndpointMiddleware::class);
+
+        $app->post('/hello/foo', function (ServerRequestInterface $request, ResponseInterface $response) {
+            $response->getBody()->write('Hello World');
+
+            return $response;
+        });
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/hello/foo');
+
+        $app->handle($request);
     }
 
     public function testRouteIsNotStoredOnNotFound()
     {
-        $routeCollector = $this->getRouteCollector();
-        $routeParser = new RouteParser($routeCollector);
-        $routeResolver = new RouteResolver($routeCollector);
-        $routingMiddleware = new RoutingMiddleware($routeResolver, $routeParser);
+        $this->expectException(HttpNotFoundException::class);
 
-        $request = $this->createServerRequest('https://example.com:443/goodbye', 'GET');
-        $requestHandlerProphecy = $this->prophesize(RequestHandlerInterface::class);
-        /** @var RequestHandlerInterface $requestHandler */
-        $requestHandler = $requestHandlerProphecy->reveal();
+        $builder = new AppBuilder();
+        $app = $builder->build();
 
-        $middlewareDispatcher = $this->createMiddlewareDispatcher($requestHandler, null);
-        $middlewareDispatcher->addMiddleware($routingMiddleware);
+        $test = $this;
+        $middleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($test) {
+            try {
+                return $handler->handle($request);
+            } catch (HttpNotFoundException $exception) {
+                $request = $exception->getRequest();
 
-        try {
-            $middlewareDispatcher->handle($request);
-            $this->fail('HTTP route should not have been found');
-        } catch (HttpNotFoundException $exception) {
-            $request = $exception->getRequest();
+                // routingResults is available
+                /** @var RoutingResults $routingResults */
+                $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
+                $test->assertInstanceOf(RoutingResults::class, $routingResults);
+                $test->assertSame(Dispatcher::NOT_FOUND, $routingResults->getRouteStatus());
 
-            // route is not available
-            $route = $request->getAttribute(RouteContext::ROUTE);
-            $this->assertNull($route);
+                // route is not available
+                $route = $routingResults->getRoute();
+                $test->assertNull($route);
 
-            // routeParser is available
-            $routeParser = $request->getAttribute(RouteContext::URL_GENERATOR);
-            $this->assertNotNull($routeParser);
-            $this->assertInstanceOf(UrlGeneratorInterface::class, $routeParser);
+                // routeParser is available
+                $urlGenerator = $request->getAttribute(RouteContext::URL_GENERATOR);
+                $test->assertNotNull($urlGenerator);
+                $test->assertInstanceOf(UrlGeneratorInterface::class, $urlGenerator);
 
-            // routingResults is available
-            $routingResults = $request->getAttribute(RouteContext::ROUTING_RESULTS);
-            $this->assertInstanceOf(RoutingResults::class, $routingResults);
-            $this->assertSame(Dispatcher::NOT_FOUND, $routingResults->getRouteStatus());
-        }
-    }
+                // Re-throw to keep the behavior consistent
+                throw $exception;
+            }
+        };
 
-    public function testPerformRoutingThrowsExceptionOnInvalidRoutingResultsRouteStatus()
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('An unexpected error occurred while performing routing.');
+        $app->add(RoutingMiddleware::class);
+        $app->add(UrlGeneratorMiddleware::class);
+        $app->add($middleware);
+        $app->add(EndpointMiddleware::class);
 
-        // Prophesize the `RoutingResults` instance that would return an invalid route
-        // status when the method `getRouteStatus()` gets called.
-        $routingResultsProphecy = $this->prophesize(RoutingResults::class);
-        /** @noinspection PhpUndefinedMethodInspection */
-        $routingResultsProphecy->getRouteStatus()
-            ->willReturn(-1)
-            ->shouldBeCalledOnce();
-        /** @var RoutingResults $routingResults */
-        $routingResults = $routingResultsProphecy->reveal();
+        // No route is defined for '/hello/foo'
 
-        // Prophesize the `RouteParserInterface` instance will be created.
-        $routeParserProphecy = $this->prophesize(RouteParser::class);
-        /** @var UrlGeneratorInterface $routeParser */
-        $routeParser = $routeParserProphecy->reveal();
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/hello/foo');
 
-        // Prophesize the `RouteResolverInterface` that would return the `RoutingResults`
-        // defined above, when the method `computeRoutingResults()` gets called.
-        $routeResolverProphecy = $this->prophesize(RouteResolverInterface::class);
-        /** @noinspection PhpUndefinedMethodInspection */
-        $routeResolverProphecy->computeRoutingResults(Argument::any(), Argument::any())
-            ->willReturn($routingResults)
-            ->shouldBeCalled();
-        /** @var RouteResolverInterface $routeResolver */
-        $routeResolver = $routeResolverProphecy->reveal();
-
-        // Create the server request.
-        $request = $this->createServerRequest('https://example.com:443/hello/foo', 'GET');
-
-        // Create the routing middleware with the `RouteResolverInterface` defined
-        // above. Perform the routing, which should throw the RuntimeException.
-        $middleware = new RoutingMiddleware($routeResolver, $routeParser);
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $middleware->performRouting($request);
+        $app->handle($request);
     }
 }
