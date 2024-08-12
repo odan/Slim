@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New `RequestResponseTypedArgs` invocation strategy for route parameters with type declarations.
 - New `UrlGeneratorMiddleware` injects the `UrlGenerator` into the request attributes.
 - Support to build a custom middleware pipeline without the Slim App class. See new `ResponseFactoryMiddleware`
+- Add content negotiator
 
 ### Changed
 
@@ -70,6 +71,7 @@ Dev dependencies:
 - Provide [CallbackStream](https://gist.github.com/odan/75c2938c419af2a590675bddeb941a0d#file-callbackstream-php). See #3323
 - Provide a ShutdownHandler (using a new ShutdownHandlerInterface)
 - Provide App test traits. See #3338
+- Add UnsupportedMediaTypeException 
 
 ## Files
 

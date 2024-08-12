@@ -8,13 +8,13 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers;
+namespace Slim\Formatting;
 
 use DOMDocument;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Interfaces\ExceptionRendererInterface;
+use Slim\Interfaces\MediaTypeFormatterInterface;
 use Throwable;
 
 use function get_class;
@@ -25,17 +25,17 @@ use function get_class;
  * Problem Details rfc7807:
  * https://datatracker.ietf.org/doc/html/rfc7807#page-14
  */
-final class XmlExceptionRenderer implements ExceptionRendererInterface
+final class XmlMediaTypeFormatter implements MediaTypeFormatterInterface
 {
-    use ExceptionRendererTrait;
+    use ExceptionFormatterTrait;
 
     private string $contentType = 'application/problem+xml';
 
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        Throwable $exception,
-        bool $displayErrorDetails
+        ?Throwable $exception = null,
+        bool $displayErrorDetails = false
     ): ResponseInterface {
         $doc = new DOMDocument('1.0', 'UTF-8');
         $doc->formatOutput = true;

@@ -8,12 +8,12 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers;
+namespace Slim\Formatting;
 
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Interfaces\ExceptionRendererInterface;
+use Slim\Interfaces\MediaTypeFormatterInterface;
 use Slim\Renderers\JsonRenderer;
 use Throwable;
 
@@ -25,9 +25,9 @@ use function get_class;
  * Problem Details rfc7807:
  * https://datatracker.ietf.org/doc/html/rfc7807
  */
-final class JsonExceptionRenderer implements ExceptionRendererInterface
+final class JsonMediaTypeFormatter implements MediaTypeFormatterInterface
 {
-    use ExceptionRendererTrait;
+    use ExceptionFormatterTrait;
 
     private JsonRenderer $jsonRenderer;
 
@@ -64,8 +64,8 @@ final class JsonExceptionRenderer implements ExceptionRendererInterface
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        Throwable $exception,
-        bool $displayErrorDetails
+        ?Throwable $exception = null,
+        bool $displayErrorDetails = false
     ): ResponseInterface {
         $error = [
             'type' => 'urn:ietf:rfc:7807',

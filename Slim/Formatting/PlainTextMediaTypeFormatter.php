@@ -8,12 +8,12 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers;
+namespace Slim\Formatting;
 
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Interfaces\ExceptionRendererInterface;
+use Slim\Interfaces\MediaTypeFormatterInterface;
 use Throwable;
 
 use function get_class;
@@ -22,15 +22,15 @@ use function sprintf;
 /**
  * Plain Text Error Renderer.
  */
-final class PlainTextExceptionRenderer implements ExceptionRendererInterface
+final class PlainTextMediaTypeFormatter implements MediaTypeFormatterInterface
 {
-    use ExceptionRendererTrait;
+    use ExceptionFormatterTrait;
 
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        Throwable $exception,
-        bool $displayErrorDetails
+        ?Throwable $exception = null,
+        bool $displayErrorDetails = false
     ): ResponseInterface {
         $text = sprintf("%s\n", $this->getErrorTitle($exception));
 

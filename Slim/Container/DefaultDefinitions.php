@@ -30,12 +30,14 @@ use Slim\Factory\Psr17\LaminasDiactorosPsr17Factory;
 use Slim\Factory\Psr17\NyholmPsr17Factory;
 use Slim\Factory\Psr17\SlimDecoratedPsr17Factory;
 use Slim\Factory\Psr17\SlimPsr17Factory;
+use Slim\Formatting\ContentNegotiator;
+use Slim\Formatting\HtmlMediaTypeFormatter;
+use Slim\Formatting\JsonMediaTypeFormatter;
+use Slim\Formatting\PlainTextMediaTypeFormatter;
+use Slim\Formatting\XmlMediaTypeFormatter;
 use Slim\Handlers\ExceptionHandler;
-use Slim\Handlers\HtmlExceptionRenderer;
-use Slim\Handlers\JsonExceptionRenderer;
-use Slim\Handlers\PlainTextExceptionRenderer;
-use Slim\Handlers\XmlExceptionRenderer;
 use Slim\Interfaces\ContainerResolverInterface;
+use Slim\Interfaces\ContentNegotiatorInterface;
 use Slim\Interfaces\EmitterInterface;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
@@ -229,16 +231,23 @@ final class DefaultDefinitions
                     $displayErrorDetails = (bool)($container->get('settings')['display_error_details'] ?? false);
                 }
 
-                $exceptionHandler
-                    ->setDisplayErrorDetails($displayErrorDetails)
-                    ->setDefaultMediaType('application/json')
-                    ->registerRenderer('application/json', JsonExceptionRenderer::class)
-                    ->registerRenderer('text/html', HtmlExceptionRenderer::class)
-                    ->registerRenderer('application/xhtml+xml', HtmlExceptionRenderer::class)
-                    ->registerRenderer('application/xml', XmlExceptionRenderer::class)
-                    ->registerRenderer('text/plain', PlainTextExceptionRenderer::class);
+                $exceptionHandler->setDisplayErrorDetails($displayErrorDetails);
 
                 return new ExceptionHandlingMiddleware($exceptionHandler);
+            },
+
+            ContentNegotiatorInterface::class => function (ContainerInterface $container) {
+                $negotiator = $container->get(ContentNegotiator::class);
+
+                $negotiator
+                    ->clearFormatters()
+                    ->setFormatter('application/json', JsonMediaTypeFormatter::class)
+                    ->setFormatter('text/html', HtmlMediaTypeFormatter::class)
+                    ->setFormatter('application/xhtml+xml', HtmlMediaTypeFormatter::class)
+                    ->setFormatter('application/xml', XmlMediaTypeFormatter::class)
+                    ->setFormatter('text/plain', PlainTextMediaTypeFormatter::class);
+
+                return $negotiator;
             },
             // Middleware
             ExceptionLoggingMiddleware::class => function () {

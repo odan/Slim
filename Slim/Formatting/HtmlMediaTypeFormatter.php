@@ -8,12 +8,12 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers;
+namespace Slim\Formatting;
 
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Interfaces\ExceptionRendererInterface;
+use Slim\Interfaces\MediaTypeFormatterInterface;
 use Throwable;
 
 use function get_class;
@@ -22,15 +22,15 @@ use function sprintf;
 /**
  * HTML Error Renderer.
  */
-final class HtmlExceptionRenderer implements ExceptionRendererInterface
+final class HtmlMediaTypeFormatter implements MediaTypeFormatterInterface
 {
-    use ExceptionRendererTrait;
+    use ExceptionFormatterTrait;
 
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        Throwable $exception,
-        bool $displayErrorDetails
+        ?Throwable $exception = null,
+        bool $displayErrorDetails = false
     ): ResponseInterface {
         if ($displayErrorDetails) {
             $html = '<p>The application could not run because of the following error:</p>';

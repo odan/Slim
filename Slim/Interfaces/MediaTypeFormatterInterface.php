@@ -14,12 +14,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
-interface ExceptionRendererInterface
+interface MediaTypeFormatterInterface
 {
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        Throwable $exception,
-        bool $displayErrorDetails
+        ?Throwable $exception = null,
+        bool $displayErrorDetails = false
     ): ResponseInterface;
 }

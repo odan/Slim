@@ -8,12 +8,12 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers;
+namespace Slim\Formatting;
 
 use Slim\Exception\HttpException;
 use Throwable;
 
-trait ExceptionRendererTrait
+trait ExceptionFormatterTrait
 {
     private string $defaultErrorTitle = 'Slim Application Error';
 
