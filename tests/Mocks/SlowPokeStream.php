@@ -13,11 +13,11 @@ namespace Slim\Tests\Mocks;
 use Exception;
 use Psr\Http\Message\StreamInterface;
 
-use const SEEK_SET;
-
 use function min;
 use function str_repeat;
 use function usleep;
+
+use const SEEK_SET;
 
 class SlowPokeStream implements StreamInterface
 {

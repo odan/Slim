@@ -20,9 +20,7 @@ use Slim\Interfaces\ContainerResolverInterface;
 
 /**
  * This class is responsible for building and configuring a Slim application with a dependency injection (DI) container.
- * It provides methods to set up service definitions, configure a custom container factory, and specify middleware order.
- * The `AppBuilder` class simplifies the process of initializing a Slim application by encapsulating the necessary
- * setup steps, including the creation and configuration of the DI container and the registration of middleware.
+ * It provides methods to set up service definitions, configure a custom container factory, and more.
  *
  * Key functionalities include:
  * - Building the Slim `App` instance with configured dependencies.

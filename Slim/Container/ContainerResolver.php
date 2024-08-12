@@ -20,7 +20,8 @@ use function is_array;
 /**
  *  This class is responsible for resolving dependencies or services from a PSR-11 compatible DI container.
  *  It can handle resolving strings, arrays, callables, and objects. If the provided identifier is a string,
- *  it can also interpret Slim's notation (e.g., "service:method") or the standard "::" notation for static method calls.
+ *  it can also interpret Slim's notation (e.g., "service:method") or the standard "::" notation for static
+ *  method calls.
  *
  *  The primary use case for this class is to provide a way to retrieve or resolve services and callables from
  *  a container by processing the given identifier.

@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Routing;
-
 namespace Slim\Routing;
 
 use FastRoute\RouteCollector;

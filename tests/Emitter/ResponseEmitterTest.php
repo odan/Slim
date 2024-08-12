@@ -18,11 +18,6 @@ use Slim\Tests\Mocks\SlowPokeStream;
 use Slim\Tests\Mocks\SmallChunksStream;
 use Slim\Tests\Traits\AppTestTrait;
 
-use const CONNECTION_ABORTED;
-use const CONNECTION_TIMEOUT;
-use const STREAM_FILTER_READ;
-use const STREAM_FILTER_WRITE;
-
 use function base64_decode;
 use function fopen;
 use function fwrite;
@@ -35,6 +30,11 @@ use function stream_filter_remove;
 use function stream_get_filters;
 use function strlen;
 use function trim;
+
+use const CONNECTION_ABORTED;
+use const CONNECTION_TIMEOUT;
+use const STREAM_FILTER_READ;
+use const STREAM_FILTER_WRITE;
 
 final class ResponseEmitterTest extends TestCase
 {

@@ -20,7 +20,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  * Middleware to handle HTTP HEAD requests.
  *
  * Ensures that the response body is empty for HEAD requests in compliance with RFC 2616, Section 9.
- * This is to avoid unintended content in the response body if the route handler was originally intended for GET requests.
+ * This is to avoid unintended content in the response body if the route handler was originally
+ * intended for GET requests.
  */
 final class HeadMethodMiddleware implements MiddlewareInterface
 {

@@ -16,8 +16,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 
-use const LIBXML_VERSION;
-
 use function count;
 use function explode;
 use function is_array;
@@ -30,6 +28,8 @@ use function parse_str;
 use function simplexml_load_string;
 use function strtolower;
 use function trim;
+
+use const LIBXML_VERSION;
 
 final class BodyParsingMiddleware implements MiddlewareInterface
 {

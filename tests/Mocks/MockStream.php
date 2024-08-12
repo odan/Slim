@@ -15,8 +15,6 @@ use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
-use const SEEK_SET;
-
 use function clearstatcache;
 use function fclose;
 use function feof;
@@ -32,6 +30,8 @@ use function is_string;
 use function stream_get_contents;
 use function stream_get_meta_data;
 use function var_export;
+
+use const SEEK_SET;
 
 class MockStream implements StreamInterface
 {

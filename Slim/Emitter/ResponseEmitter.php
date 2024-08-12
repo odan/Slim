@@ -13,8 +13,6 @@ namespace Slim\Emitter;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Interfaces\EmitterInterface;
 
-use const CONNECTION_NORMAL;
-
 use function connection_status;
 use function header;
 use function headers_sent;
@@ -23,6 +21,8 @@ use function min;
 use function sprintf;
 use function strlen;
 use function strtolower;
+
+use const CONNECTION_NORMAL;
 
 final class ResponseEmitter implements EmitterInterface
 {
