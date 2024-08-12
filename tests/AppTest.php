@@ -121,7 +121,7 @@ final class AppTest extends TestCase
         $app->add(ExceptionHandlingMiddleware::class);
         $app->add(EndpointMiddleware::class);
 
-        $app->get('/', fn() => throw new UnexpectedValueException('Test exception message'));
+        $app->get('/', fn () => throw new UnexpectedValueException('Test exception message'));
 
         $request = $app->getContainer()
             ->get(ServerRequestFactoryInterface::class)
@@ -560,7 +560,7 @@ final class AppTest extends TestCase
     {
         $builder = new AppBuilder();
         $builder->setDefinitions([
-            RequestHandlerInvocationStrategyInterface::class => fn() => new RequestResponseArgs(),
+            RequestHandlerInvocationStrategyInterface::class => fn () => new RequestResponseArgs(),
         ]);
         $app = $builder->build();
 
@@ -589,7 +589,7 @@ final class AppTest extends TestCase
     {
         $builder = new AppBuilder();
         $builder->setDefinitions([
-            RequestHandlerInvocationStrategyInterface::class => fn() => new RequestResponseNamedArgs(),
+            RequestHandlerInvocationStrategyInterface::class => fn () => new RequestResponseNamedArgs(),
         ]);
         $app = $builder->build();
 

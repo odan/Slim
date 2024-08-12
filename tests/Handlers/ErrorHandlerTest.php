@@ -19,11 +19,11 @@ use ReflectionProperty;
 use RuntimeException;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
+use Slim\Formatting\HtmlMediaTypeFormatter;
+use Slim\Formatting\JsonMediaTypeFormatter;
+use Slim\Formatting\PlainTextMediaTypeFormatter;
+use Slim\Formatting\XmlMediaTypeFormatter;
 use Slim\Handlers\ExceptionHandler;
-use Slim\Handlers\HtmlExceptionRenderer;
-use Slim\Handlers\JsonExceptionRenderer;
-use Slim\Handlers\PlainTextExceptionRenderer;
-use Slim\Handlers\XmlExceptionRenderer;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Tests\Mocks\MockCustomException;
 use Slim\Tests\Traits\AppTestTrait;
@@ -56,23 +56,23 @@ final class ErrorHandlerTest extends TestCase
 
         $renderer = $method->invoke($handler);
         $this->assertIsCallable($renderer);
-        $this->assertInstanceOf(JsonExceptionRenderer::class, $renderer[0]);
+        $this->assertInstanceOf(JsonMediaTypeFormatter::class, $renderer[0]);
 
         $reflectionProperty->setValue($handler, 'application/xml');
         $renderer = $method->invoke($handler);
         $this->assertIsCallable($renderer);
-        $this->assertInstanceOf(XmlExceptionRenderer::class, $renderer[0]);
+        $this->assertInstanceOf(XmlMediaTypeFormatter::class, $renderer[0]);
 
         $reflectionProperty->setValue($handler, 'text/plain');
         $renderer = $method->invoke($handler);
         $this->assertIsCallable($renderer);
-        $this->assertInstanceOf(PlainTextExceptionRenderer::class, $renderer[0]);
+        $this->assertInstanceOf(PlainTextMediaTypeFormatter::class, $renderer[0]);
 
         // Test the default error renderer
         $reflectionProperty->setValue($handler, 'text/unknown');
         $renderer = $method->invoke($handler);
         $this->assertIsCallable($renderer);
-        $this->assertInstanceOf(HtmlExceptionRenderer::class, $renderer[0]);
+        $this->assertInstanceOf(HtmlMediaTypeFormatter::class, $renderer[0]);
     }
 
     public function testDetermineStatusCode()
@@ -129,9 +129,9 @@ final class ErrorHandlerTest extends TestCase
 
         $handler = $this->container->get(ExceptionHandler::class);
         $newErrorRenderers = [
-            'application/xml' => XmlExceptionRenderer::class,
-            'text/xml' => XmlExceptionRenderer::class,
-            'text/html' => HtmlExceptionRenderer::class,
+            'application/xml' => XmlMediaTypeFormatter::class,
+            'text/xml' => XmlMediaTypeFormatter::class,
+            'text/html' => HtmlMediaTypeFormatter::class,
         ];
 
         $class = new ReflectionClass(ExceptionHandler::class);
@@ -162,8 +162,8 @@ final class ErrorHandlerTest extends TestCase
         $handler = $this->container->get(ExceptionHandler::class);
 
         $errorRenderers = [
-            'text/plain' => PlainTextExceptionRenderer::class,
-            'text/xml' => XmlExceptionRenderer::class,
+            'text/plain' => PlainTextMediaTypeFormatter::class,
+            'text/xml' => XmlMediaTypeFormatter::class,
         ];
 
         $class = new ReflectionClass(ExceptionHandler::class);
@@ -194,7 +194,7 @@ final class ErrorHandlerTest extends TestCase
         $handler = $this->container->get(ExceptionHandler::class);
 
         $errorRenderers = [
-            'application/xml' => XmlExceptionRenderer::class,
+            'application/xml' => XmlMediaTypeFormatter::class,
         ];
 
         $class = new ReflectionClass(ExceptionHandler::class);
@@ -242,7 +242,7 @@ final class ErrorHandlerTest extends TestCase
     public function testRegisterErrorRenderer()
     {
         $handler = new ExceptionHandler($this->getCallableResolver(), $this->getResponseFactory());
-        $handler->registerErrorRenderer('application/slim', PlainTextExceptionRenderer::class);
+        $handler->registerErrorRenderer('application/slim', PlainTextMediaTypeFormatter::class);
 
         $reflectionClass = new ReflectionClass(ExceptionHandler::class);
         $reflectionProperty = $reflectionClass->getProperty('errorRenderers');
@@ -255,7 +255,7 @@ final class ErrorHandlerTest extends TestCase
     public function testSetDefaultErrorRenderer()
     {
         $handler = new ErrorHandler($this->getCallableResolver(), $this->getResponseFactory());
-        $handler->setDefaultErrorRenderer('text/plain', PlainTextExceptionRenderer::class);
+        $handler->setDefaultErrorRenderer('text/plain', PlainTextMediaTypeFormatter::class);
 
         $reflectionClass = new ReflectionClass(ExceptionHandler::class);
         $reflectionProperty = $reflectionClass->getProperty('defaultErrorRenderer');
@@ -266,7 +266,7 @@ final class ErrorHandlerTest extends TestCase
         $defaultErrorRendererContentTypeProperty->setAccessible(true);
         $defaultErrorRendererContentType = $defaultErrorRendererContentTypeProperty->getValue($handler);
 
-        $this->assertSame(PlainTextExceptionRenderer::class, $defaultErrorRenderer);
+        $this->assertSame(PlainTextMediaTypeFormatter::class, $defaultErrorRenderer);
         $this->assertSame('text/plain', $defaultErrorRendererContentType);
     }
 
@@ -345,7 +345,7 @@ final class ErrorHandlerTest extends TestCase
             $logger
         );
 
-        $handler->setLogErrorRenderer(HtmlExceptionRenderer::class);
+        $handler->setLogErrorRenderer(HtmlMediaTypeFormatter::class);
 
         $logger->expects(self::once())
             ->method('error')
