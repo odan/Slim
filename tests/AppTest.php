@@ -54,13 +54,9 @@ final class AppTest extends TestCase
 {
     use AppTestTrait;
 
-    public function setUp(): void
-    {
-        $this->markTestSkipped();
-    }
-
     public function testApp5(): void
     {
+        $this->markTestSkipped();
         $builder = new AppBuilder();
         $builder->setSettings(['display_error_details' => true]);
 
