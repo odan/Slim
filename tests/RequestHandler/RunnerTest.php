@@ -44,9 +44,9 @@ final class RunnerTest extends TestCase
 
         $runner = new Runner([
             $middleware,
-            function ($req) use ($response) {
+            function () use ($response) {
                 return $response->withHeader('X-Result', 'Success');
-            }
+            },
         ]);
 
         $result = $runner->handle($request);

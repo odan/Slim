@@ -165,7 +165,6 @@ final class MiddlewareRequestHandlerTest extends TestCase
 
         $middleware = [];
 
-
         $middleware[] = new class implements MiddlewareInterface {
             public function process(
                 ServerRequestInterface $request,
@@ -173,6 +172,7 @@ final class MiddlewareRequestHandlerTest extends TestCase
             ): ResponseInterface {
                 $response = $handler->handle($request);
                 $response->getBody()->write('2');
+
                 return $response;
             }
         };
@@ -184,6 +184,7 @@ final class MiddlewareRequestHandlerTest extends TestCase
             ): ResponseInterface {
                 $response = $handler->handle($request);
                 $response->getBody()->write('1');
+
                 return $response;
             }
         };
@@ -221,6 +222,7 @@ final class MiddlewareRequestHandlerTest extends TestCase
             ): ResponseInterface {
                 $response = $handler->handle($request);
                 $response->getBody()->write('2');
+
                 return $response;
             }
         };
@@ -232,6 +234,7 @@ final class MiddlewareRequestHandlerTest extends TestCase
             ): ResponseInterface {
                 $response = $handler->handle($request);
                 $response->getBody()->write('1');
+
                 return $response;
             }
         };
