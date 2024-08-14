@@ -37,7 +37,7 @@ final class RequestResponseTest extends TestCase
 
         $args = [
             'name' => 'John',
-            'foo' => 'bar'
+            'foo' => 'bar',
         ];
 
         $callback = function ($request, $response, $args) {

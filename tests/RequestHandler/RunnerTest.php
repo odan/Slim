@@ -8,12 +8,13 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
-use Slim\Builder\AppBuilder;
-use Slim\RequestHandler\Runner;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
+use Slim\Builder\AppBuilder;
+use Slim\RequestHandler\Runner;
+use stdClass;
 
 final class RunnerTest extends TestCase
 {
@@ -31,16 +32,22 @@ final class RunnerTest extends TestCase
             ->createResponse();
 
         $middleware = new class implements MiddlewareInterface {
-            public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-            {
+            public function process(
+                ServerRequestInterface $request,
+                RequestHandlerInterface $handler
+            ): ResponseInterface {
                 $response = $handler->handle($request);
+
                 return $response->withHeader('X-Middleware', 'Processed');
             }
         };
 
-        $runner = new Runner([$middleware, function ($req) use ($response) {
-            return $response->withHeader('X-Result', 'Success');
-        }]);
+        $runner = new Runner([
+            $middleware,
+            function ($req) use ($response) {
+                return $response->withHeader('X-Result', 'Success');
+            }
+        ]);
 
         $result = $runner->handle($request);
 
@@ -60,7 +67,7 @@ final class RunnerTest extends TestCase
             ->get(ResponseFactoryInterface::class)
             ->createResponse();
 
-        $handler = new class($response) implements RequestHandlerInterface {
+        $handler = new class ($response) implements RequestHandlerInterface {
             private ResponseInterface $response;
 
             public function __construct(ResponseInterface $response)
@@ -96,7 +103,7 @@ final class RunnerTest extends TestCase
         $runner = new Runner([
             function (ServerRequestInterface $req, RequestHandlerInterface $handler) use ($response) {
                 return $response->withHeader('X-Callable', 'Called');
-            }
+            },
         ]);
 
         $result = $runner->handle($request);
@@ -130,7 +137,7 @@ final class RunnerTest extends TestCase
             ->get(ServerRequestFactoryInterface::class)
             ->createServerRequest('GET', '/');
 
-        $runner = new Runner([new \stdClass()]);
+        $runner = new Runner([new stdClass()]);
         $runner->handle($request);
     }
 

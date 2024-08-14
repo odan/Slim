@@ -37,7 +37,7 @@ final class RequestResponseArgsTest extends TestCase
 
         $args = [
             'name' => 'John',
-            'age' => '30'
+            'age' => '30',
         ];
 
         $callback = function ($request, $response, $name, $age) {
@@ -66,7 +66,7 @@ final class RequestResponseArgsTest extends TestCase
         $invocationStrategy = $app->getContainer()->get(RequestResponseArgs::class);
 
         $args = [
-            'name' => 'John'
+            'name' => 'John',
         ];
 
         $callback = function ($request, $response, $name) {
