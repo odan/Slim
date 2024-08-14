@@ -57,8 +57,8 @@ final class Runner implements RequestHandlerInterface
 
         throw new RuntimeException(
             sprintf(
-                'Invalid middleware queue entry: %s. Middleware must either be callable or implement %s.',
-                $middleware,
+                'Invalid middleware queue entry "%s". Middleware must either be callable or implement %s.',
+                is_scalar($middleware) ? (string)$middleware : gettype($middleware),
                 MiddlewareInterface::class
             )
         );

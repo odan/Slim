@@ -80,10 +80,7 @@ final class MiddlewareResolver
             return $middleware;
         }
 
-        throw new RuntimeException(
-            'A middleware must be an object/class name referencing an implementation of ' .
-            'MiddlewareInterface or a callable with a matching signature.'
-        );
+        throw new RuntimeException('A middleware must be an object or callable that implements "MiddlewareInterface".');
     }
 
     /**
