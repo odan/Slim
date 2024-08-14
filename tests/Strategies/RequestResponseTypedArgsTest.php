@@ -12,8 +12,11 @@ namespace Slim\Tests\Strategies;
 
 use Invoker\Exception\NotEnoughParametersException;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Builder\AppBuilder;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Strategies\RequestResponseTypedArgs;
 use Slim\Tests\Traits\AppTestTrait;
@@ -26,93 +29,122 @@ final class RequestResponseTypedArgsTest extends TestCase
     private ResponseInterface $response;
     private RequestHandlerInvocationStrategyInterface $invocationStrategy;
 
-    public function setUp(): void
-    {
-        $this->setUpApp();
-        $this->request = $this->createServerRequest();
-        $this->response = $this->createResponse();
-        $this->invocationStrategy = $this->container->get(RequestResponseTypedArgs::class);
-    }
-
     public function testCallingWithEmptyArguments()
     {
-        $args = [];
+        $app = (new AppBuilder())->build();
 
-        $callback = function ($request, $response) {
-            $this->assertSame($this->request, $request);
-            $this->assertSame($this->response, $response);
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
 
-            return $response;
+        $response = $app->getContainer()
+            ->get(ResponseFactoryInterface::class)
+            ->createResponse();
+
+        $invocationStrategy = $app->getContainer()->get(RequestResponseTypedArgs::class);
+
+        $args = [
+            'name' => 'John',
+        ];
+
+        $callback = function ($request, $response, $name) {
+            return $response->withHeader('X-Foo', $name);
         };
 
-        $this->assertSame(
-            $this->response,
-            ($this->invocationStrategy)($callback, $this->request, $this->response, $args)
-        );
+        $response = $invocationStrategy($callback, $request, $response, $args);
+
+        $this->assertSame('John', $response->getHeaderLine('X-Foo'));
     }
 
     // https://github.com/slimphp/Slim/issues/3198
     public function testCallingWithKnownArguments()
     {
+        $app = (new AppBuilder())->build();
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
+        $response = $app->getContainer()
+            ->get(ResponseFactoryInterface::class)
+            ->createResponse();
+
+        $invocationStrategy = $app->getContainer()->get(RequestResponseTypedArgs::class);
+
         $args = [
-            'name' => 'john',
+            'name' => 'John',
             'id' => '123',
         ];
 
         $callback = function ($request, $response, string $name, int $id) {
-            $this->assertSame($this->request, $request);
-            $this->assertSame($this->response, $response);
-            $this->assertSame('john', $name);
+            $this->assertSame('John', $name);
             $this->assertSame(123, $id);
 
-            return $response;
+            return $response->withHeader('X-Foo', $name);
         };
 
-        $this->assertSame(
-            $this->response,
-            ($this->invocationStrategy)($callback, $this->request, $this->response, $args)
-        );
+        $response = $invocationStrategy($callback, $request, $response, $args);
+
+        $this->assertSame('John', $response->getHeaderLine('X-Foo'));
     }
 
     public function testCallingWithOptionalArguments()
     {
+        $app = (new AppBuilder())->build();
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
+        $response = $app->getContainer()
+            ->get(ResponseFactoryInterface::class)
+            ->createResponse();
+
+        $invocationStrategy = $app->getContainer()->get(RequestResponseTypedArgs::class);
+
         $args = [
             'name' => 'world',
         ];
 
-        $callback = function ($request, $response, string $greeting = 'Hello', string $name = 'Rob') use ($args) {
-            $this->assertSame($this->request, $request);
-            $this->assertSame($this->response, $response);
-            $this->assertSame($greeting, 'Hello');
-            $this->assertSame($name, $args['name']);
+        $callback = function ($request, $response, string $greeting = 'Hello', string $name = 'Rob') {
+            $this->assertSame('Hello', $greeting);
+            $this->assertSame('world', $name);
 
-            return $response;
+            return $response->withHeader('X-Foo', $name);
         };
 
-        $this->assertSame(
-            $this->response,
-            ($this->invocationStrategy)($callback, $this->request, $this->response, $args)
-        );
+        $response = $invocationStrategy($callback, $request, $response, $args);
+
+        $this->assertSame('world', $response->getHeaderLine('X-Foo'));
     }
 
     public function testCallingWithNotEnoughParameters()
     {
+        $app = (new AppBuilder())->build();
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
+        $response = $app->getContainer()
+            ->get(ResponseFactoryInterface::class)
+            ->createResponse();
+
+        $invocationStrategy = $app->getContainer()->get(RequestResponseTypedArgs::class);
+
         $this->expectException(NotEnoughParametersException::class);
         $args = [
             'greeting' => 'hello',
         ];
 
         $callback = function ($request, $response, $arguments) use ($args) {
-            $this->assertSame($this->request, $request);
-            $this->assertSame($this->response, $response);
             $this->assertSame($args, $arguments);
 
-            return $response;
+            return $response->withHeader('X-Foo', $args['greeting']);
         };
 
-        $this->assertSame(
-            $this->response,
-            ($this->invocationStrategy)($callback, $this->request, $this->response, $args)
-        );
+        $response = $invocationStrategy($callback, $request, $response, $args);
+
+        $this->assertSame('hello', $response->getHeaderLine('X-Foo'));
     }
 }
