@@ -13,21 +13,14 @@ namespace Slim\Tests\Strategies;
 use Invoker\Exception\NotEnoughParametersException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Strategies\RequestResponseTypedArgs;
 use Slim\Tests\Traits\AppTestTrait;
 
 final class RequestResponseTypedArgsTest extends TestCase
 {
     use AppTestTrait;
-
-    private ServerRequestInterface $request;
-    private ResponseInterface $response;
-    private RequestHandlerInvocationStrategyInterface $invocationStrategy;
 
     public function testCallingWithEmptyArguments()
     {
