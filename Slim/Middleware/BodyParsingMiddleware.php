@@ -29,14 +29,12 @@ use function simplexml_load_string;
 use function strtolower;
 use function trim;
 
-use const LIBXML_VERSION;
-
 final class BodyParsingMiddleware implements MiddlewareInterface
 {
     /**
      * @var callable[]
      */
-    protected array $bodyParsers;
+    private array $bodyParsers;
 
     /**
      * @param callable[] $bodyParsers list of body parsers as an associative array of mediaType => callable
@@ -73,7 +71,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
         return $this;
     }
 
-    protected function registerDefaultBodyParsers(): void
+    private function registerDefaultBodyParsers(): void
     {
         $this->registerBodyParser('application/json', static function ($input) {
             $result = json_decode($input, true);
@@ -93,11 +91,9 @@ final class BodyParsingMiddleware implements MiddlewareInterface
 
         $self = $this;
         $xmlCallable = function ($input) use ($self) {
-            $backup = $self->disableXmlEntityLoader(true);
             $backup_errors = libxml_use_internal_errors(true);
             $result = simplexml_load_string($input);
 
-            $self->disableXmlEntityLoader($backup);
             libxml_clear_errors();
             libxml_use_internal_errors($backup_errors);
 
@@ -112,12 +108,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
         $this->registerBodyParser('text/xml', $xmlCallable);
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return array<mixed>|object|null
-     */
-    protected function parseBody(ServerRequestInterface $request): array|object|null
+    private function parseBody(ServerRequestInterface $request): array|object|null
     {
         $mediaType = $this->getMediaType($request);
         if ($mediaType === null) {
@@ -152,7 +143,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
     /**
      * @return string|null The serverRequest media type, minus content-type params
      */
-    protected function getMediaType(ServerRequestInterface $request): ?string
+    private function getMediaType(ServerRequestInterface $request): ?string
     {
         $contentType = $request->getHeader('Content-Type')[0] ?? null;
 
@@ -163,16 +154,5 @@ final class BodyParsingMiddleware implements MiddlewareInterface
         }
 
         return null;
-    }
-
-    protected function disableXmlEntityLoader(bool $disable): bool
-    {
-        if (LIBXML_VERSION >= 20900) {
-            // libxml >= 2.9.0 disables entity loading by default, so it is
-            // safe to skip the real call (deprecated in PHP 8).
-            return true;
-        }
-
-        return libxml_disable_entity_loader($disable);
     }
 }
