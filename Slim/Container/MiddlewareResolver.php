@@ -38,13 +38,6 @@ final class MiddlewareResolver
         $this->middlewareOrder = $middlewareOrder;
     }
 
-    public function setMiddlewareOrder(MiddlewareOrder $middlewareOrder): self
-    {
-        $this->middlewareOrder = $middlewareOrder;
-
-        return $this;
-    }
-
     /**
      * Resolve the middleware stack.
      *
