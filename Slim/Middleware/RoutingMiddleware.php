@@ -18,6 +18,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Routing\RouteContext;
 use Slim\Routing\Router;
 use Slim\Routing\RoutingResults;
+use Slim\Routing\UrlGenerator;
 
 /**
  * Middleware for resolving routes.
@@ -29,9 +30,12 @@ final class RoutingMiddleware implements MiddlewareInterface
 {
     private Router $router;
 
-    public function __construct(Router $router)
+    private UrlGenerator $urlGenerator;
+
+    public function __construct(Router $router, UrlGenerator $urlGenerator)
     {
         $this->router = $router;
+        $this->urlGenerator = $urlGenerator;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -90,7 +94,9 @@ final class RoutingMiddleware implements MiddlewareInterface
         }
 
         if ($routingResults) {
-            $request = $request->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults);
+            $request = $request
+                ->withAttribute(RouteContext::ROUTING_RESULTS, $routingResults)
+                ->withAttribute(RouteContext::URL_GENERATOR, $this->urlGenerator);
         }
 
         return $handler->handle($request);

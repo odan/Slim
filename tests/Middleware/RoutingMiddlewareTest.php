@@ -22,7 +22,6 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Interfaces\UrlGeneratorInterface;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\RoutingMiddleware;
-use Slim\Middleware\UrlGeneratorMiddleware;
 use Slim\Routing\RouteContext;
 use Slim\Routing\RoutingResults;
 
@@ -53,7 +52,6 @@ final class RoutingMiddlewareTest extends TestCase
         };
 
         $app->add(RoutingMiddleware::class);
-        $app->add(UrlGeneratorMiddleware::class);
         $app->add($middleware);
         $app->add(EndpointMiddleware::class);
 
@@ -107,7 +105,6 @@ final class RoutingMiddlewareTest extends TestCase
         };
 
         $app->add(RoutingMiddleware::class);
-        $app->add(UrlGeneratorMiddleware::class);
         $app->add($middleware);
         $app->add(EndpointMiddleware::class);
 
@@ -159,7 +156,6 @@ final class RoutingMiddlewareTest extends TestCase
         };
 
         $app->add(RoutingMiddleware::class);
-        $app->add(UrlGeneratorMiddleware::class);
         $app->add($middleware);
         $app->add(EndpointMiddleware::class);
 

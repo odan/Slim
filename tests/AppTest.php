@@ -34,7 +34,6 @@ use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\Middleware\HeadMethodMiddleware;
 use Slim\Middleware\RoutingArgumentsMiddleware;
 use Slim\Middleware\RoutingMiddleware;
-use Slim\Middleware\UrlGeneratorMiddleware;
 use Slim\Psr7\Headers;
 use Slim\Psr7\Request;
 use Slim\Psr7\Stream;
@@ -66,7 +65,6 @@ final class AppTest extends TestCase
         $app->add(RoutingMiddleware::class);
         $app->add(RoutingArgumentsMiddleware::class);
         $app->add(BodyParsingMiddleware::class);
-        $app->add(UrlGeneratorMiddleware::class);
         $app->add(ErrorHandlingMiddleware::class);
         $app->add(ExceptionHandlingMiddleware::class);
         $app->add(ExceptionLoggingMiddleware::class);
