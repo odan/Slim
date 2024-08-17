@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Test\Logging;
+namespace Slim\Tests\Logging;
 
 use Psr\Log\AbstractLogger;
 use Stringable;
@@ -19,12 +19,7 @@ final class TestLogger extends AbstractLogger
 
     public function log($level, string|Stringable $message, array $context = []): void
     {
-        $level = (string)$level;
-        if (!isset($this->logs[$level])) {
-            $this->logs[$level] = [];
-        }
-
-        $this->logs[$level][] = [
+        $this->logs[] = [
             'level' => $level,
             'message' => $message,
             'context' => $context,
@@ -34,10 +29,5 @@ final class TestLogger extends AbstractLogger
     public function getLogs(): array
     {
         return $this->logs;
-    }
-
-    public function hasErrorRecords(): bool
-    {
-        return !empty($this->logs['error']);
     }
 }
