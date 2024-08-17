@@ -61,7 +61,7 @@ final class ExceptionHandlerTest extends TestCase
         $negotiator = $app->getContainer()->get(ContentNegotiatorInterface::class);
         $negotiator
             ->clearFormatters()
-            ->setFormatter('text/html', $customRenderer);
+            ->setHandler('text/html', $customRenderer);
 
         $request = $app->getContainer()
             ->get(ServerRequestFactoryInterface::class)
@@ -156,11 +156,11 @@ final class ExceptionHandlerTest extends TestCase
         // The order is considered
         $negotiator
             ->clearFormatters()
-            ->setFormatter('application/xml', XmlMediaTypeFormatter::class)
-            ->setFormatter('application/xhtml+xml', HtmlMediaTypeFormatter::class)
-            ->setFormatter('application/json', JsonMediaTypeFormatter::class)
-            ->setFormatter('text/html', HtmlMediaTypeFormatter::class)
-            ->setFormatter('text/plain', PlainTextMediaTypeFormatter::class);
+            ->setHandler('application/xml', XmlMediaTypeFormatter::class)
+            ->setHandler('application/xhtml+xml', HtmlMediaTypeFormatter::class)
+            ->setHandler('application/json', JsonMediaTypeFormatter::class)
+            ->setHandler('text/html', HtmlMediaTypeFormatter::class)
+            ->setHandler('text/plain', PlainTextMediaTypeFormatter::class);
 
         $response = $exceptionHandler($request, new RuntimeException('Test exception'));
 

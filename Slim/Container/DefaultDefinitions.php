@@ -43,6 +43,7 @@ use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
 use Slim\Logging\StdErrorLogger;
 use Slim\Logging\StdOutLogger;
+use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ExceptionHandlingMiddleware;
 use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\RequestHandler\MiddlewareRequestHandler;
@@ -241,17 +242,24 @@ final class DefaultDefinitions
 
                 $negotiator
                     ->clearFormatters()
-                    ->setFormatter('application/json', JsonMediaTypeFormatter::class)
-                    ->setFormatter('text/html', HtmlMediaTypeFormatter::class)
-                    ->setFormatter('application/xhtml+xml', HtmlMediaTypeFormatter::class)
-                    ->setFormatter('application/xml', XmlMediaTypeFormatter::class)
-                    ->setFormatter('text/plain', PlainTextMediaTypeFormatter::class);
+                    ->setHandler('application/json', JsonMediaTypeFormatter::class)
+                    ->setHandler('text/html', HtmlMediaTypeFormatter::class)
+                    ->setHandler('application/xhtml+xml', HtmlMediaTypeFormatter::class)
+                    ->setHandler('application/xml', XmlMediaTypeFormatter::class)
+                    ->setHandler('text/plain', PlainTextMediaTypeFormatter::class);
 
                 return $negotiator;
             },
             // Middleware
             ExceptionLoggingMiddleware::class => function () {
                 return new ExceptionLoggingMiddleware(new StdErrorLogger());
+            },
+            BodyParsingMiddleware::class => function (ContainerInterface $container) {
+                $negotiator = $container->get(ContentNegotiatorInterface::class);
+                $middleware = new BodyParsingMiddleware($negotiator);
+                $middleware->registerDefaultBodyParsers();
+
+                return $middleware;
             },
             // Logging
             LoggerInterface::class => function () {

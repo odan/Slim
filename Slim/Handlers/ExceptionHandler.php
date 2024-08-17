@@ -49,7 +49,7 @@ final class ExceptionHandler implements ExceptionHandlerInterface
 
         // Invoke the formatter
         return call_user_func(
-            $negotiationResult->getFormatter(),
+            $negotiationResult->getHandler(),
             $request,
             $response,
             $exception,

@@ -15,37 +15,23 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
+use Slim\Interfaces\ContentNegotiatorInterface;
 
-use function count;
-use function explode;
 use function is_array;
 use function is_object;
-use function is_string;
 use function json_decode;
 use function libxml_clear_errors;
 use function libxml_use_internal_errors;
 use function parse_str;
 use function simplexml_load_string;
-use function strtolower;
-use function trim;
 
 final class BodyParsingMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var callable[]
-     */
-    private array $bodyParsers;
+    private ContentNegotiatorInterface $contentNegotiator;
 
-    /**
-     * @param callable[] $bodyParsers list of body parsers as an associative array of mediaType => callable
-     */
-    public function __construct(array $bodyParsers = [])
+    public function __construct(ContentNegotiatorInterface $contentNegotiator)
     {
-        $this->registerDefaultBodyParsers();
-
-        foreach ($bodyParsers as $mediaType => $parser) {
-            $this->registerBodyParser($mediaType, $parser);
-        }
+        $this->contentNegotiator = $contentNegotiator;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -66,12 +52,12 @@ final class BodyParsingMiddleware implements MiddlewareInterface
      */
     public function registerBodyParser(string $mediaType, callable $callable): self
     {
-        $this->bodyParsers[$mediaType] = $callable;
+        $this->contentNegotiator->setHandler($mediaType, $callable);
 
         return $this;
     }
 
-    private function registerDefaultBodyParsers(): void
+    public function registerDefaultBodyParsers(): void
     {
         $this->registerBodyParser('application/json', static function ($input) {
             $result = json_decode($input, true);
@@ -90,7 +76,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
         });
 
         $self = $this;
-        $xmlCallable = function ($input) use ($self) {
+        $xmlCallable = function ($input) {
             $backup_errors = libxml_use_internal_errors(true);
             $result = simplexml_load_string($input);
 
@@ -110,49 +96,21 @@ final class BodyParsingMiddleware implements MiddlewareInterface
 
     private function parseBody(ServerRequestInterface $request): array|object|null
     {
-        $mediaType = $this->getMediaType($request);
-        if ($mediaType === null) {
-            return null;
-        }
+        $negotiationResult = $this->contentNegotiator->negotiate($request);
 
-        // Check if this specific media type has a parser registered first
-        if (!isset($this->bodyParsers[$mediaType])) {
-            // If not, look for a media type with a structured syntax suffix (RFC 6839)
-            $parts = explode('+', $mediaType);
-            if (count($parts) >= 2) {
-                $mediaType = 'application/' . $parts[count($parts) - 1];
-            }
-        }
+        // Invoke the parser
+        /** @var mixed $parsed */
+        $parsed = call_user_func(
+            $negotiationResult->getHandler(),
+            (string)$request->getBody()
+        );
 
-        if (isset($this->bodyParsers[$mediaType])) {
-            $body = (string)$request->getBody();
-            $parsed = $this->bodyParsers[$mediaType]($body);
-
-            if ($parsed !== null && !is_object($parsed) && !is_array($parsed)) {
-                throw new RuntimeException(
-                    'Request body media type parser return value must be an array, an object, or null'
-                );
-            }
-
+        if ($parsed === null || is_object($parsed) || is_array($parsed)) {
             return $parsed;
         }
 
-        return null;
-    }
-
-    /**
-     * @return string|null The serverRequest media type, minus content-type params
-     */
-    private function getMediaType(ServerRequestInterface $request): ?string
-    {
-        $contentType = $request->getHeader('Content-Type')[0] ?? null;
-
-        if (is_string($contentType) && trim($contentType) !== '') {
-            $contentTypeParts = explode(';', $contentType);
-
-            return strtolower(trim($contentTypeParts[0]));
-        }
-
-        return null;
+        throw new RuntimeException(
+            'Request body media type parser return value must be an array, an object, or null'
+        );
     }
 }

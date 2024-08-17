@@ -16,48 +16,46 @@ use Slim\Interfaces\ContentNegotiatorInterface;
 use Slim\Interfaces\MediaTypeFormatterInterface;
 use UnexpectedValueException;
 
-use function explode;
-use function strtolower;
-
 /**
  * This handler determines the response based on the media type (mime)
  * specified in the HTTP request `Accept` header.
- *
- * Output formats: JSON, HTML, XML, or Plain Text.
  */
 final class ContentNegotiator implements ContentNegotiatorInterface
 {
     private ContainerResolverInterface $resolver;
 
-    private array $formatters;
+    private MediaTypeDetector $mediaTypeDetector;
 
-    public function __construct(ContainerResolverInterface $resolver)
+    private array $handlers;
+
+    public function __construct(ContainerResolverInterface $resolver, MediaTypeDetector $mediaTypeDetector)
     {
         $this->resolver = $resolver;
+        $this->mediaTypeDetector = $mediaTypeDetector;
     }
 
     public function negotiate(ServerRequestInterface $request): ContentNegotiationResult
     {
-        if (empty($this->formatters)) {
-            throw new UnexpectedValueException('There is no content negotiation formatter defined');
+        if (empty($this->handlers)) {
+            throw new UnexpectedValueException('There is no content negotiation handler defined');
         }
 
         $mediaType = $this->negotiateMediaType($request);
-        $renderer = $this->negotiateFormatter($mediaType);
+        $handler = $this->negotiateHandler($mediaType);
 
-        return new ContentNegotiationResult($mediaType, $renderer);
+        return new ContentNegotiationResult($mediaType, $handler);
     }
 
-    public function setFormatter(string $mediaType, MediaTypeFormatterInterface|callable|string $handler): self
+    public function setHandler(string $mediaType, MediaTypeFormatterInterface|callable|string $handler): self
     {
-        $this->formatters[$mediaType] = $handler;
+        $this->handlers[$mediaType] = $handler;
 
         return $this;
     }
 
     public function clearFormatters(): self
     {
-        $this->formatters = [];
+        $this->handlers = [];
 
         return $this;
     }
@@ -69,16 +67,10 @@ final class ContentNegotiator implements ContentNegotiatorInterface
      */
     private function negotiateMediaType(ServerRequestInterface $request): string
     {
-        $formatterTypes = array_keys($this->formatters);
-
-        $mediaTypes = $this->parseAcceptHeader($request->getHeaderLine('Accept'));
-
-        if (!$mediaTypes) {
-            $mediaTypes = $this->parseContentType($request->getHeaderLine('Content-Type'));
-        }
+        $mediaTypes = $this->mediaTypeDetector->detect($request);
 
         // Use the order of definitions
-        foreach ($formatterTypes as $mediaType) {
+        foreach (array_keys($this->handlers) as $mediaType) {
             if (isset($mediaTypes[$mediaType])) {
                 return $mediaType;
             }
@@ -88,51 +80,22 @@ final class ContentNegotiator implements ContentNegotiatorInterface
         foreach ($mediaTypes as $type) {
             if (preg_match('/\+(json|xml)/', $type, $matches)) {
                 $mediaType = 'application/' . $matches[1];
-                if (isset($formatterTypes[$mediaType])) {
+                if (isset($this->handlers[$mediaType])) {
                     return $mediaType;
                 }
             }
         }
 
-        return reset($formatterTypes);
+        return (string)array_key_first($this->handlers);
     }
 
     /**
      * Determine which renderer to use based on media type.
      */
-    private function negotiateFormatter(string $mediaType): callable
+    private function negotiateHandler(string $mediaType): callable
     {
-        $formatter = $this->formatters[$mediaType] ?? reset($this->formatters);
+        $formatter = $this->handlers[$mediaType] ?? reset($this->handlers);
 
         return $this->resolver->resolveCallable($formatter);
-    }
-
-    private function parseAcceptHeader(string $accept = null): array
-    {
-        $acceptTypes = $accept ? explode(',', $accept) : [];
-
-        // Normalize types
-        $cleanTypes = [];
-        foreach ($acceptTypes as $type) {
-            $tokens = explode(';', $type);
-            $name = trim(strtolower(reset($tokens)));
-            $cleanTypes[$name] = $name;
-        }
-
-        return $cleanTypes;
-    }
-
-    private function parseContentType(string $contentType = null): array
-    {
-        $parts = explode(';', $contentType ?? '');
-
-        // @phpstan-ignore-next-line
-        if (!$parts) {
-            return [];
-        }
-
-        $name = strtolower(trim($parts[0]));
-
-        return [$name => $name];
     }
 }

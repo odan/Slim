@@ -11,7 +11,10 @@ declare(strict_types=1);
 namespace Slim\Tests\Emitter;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use ReflectionClass;
+use Slim\Builder\AppBuilder;
 use Slim\Emitter\ResponseEmitter;
 use Slim\Tests\Mocks\MockStream;
 use Slim\Tests\Mocks\SlowPokeStream;
@@ -174,7 +177,12 @@ final class ResponseEmitterTest extends TestCase
 
     public function testIsResponseEmptyWithNonEmptyBodyAndTriggeringStatusCode(): void
     {
-        $body = $this->createStream('Hello');
+        $app = (new AppBuilder())->build();
+
+        $body = $app->getContainer()
+            ->get(StreamFactoryInterface::class)
+            ->createStream('Hello');
+
         $response = $this
             ->createResponse(204)
             ->withBody($body);
@@ -185,10 +193,17 @@ final class ResponseEmitterTest extends TestCase
 
     public function testIsResponseEmptyDoesNotReadAllDataFromNonEmptySeekableResponse(): void
     {
-        $body = $this->createStream('Hello');
-        $response = $this
-            ->createResponse(200)
+        $app = (new AppBuilder())->build();
+
+        $body = $app->getContainer()
+            ->get(StreamFactoryInterface::class)
+            ->createStream('Hello');
+
+        $response = $app->getContainer()
+            ->get(ResponseFactoryInterface::class)
+            ->createResponse()
             ->withBody($body);
+
         $responseEmitter = new ResponseEmitter();
 
         $responseEmitter->isResponseEmpty($response);
@@ -234,10 +249,17 @@ final class ResponseEmitterTest extends TestCase
 
     public function testIsResponseEmptyWithZeroAsBody(): void
     {
-        $body = $this->createStream('0');
-        $response = $this
-            ->createResponse(200)
+        $app = (new AppBuilder())->build();
+
+        $body = $app->getContainer()
+            ->get(StreamFactoryInterface::class)
+            ->createStream('0');
+
+        $response = $app->getContainer()
+            ->get(ResponseFactoryInterface::class)
+            ->createResponse()
             ->withBody($body);
+
         $responseEmitter = new ResponseEmitter();
 
         $this->assertFalse($responseEmitter->isResponseEmpty($response));

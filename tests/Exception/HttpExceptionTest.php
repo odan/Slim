@@ -11,7 +11,9 @@ declare(strict_types=1);
 namespace Slim\Tests\Exception;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Builder\AppBuilder;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Tests\Traits\AppTestTrait;
@@ -27,7 +29,12 @@ final class HttpExceptionTest extends TestCase
 
     public function testHttpExceptionRequestReponseGetterSetters()
     {
-        $request = $this->createServerRequest('GET', '/');
+        $app = (new AppBuilder())->build();
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
         $exception = new HttpNotFoundException($request);
 
         $this->assertInstanceOf(ServerRequestInterface::class, $exception->getRequest());
@@ -35,7 +42,11 @@ final class HttpExceptionTest extends TestCase
 
     public function testHttpExceptionAttributeGettersSetters()
     {
-        $request = $this->createServerRequest('GET', '/');
+        $app = (new AppBuilder())->build();
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
 
         $exception = new HttpNotFoundException($request);
         $exception->setTitle('Title');
@@ -47,7 +58,11 @@ final class HttpExceptionTest extends TestCase
 
     public function testHttpNotAllowedExceptionGetAllowedMethods()
     {
-        $request = $this->createServerRequest('GET', '/');
+        $app = (new AppBuilder())->build();
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
 
         $exception = new HttpMethodNotAllowedException($request);
         $exception->setAllowedMethods(['GET']);

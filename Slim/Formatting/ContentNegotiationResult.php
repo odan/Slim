@@ -10,18 +10,17 @@ declare(strict_types=1);
 
 namespace Slim\Formatting;
 
-use Slim\Interfaces\MediaTypeFormatterInterface;
-
 final class ContentNegotiationResult
 {
     private string $mediaType;
 
-    private MediaTypeFormatterInterface $formatter;
+    /** @var callable */
+    private $handler;
 
-    public function __construct(string $contentType, MediaTypeFormatterInterface $formatter)
+    public function __construct(string $contentType, callable $handler)
     {
         $this->mediaType = $contentType;
-        $this->formatter = $formatter;
+        $this->handler = $handler;
     }
 
     public function getMediaType(): string
@@ -29,8 +28,8 @@ final class ContentNegotiationResult
         return $this->mediaType;
     }
 
-    public function getFormatter(): MediaTypeFormatterInterface
+    public function getHandler(): callable
     {
-        return $this->formatter;
+        return $this->handler;
     }
 }
