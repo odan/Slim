@@ -43,9 +43,11 @@ final class ErrorHandlingMiddleware implements MiddlewareInterface
             }
         );
 
-        $response = $handler->handle($request);
-
-        restore_error_handler();
+        try {
+            $response = $handler->handle($request);
+        } finally {
+            restore_error_handler();
+        }
 
         return $response;
     }
