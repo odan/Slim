@@ -32,6 +32,7 @@ class HeadMethodMiddlewareTest extends TestCase
         // Set up a route that returns a non-empty body
         $app->get('/test', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('This is the body content');
+
             return $response;
         });
 
@@ -56,6 +57,7 @@ class HeadMethodMiddlewareTest extends TestCase
         // Set up a route that returns a non-empty body
         $app->get('/test', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('This is the body content');
+
             return $response;
         });
 

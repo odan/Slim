@@ -77,7 +77,7 @@ class ResponseFactoryMiddlewareTest extends TestCase
         $expectedResponse->getBody()->write('Expected Response');
 
         // Mock the ResponseFactoryInterface to always return the expected response
-        $responseFactory = new class($expectedResponse) implements ResponseFactoryInterface {
+        $responseFactory = new class ($expectedResponse) implements ResponseFactoryInterface {
             private ResponseInterface $response;
 
             public function __construct(ResponseInterface $response)
