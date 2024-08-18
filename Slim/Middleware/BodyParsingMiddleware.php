@@ -47,8 +47,8 @@ final class BodyParsingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param string $mediaType a HTTP media type (excluding content-type params)
-     * @param callable $callable a callable that returns parsed contents for media type
+     * @param string $mediaType The HTTP media type (excluding content-type params)
+     * @param callable $callable The callable that returns parsed contents for media type
      */
     public function registerBodyParser(string $mediaType, callable $callable): self
     {
@@ -59,8 +59,8 @@ final class BodyParsingMiddleware implements MiddlewareInterface
 
     public function registerDefaultBodyParsers(): void
     {
-        $this->registerBodyParser('application/json', static function ($input) {
-            $result = json_decode($input, true);
+        $this->registerBodyParser('application/json', function ($input) {
+            $result = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
 
             if (!is_array($result)) {
                 return null;
@@ -75,7 +75,6 @@ final class BodyParsingMiddleware implements MiddlewareInterface
             return $data;
         });
 
-        $self = $this;
         $xmlCallable = function ($input) {
             $backup_errors = libxml_use_internal_errors(true);
             $result = simplexml_load_string($input);
@@ -99,7 +98,6 @@ final class BodyParsingMiddleware implements MiddlewareInterface
         $negotiationResult = $this->contentNegotiator->negotiate($request);
 
         // Invoke the parser
-        /** @var mixed $parsed */
         $parsed = call_user_func(
             $negotiationResult->getHandler(),
             (string)$request->getBody()
