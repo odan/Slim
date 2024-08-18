@@ -6,7 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
 /**
- * A simple utility class for rendering JSON responses.
+ * A utility class for rendering JSON responses.
  * It also sets the appropriate `Content-Type` header for JSON responses.
  *
  * Example usage:
