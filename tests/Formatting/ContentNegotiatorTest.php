@@ -138,7 +138,7 @@ class ContentNegotiatorTest extends TestCase
             [
                 'text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8',
                 'application/xml',
-                'xml_handler'
+                'xml_handler',
             ],
             ['application/json', 'application/json', 'json_handler'],
             ['multipart/form-data; boundary=ExampleBoundaryString', 'application/json', 'json_handler'],
