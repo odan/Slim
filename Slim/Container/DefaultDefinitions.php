@@ -41,11 +41,9 @@ use Slim\Interfaces\ContentNegotiatorInterface;
 use Slim\Interfaces\EmitterInterface;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
-use Slim\Logging\StdErrorLogger;
-use Slim\Logging\StdOutLogger;
+use Slim\Logging\StdLogger;
 use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ExceptionHandlingMiddleware;
-use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
 use Slim\Strategies\RequestResponse;
@@ -251,9 +249,6 @@ final class DefaultDefinitions
                 return $negotiator;
             },
             // Middleware
-            ExceptionLoggingMiddleware::class => function () {
-                return new ExceptionLoggingMiddleware(new StdErrorLogger());
-            },
             BodyParsingMiddleware::class => function (ContainerInterface $container) {
                 $negotiator = $container->get(ContentNegotiatorInterface::class);
                 $middleware = new BodyParsingMiddleware($negotiator);
@@ -263,7 +258,7 @@ final class DefaultDefinitions
             },
             // Logging
             LoggerInterface::class => function () {
-                return new StdOutLogger();
+                return new StdLogger();
             },
         ];
     }
