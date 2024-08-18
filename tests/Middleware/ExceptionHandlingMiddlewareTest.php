@@ -135,7 +135,7 @@ final class ExceptionHandlingMiddlewareTest extends TestCase
 
         $expected = [
             'type' => 'urn:ietf:rfc:7807',
-            'title' => 'Slim Application Error',
+            'title' => 'Application Error',
             'status' => 500,
         ];
         $this->assertJsonResponse($expected, $response);
@@ -163,7 +163,7 @@ final class ExceptionHandlingMiddlewareTest extends TestCase
 
         $actual = json_decode((string)$response->getBody(), true);
         $this->assertSame('urn:ietf:rfc:7807', $actual['type']);
-        $this->assertSame('Slim Application Error', $actual['title']);
+        $this->assertSame('Application Error', $actual['title']);
         $this->assertSame(500, $actual['status']);
         $this->assertSame('A website error has occurred. Sorry for the temporary inconvenience.', $actual['detail']);
         $this->assertSame(1, count($actual['exceptions']));
