@@ -103,7 +103,7 @@ final class HtmlMediaTypeFormatter implements MediaTypeFormatterInterface
             '</html>',
             $this->escapeHtml($title),
             $this->escapeHtml($title),
-            $this->escapeHtml($html)
+            $html
         );
     }
 
