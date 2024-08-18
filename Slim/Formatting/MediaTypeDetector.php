@@ -59,6 +59,6 @@ final class MediaTypeDetector
 
         $name = strtolower(trim($parts[0]));
 
-        return [$name => $name];
+        return $name ? [$name => $name]: [];
     }
 }
