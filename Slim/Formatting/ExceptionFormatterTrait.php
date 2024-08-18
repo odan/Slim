@@ -15,7 +15,7 @@ use Throwable;
 
 trait ExceptionFormatterTrait
 {
-    private string $defaultErrorTitle = 'Slim Application Error';
+    private string $defaultErrorTitle = 'Application Error';
 
     private string $defaultErrorDescription = 'A website error has occurred. Sorry for the temporary inconvenience.';
 
