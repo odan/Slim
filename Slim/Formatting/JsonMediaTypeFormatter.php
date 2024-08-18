@@ -48,19 +48,6 @@ final class JsonMediaTypeFormatter implements MediaTypeFormatterInterface
         return $this;
     }
 
-    /**
-     * Set options for JSON encoding
-     *
-     * @see https://php.net/manual/function.json-encode.php
-     * @see https://php.net/manual/json.constants.php
-     */
-    public function setJsonOptions(int $options): self
-    {
-        $this->jsonRenderer->setJsonOptions($options);
-
-        return $this;
-    }
-
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
