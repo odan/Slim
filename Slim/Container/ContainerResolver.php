@@ -30,12 +30,9 @@ final class ContainerResolver implements ContainerResolverInterface
 {
     private ContainerInterface $container;
 
-    // private \Invoker\CallableResolver $resolver;
-
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        //   $this->resolver = new \Invoker\CallableResolver($container);
     }
 
     /**
