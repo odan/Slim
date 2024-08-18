@@ -45,6 +45,7 @@ class ContentNegotiatorTest extends TestCase
             ->createServerRequest('GET', '/');
 
         $negotiator = $app->getContainer()->get(ContentNegotiator::class);
+        $negotiator->clearHandlers();
 
         // Define a handler and associate it with a media type
         $handler = function () {
