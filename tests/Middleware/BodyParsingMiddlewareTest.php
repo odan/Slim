@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Middleware;
 
+use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -112,11 +113,6 @@ final class BodyParsingMiddlewareTest extends TestCase
                 '<person><name>John</name></person>',
                 simplexml_load_string('<person><name>John</name></person>'),
             ],
-            'invalid-json' => [
-                'application/json;charset=utf8',
-                '{"foo"}/bar',
-                null,
-            ],
             'valid-json-but-not-an-array' => [
                 'application/json;charset=utf8',
                 '"foo bar"',
@@ -152,6 +148,52 @@ final class BodyParsingMiddlewareTest extends TestCase
                 'text/xml',
                 '<person><name>John</name></invalid>',
                 null,
+            ],
+        ];
+    }
+
+    #[DataProvider('parsingInvalidJsonProvider')]
+    public function testParsingInvalidJson($contentType, $body)
+    {
+        $this->expectException(JsonException::class);
+
+        $builder = new AppBuilder();
+
+        // Replace or change the PSR-17 factory because slim/http has its own parser
+        $builder->setDefinitions(
+            [
+                ServerRequestFactoryInterface::class => function (ContainerInterface $container) {
+                    return $container->get(SlimPsr17Factory::class);
+                },
+            ]
+        );
+        $app = $builder->build();
+
+        $middlewares = [
+            $app->getContainer()->get(BodyParsingMiddleware::class),
+        ];
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('POST', '/')
+            ->withHeader('Accept', $contentType)
+            ->withHeader('Content-Type', $contentType);
+
+        $request->getBody()->write($body);
+
+        (new Runner($middlewares))->handle($request);
+    }
+
+    public static function parsingInvalidJsonProvider(): array
+    {
+        return [
+            'invalid-json' => [
+                'application/json;charset=utf8',
+                '{"foo"}/bar',
+            ],
+            'invalid-json-2' => [
+                'application/json',
+                '{',
             ],
         ];
     }
