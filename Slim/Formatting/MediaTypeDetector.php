@@ -51,13 +51,7 @@ final class MediaTypeDetector
     private function parseContentType(string $contentType = null): array
     {
         $parts = explode(';', $contentType ?? '');
-
-        // @phpstan-ignore-next-line
-        if (!$parts) {
-            return [];
-        }
-
-        $name = strtolower(trim($parts[0]));
+        $name = strtolower(trim($parts[0] ?? ''));
 
         return $name ? [$name => $name] : [];
     }
