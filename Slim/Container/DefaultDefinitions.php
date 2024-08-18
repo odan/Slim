@@ -239,7 +239,7 @@ final class DefaultDefinitions
                 $negotiator = $container->get(ContentNegotiator::class);
 
                 $negotiator
-                    ->clearFormatters()
+                    ->clearHandlers()
                     ->setHandler('application/json', JsonMediaTypeFormatter::class)
                     ->setHandler('text/html', HtmlMediaTypeFormatter::class)
                     ->setHandler('application/xhtml+xml', HtmlMediaTypeFormatter::class)

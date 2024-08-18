@@ -53,7 +53,7 @@ final class ContentNegotiator implements ContentNegotiatorInterface
         return $this;
     }
 
-    public function clearFormatters(): self
+    public function clearHandlers(): self
     {
         $this->handlers = [];
 
