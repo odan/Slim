@@ -32,7 +32,7 @@ class JsonMediaTypeFormatterTest extends TestCase
         $formatter = $app->getContainer()->get(JsonMediaTypeFormatter::class);
         $result = $formatter($request, $response, $exception, true);
 
-        $this->assertEquals('application/json', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('application/problem+json', $result->getHeaderLine('Content-Type'));
 
         $json = (string)$result->getBody();
         $data = json_decode($json, true);
@@ -63,7 +63,7 @@ class JsonMediaTypeFormatterTest extends TestCase
         $formatter = $app->getContainer()->get(JsonMediaTypeFormatter::class);
         $result = $formatter($request, $response, $exception, false);
 
-        $this->assertEquals('application/json', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('application/problem+json', $result->getHeaderLine('Content-Type'));
 
         $json = (string)$result->getBody();
         $data = json_decode($json, true);
