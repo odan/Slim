@@ -17,10 +17,69 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Builder\AppBuilder;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\RoutingMiddleware;
+use Slim\Routing\Route;
 use Slim\Routing\RouteContext;
+use Slim\Routing\RoutingResults;
 
 class RoutingResultsTest extends TestCase
 {
+    public function testConstructAndGetters(): void
+    {
+        $route = new Route(['GET'], '/test', function () {
+        });
+
+        // Define test parameters
+        $status = RoutingResults::FOUND;
+        $method = 'GET';
+        $uri = '/test';
+        $routeArguments = ['arg1' => 'value1'];
+        $allowedMethods = ['GET', 'POST'];
+
+        // Create RoutingResults instance
+        $routingResults = new RoutingResults(
+            $status,
+            $route,
+            $method,
+            $uri,
+            $routeArguments,
+            $allowedMethods
+        );
+
+        $this->assertSame($status, $routingResults->getRouteStatus());
+        $this->assertSame($route, $routingResults->getRoute());
+        $this->assertSame($method, $routingResults->getMethod());
+        $this->assertSame($uri, $routingResults->getUri());
+        $this->assertSame($routeArguments, $routingResults->getRouteArguments());
+        $this->assertSame($allowedMethods, $routingResults->getAllowedMethods());
+    }
+
+    public function testGettersWithNullRoute(): void
+    {
+        // Define test parameters with null route
+        $status = RoutingResults::NOT_FOUND;
+        $method = 'POST';
+        $uri = '/not-found';
+        $routeArguments = [];
+        $allowedMethods = ['GET'];
+
+        // Create RoutingResults instance with null route
+        $routingResults = new RoutingResults(
+            $status,
+            null,
+            $method,
+            $uri,
+            $routeArguments,
+            $allowedMethods
+        );
+
+        $this->assertSame($status, $routingResults->getRouteStatus());
+        $this->assertNull($routingResults->getRoute());
+        $this->assertSame($method, $routingResults->getMethod());
+        $this->assertSame($uri, $routingResults->getUri());
+        $this->assertSame($routeArguments, $routingResults->getRouteArguments());
+        $this->assertSame($allowedMethods, $routingResults->getAllowedMethods());
+    }
+
     public function testRoutingArgumentsFromRouteContext(): void
     {
         $app = (new AppBuilder())->build();
