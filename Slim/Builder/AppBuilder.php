@@ -39,7 +39,7 @@ final class AppBuilder
 
     public function __construct()
     {
-        $this->setDefinitions(new DefaultDefinitions());
+        $this->setDefinitions(DefaultDefinitions::class);
     }
 
     // Set up Slim with the DI container
@@ -56,11 +56,12 @@ final class AppBuilder
             : new Container($this->definitions);
     }
 
-    public function setDefinitions(array|callable $definitions): self
+    public function setDefinitions(array|string $definitions): self
     {
-        if (is_callable($definitions)) {
-            $definitions = (array)$definitions();
+        if (is_string($definitions)) {
+            $definitions = (array)call_user_func(new $definitions());
         }
+
         $this->definitions = array_merge($this->definitions, $definitions);
 
         return $this;

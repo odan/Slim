@@ -21,6 +21,7 @@ use RuntimeException;
 use Slim\App;
 use Slim\Builder\AppBuilder;
 use Slim\Container\DefaultDefinitions;
+use Slim\Container\HttpDefinitions;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
@@ -146,7 +147,9 @@ final class AppTest extends TestCase
 
     public function testGetContainer(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $definitions = (new DefaultDefinitions())->__invoke();
+        $definitions = array_merge($definitions, (new HttpDefinitions())->__invoke());
+        $container = new Container($definitions);
 
         $builder = new AppBuilder();
         $builder->setContainerFactory(function () use ($container) {

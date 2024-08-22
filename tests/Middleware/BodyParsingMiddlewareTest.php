@@ -22,7 +22,11 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use Slim\Builder\AppBuilder;
-use Slim\Factory\Psr17\SlimPsr17Factory;
+use Slim\Container\GuzzleDefinitions;
+use Slim\Container\HttpSoftDefinitions;
+use Slim\Container\NyholmDefinitions;
+use Slim\Container\SlimHttpDefinitions;
+use Slim\Container\SlimPsr7Definitions;
 use Slim\Interfaces\ContentNegotiatorInterface;
 use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ResponseFactoryMiddleware;
@@ -41,13 +45,7 @@ final class BodyParsingMiddlewareTest extends TestCase
         $builder = new AppBuilder();
 
         // Replace or change the PSR-17 factory because slim/http has its own parser
-        $builder->setDefinitions(
-            [
-                ServerRequestFactoryInterface::class => function (ContainerInterface $container) {
-                    return $container->get(SlimPsr17Factory::class);
-                },
-            ]
-        );
+        $builder->setDefinitions(NyholmDefinitions::class);
         $app = $builder->build();
 
         $responseFactory = $app->getContainer()->get(ResponseFactoryMiddleware::class);
@@ -160,13 +158,7 @@ final class BodyParsingMiddlewareTest extends TestCase
         $builder = new AppBuilder();
 
         // Replace or change the PSR-17 factory because slim/http has its own parser
-        $builder->setDefinitions(
-            [
-                ServerRequestFactoryInterface::class => function (ContainerInterface $container) {
-                    return $container->get(SlimPsr17Factory::class);
-                },
-            ]
-        );
+        $builder->setDefinitions(SlimPsr7Definitions::class);
         $app = $builder->build();
 
         $middlewares = [
@@ -203,11 +195,9 @@ final class BodyParsingMiddlewareTest extends TestCase
         $builder = new AppBuilder();
 
         // Replace or change the PSR-17 factory because slim/http has its own parser
+        $builder->setDefinitions(SlimHttpDefinitions::class);
         $builder->setDefinitions(
             [
-                ServerRequestFactoryInterface::class => function (ContainerInterface $container) {
-                    return $container->get(SlimPsr17Factory::class);
-                },
                 BodyParsingMiddleware::class => function (ContainerInterface $container) {
                     $negotiator = $container->get(ContentNegotiatorInterface::class);
                     $middleware = new BodyParsingMiddleware($negotiator);
@@ -244,28 +234,36 @@ final class BodyParsingMiddlewareTest extends TestCase
         $this->assertSame(['data' => ['foo' => 'bar']], json_decode((string)$response->getBody(), true));
     }
 
-    public function testParsingFailsWhenAnInvalidTypeIsReturned()
+    public static function nonDecoratedHttpDefinitionsProvider(): array
+    {
+        return [
+            // Note: The slim/http package has its own body parser, so this middleware will not be used.
+            // So SlimHttpDefinitions::class will not fail here, because the body parser will not be executed.
+            [SlimPsr7Definitions::class],
+            [SlimPsr7Definitions::class],
+            [NyholmDefinitions::class],
+            [GuzzleDefinitions::class],
+            [HttpSoftDefinitions::class],
+        ];
+    }
+
+    #[DataProvider('nonDecoratedHttpDefinitionsProvider')]
+    public function testParsingFailsWhenAnInvalidTypeIsReturned(string $definitions)
     {
         $this->expectException(RuntimeException::class);
 
-        // Note: If slim/http is installed then this middleware, then getParsedBody is already filled!!!
-        // So this should be tested with different psr-7 packages
-
         $builder = new AppBuilder();
+        $builder->setDefinitions($definitions);
 
-        // Replace or change the PSR-17 factory because slim/http has its own parser
         $builder->setDefinitions(
             [
-                ServerRequestFactoryInterface::class => function (ContainerInterface $container) {
-                    return $container->get(SlimPsr17Factory::class);
-                },
                 BodyParsingMiddleware::class => function (ContainerInterface $container) {
                     $negotiator = $container->get(ContentNegotiatorInterface::class);
                     $middleware = new BodyParsingMiddleware($negotiator);
 
-                    // $middleware->registerDefaultBodyParsers();
-                    $middleware->registerBodyParser('application/json', function ($input) {
-                        return 10; // invalid - should return null, array or object
+                    $middleware->registerBodyParser('application/json', function () {
+                        // invalid - should return null, array or object
+                        return 10;
                     });
 
                     return $middleware;

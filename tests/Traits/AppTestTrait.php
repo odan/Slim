@@ -17,6 +17,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Slim\App;
 use Slim\Builder\AppBuilder;
+use Slim\Container\NyholmDefinitions;
+use Slim\Container\SlimHttpDefinitions;
+use Slim\Container\SlimPsr7Definitions;
 use Slim\Interfaces\ContainerResolverInterface;
 
 trait AppTestTrait
@@ -75,5 +78,15 @@ trait AppTestTrait
             new IsIdentical($expected),
             $message,
         );
+    }
+
+    public static function httpDefinitionsProvider(): array
+    {
+        return [
+            [SlimHttpDefinitions::class],
+            [SlimPsr7Definitions::class],
+            [SlimPsr7Definitions::class],
+            [NyholmDefinitions::class],
+        ];
     }
 }

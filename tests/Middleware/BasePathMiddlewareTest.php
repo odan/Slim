@@ -12,10 +12,11 @@ namespace Slim\Tests\Middleware;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 use Slim\Builder\AppBuilder;
-use Slim\Http\Interfaces\ResponseInterface;
 use Slim\Middleware\BasePathMiddleware;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\RoutingMiddleware;
@@ -124,7 +125,7 @@ final class BasePathMiddlewareTest extends TestCase
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
 
-        $app->get('/', function ($request, ResponseInterface $response) {
+        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
             $basePath = $this->get(App::class)->getBasePath();
             $response->getBody()->write('basePath: ' . $basePath);
 
