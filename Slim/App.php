@@ -37,7 +37,7 @@ use Slim\Routing\Router;
  *
  * @api
  */
-final class App implements RouteCollectionInterface, MiddlewareCollectionInterface
+class App implements RouteCollectionInterface, MiddlewareCollectionInterface
 {
     use MiddlewareAwareTrait;
     use RouteCollectionTrait;
