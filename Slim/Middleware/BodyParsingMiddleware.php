@@ -68,7 +68,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
         return $this;
     }
 
-    public function registerDefaultBodyParsers(): void
+    public function registerDefaultBodyParsers(): self
     {
         $this->registerBodyParser('application/json', function ($input) {
             $result = json_decode($input, true);
@@ -102,6 +102,8 @@ final class BodyParsingMiddleware implements MiddlewareInterface
 
         $this->registerBodyParser('application/xml', $xmlCallable);
         $this->registerBodyParser('text/xml', $xmlCallable);
+
+        return $this;
     }
 
     private function parseBody(ServerRequestInterface $request): array|object|null
@@ -124,7 +126,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
         }
 
         throw new RuntimeException(
-            'Request body media type parser return value must be an array, an object, or null'
+            'Request body media type parser return value must be an array, an object, or null.'
         );
     }
 }

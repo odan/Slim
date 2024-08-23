@@ -37,6 +37,7 @@ final class DefaultDefinitionsTest extends TestCase
         $settings = $container->get('settings');
         $expected = [
             'display_error_details' => false,
+            'log_error_details' => false,
         ];
 
         $this->assertSame($expected, $settings);

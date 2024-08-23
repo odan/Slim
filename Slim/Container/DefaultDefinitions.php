@@ -31,6 +31,7 @@ use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
 use Slim\Logging\StdLogger;
 use Slim\Middleware\BodyParsingMiddleware;
+use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
 use Slim\Strategies\RequestResponse;
@@ -59,6 +60,7 @@ final class DefaultDefinitions
             // Configuration
             'settings' => [
                 'display_error_details' => false,
+                'log_error_details' => false,
             ],
             // Slim application
             App::class => function (ContainerInterface $container) {
@@ -107,13 +109,27 @@ final class DefaultDefinitions
                     ->setHandler('text/xml', XmlErrorFormatter::class)
                     ->setHandler('text/plain', PlainTextErrorFormatter::class);
             },
+
+            ExceptionLoggingMiddleware::class => function (ContainerInterface $container) {
+                // Default logger
+                $logger = $container->get(LoggerInterface::class);
+                $middleware = new ExceptionLoggingMiddleware($logger);
+
+                // Read settings
+                $logErrorDetails = false;
+                if ($container->has('settings')) {
+                    $logErrorDetails = (bool)($container->get('settings')['log_error_details'] ?? false);
+                }
+
+                return $middleware->setLogErrorDetails($logErrorDetails);
+            },
             BodyParsingMiddleware::class => function (ContainerInterface $container) {
                 $mediaTypeDetector = $container->get(MediaTypeDetector::class);
                 $middleware = new BodyParsingMiddleware($mediaTypeDetector);
-                $middleware->setDefaultMediaType('text/html');
-                $middleware->registerDefaultBodyParsers();
 
-                return $middleware;
+                return $middleware
+                    ->setDefaultMediaType('text/html')
+                    ->registerDefaultBodyParsers();
             },
             LoggerInterface::class => function () {
                 return new StdLogger();

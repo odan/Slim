@@ -33,14 +33,17 @@ class ExceptionLoggingMiddlewareTest extends TestCase
         $app = (new AppBuilder())->build();
 
         $logger = new TestLogger();
-        $app->add(new ExceptionLoggingMiddleware($logger));
+
+        $middleware = new ExceptionLoggingMiddleware($logger);
+        $middleware->setLogErrorDetails(true);
+        $app->add($middleware);
+
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
 
         // Set up a route that throws an ErrorException
         $app->get('/error', function (ServerRequestInterface $request, ResponseInterface $response) {
             throw new ErrorException('This is an error', 0, E_ERROR);
-            // trigger_error('This is an error', E_USER_ERROR);
         });
 
         $request = $app->getContainer()
@@ -68,7 +71,11 @@ class ExceptionLoggingMiddlewareTest extends TestCase
         $app = (new AppBuilder())->build();
 
         $logger = new TestLogger();
-        $app->add(new ExceptionLoggingMiddleware($logger));
+
+        $middleware = new ExceptionLoggingMiddleware($logger);
+        $middleware->setLogErrorDetails(true);
+        $app->add($middleware);
+
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
 
@@ -102,8 +109,11 @@ class ExceptionLoggingMiddlewareTest extends TestCase
 
         $logger = new TestLogger();
         $app->add(ErrorHandlingMiddleware::class);
-        // $app->add(ExceptionHandlingMiddleware::class);
-        $app->add(new ExceptionLoggingMiddleware($logger));
+
+        $middleware = new ExceptionLoggingMiddleware($logger);
+        $middleware->setLogErrorDetails(true);
+
+        $app->add($middleware);
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
 
