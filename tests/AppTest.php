@@ -28,6 +28,7 @@ use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
 use Slim\Middleware\BasePathMiddleware;
 use Slim\Middleware\BodyParsingMiddleware;
+use Slim\Middleware\ContentLengthMiddleware;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\ErrorHandlingMiddleware;
 use Slim\Middleware\ExceptionHandlingMiddleware;
@@ -51,68 +52,6 @@ use function strtolower;
 final class AppTest extends TestCase
 {
     use AppTestTrait;
-
-    public function testApp5(): void
-    {
-        $this->markTestSkipped();
-        $builder = new AppBuilder();
-        $builder->setSettings(['display_error_details' => true]);
-
-        $app = $builder->build();
-
-        $app->add(BasePathMiddleware::class);
-        $app->add(RoutingMiddleware::class);
-        $app->add(RoutingArgumentsMiddleware::class);
-        $app->add(BodyParsingMiddleware::class);
-        $app->add(ErrorHandlingMiddleware::class);
-        $app->add(ExceptionHandlingMiddleware::class);
-        $app->add(ExceptionLoggingMiddleware::class);
-        $app->add(EndpointMiddleware::class);
-
-        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
-            // $app = $this->get(App::class);
-            // trigger_error('test', E_USER_ERROR);
-            // throw new \Exception('test');
-
-            return $response->withHeader('Content-Type', 'application/json');
-        })->add(BodyParsingMiddleware::class);
-
-        $action = new class {
-            public function __invoke($request, $response, $args)
-            {
-                return $response->withHeader('X-Test', 'action');
-            }
-        };
-
-        $app->get('/test', $action::class);
-
-        $app->get('/test2', 'classname:method');
-        $app->get('/test3', 'classname2::method');
-
-        $container = $app->getContainer();
-
-        // should return the same instance
-        $appTest = $container->get(App::class);
-        $this->assertSame($appTest, $app);
-
-        $request = $container
-            ->get(ServerRequestFactoryInterface::class)
-            ->createServerRequest('GET', '/');
-
-        $request = $request->withHeader('Accept', 'application/json,application/xml');
-
-        $response = $app->handle($request);
-
-        $this->assertSame('application/json', $response->getHeaderLine('content-type'));
-
-        $request = $app->getContainer()
-            ->get(ServerRequestFactoryInterface::class)
-            ->createServerRequest('GET', '/test');
-
-        $response = $app->handle($request);
-
-        $this->assertSame('action', $response->getHeaderLine('X-Test'));
-    }
 
     public function testAppWithExceptionAndErrorDetails(): void
     {
@@ -143,6 +82,16 @@ final class AppTest extends TestCase
         $this->assertStringContainsString($expected, (string)$response->getBody());
     }
 
+    public function testGetAppFromContainer(): void
+    {
+        $builder = new AppBuilder();
+        $app = $builder->build();
+
+        // should return the same instance
+        $actual = $app->getContainer()->get(App::class);
+        $this->assertSame($app, $actual);
+    }
+
     public function testGetContainer(): void
     {
         $definitions = (new DefaultDefinitions())->__invoke();
@@ -157,6 +106,59 @@ final class AppTest extends TestCase
         $app = $builder->build();
 
         $this->assertSame($container, $app->getContainer());
+    }
+
+    public function testAppWithMiddlewareStack(): void
+    {
+        $app = (new AppBuilder())->build();
+
+        $app->add(BasePathMiddleware::class);
+        $app->add(RoutingMiddleware::class);
+        $app->add(RoutingArgumentsMiddleware::class);
+        $app->add(BodyParsingMiddleware::class);
+        $app->add(ErrorHandlingMiddleware::class);
+        $app->add(ExceptionHandlingMiddleware::class);
+        $app->add(ExceptionLoggingMiddleware::class);
+        $app->add(EndpointMiddleware::class);
+        $app->add(ContentLengthMiddleware::class);
+
+        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
+            return $response->withHeader('X-Test', 'action');
+        })->add(BodyParsingMiddleware::class);
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
+        $response = $app->handle($request);
+
+        $this->assertSame('action', $response->getHeaderLine('X-Test'));
+    }
+
+    public function testGetWithInvokableClass(): void
+    {
+        $builder = new AppBuilder();
+        $app = $builder->build();
+
+        $app->add(RoutingMiddleware::class);
+        $app->add(EndpointMiddleware::class);
+
+        $action = new class {
+            public function __invoke($request, $response, $args)
+            {
+                return $response->withHeader('X-Test', 'action');
+            }
+        };
+
+        $app->get('/', $action::class);
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
+        $response = $app->handle($request);
+
+        $this->assertSame('action', $response->getHeaderLine('X-Test'));
     }
 
     public static function lowerCaseRequestMethodsProvider(): array
