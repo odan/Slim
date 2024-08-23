@@ -14,22 +14,13 @@ final class ContentNegotiationResult
 {
     private string $mediaType;
 
-    /** @var callable */
-    private $handler;
-
-    public function __construct(string $contentType, callable $handler)
+    public function __construct(string $contentType)
     {
         $this->mediaType = $contentType;
-        $this->handler = $handler;
     }
 
     public function getMediaType(): string
     {
         return $this->mediaType;
-    }
-
-    public function getHandler(): callable
-    {
-        return $this->handler;
     }
 }

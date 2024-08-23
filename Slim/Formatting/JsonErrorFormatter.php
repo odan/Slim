@@ -25,7 +25,7 @@ use function get_class;
  * Problem Details rfc7807:
  * https://datatracker.ietf.org/doc/html/rfc7807
  */
-final class JsonMediaTypeFormatter implements MediaTypeFormatterInterface
+final class JsonErrorFormatter implements MediaTypeFormatterInterface
 {
     use ExceptionFormatterTrait;
 

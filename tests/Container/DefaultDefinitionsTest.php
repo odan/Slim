@@ -21,7 +21,6 @@ use Slim\Container\SlimHttpDefinitions;
 use Slim\Container\SlimPsr7Definitions;
 use Slim\Emitter\ResponseEmitter;
 use Slim\Interfaces\ContainerResolverInterface;
-use Slim\Interfaces\ContentNegotiatorInterface;
 use Slim\Interfaces\EmitterInterface;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Middleware\BodyParsingMiddleware;
@@ -173,14 +172,6 @@ final class DefaultDefinitionsTest extends TestCase
         $exceptionHandlingMiddleware = $container->get(ExceptionHandlingMiddleware::class);
 
         $this->assertInstanceOf(ExceptionHandlingMiddleware::class, $exceptionHandlingMiddleware);
-    }
-
-    public function testContentNegotiatorInterface(): void
-    {
-        $container = new Container((new DefaultDefinitions())->__invoke());
-        $contentNegotiator = $container->get(ContentNegotiatorInterface::class);
-
-        $this->assertInstanceOf(ContentNegotiatorInterface::class, $contentNegotiator);
     }
 
     public function testBodyParsingMiddleware(): void

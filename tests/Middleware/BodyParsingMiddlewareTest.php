@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Middleware;
 
-use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -27,7 +26,7 @@ use Slim\Container\HttpSoftDefinitions;
 use Slim\Container\NyholmDefinitions;
 use Slim\Container\SlimHttpDefinitions;
 use Slim\Container\SlimPsr7Definitions;
-use Slim\Interfaces\ContentNegotiatorInterface;
+use Slim\Formatting\MediaTypeDetector;
 use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ResponseFactoryMiddleware;
 use Slim\RequestHandler\Runner;
@@ -101,11 +100,6 @@ final class BodyParsingMiddlewareTest extends TestCase
                 '<person><name>John</name></person>',
                 simplexml_load_string('<person><name>John</name></person>'),
             ],
-            'xml-suffix' => [
-                'application/hal+xml;charset=utf8',
-                '<person><name>John</name></person>',
-                simplexml_load_string('<person><name>John</name></person>'),
-            ],
             'text-xml' => [
                 'text/xml',
                 '<person><name>John</name></person>',
@@ -153,16 +147,16 @@ final class BodyParsingMiddlewareTest extends TestCase
     #[DataProvider('parsingInvalidJsonProvider')]
     public function testParsingInvalidJson($contentType, $body)
     {
-        $this->expectException(JsonException::class);
-
         $builder = new AppBuilder();
 
         // Replace or change the PSR-17 factory because slim/http has its own parser
         $builder->setDefinitions(SlimPsr7Definitions::class);
         $app = $builder->build();
+        $container = $app->getContainer();
 
         $middlewares = [
-            $app->getContainer()->get(BodyParsingMiddleware::class),
+            $container->get(BodyParsingMiddleware::class),
+            $container->get(ResponseFactoryMiddleware::class),
         ];
 
         $request = $app->getContainer()
@@ -173,7 +167,9 @@ final class BodyParsingMiddlewareTest extends TestCase
 
         $request->getBody()->write($body);
 
-        (new Runner($middlewares))->handle($request);
+        $response = (new Runner($middlewares))->handle($request);
+
+        $this->assertSame('', (string)$response->getBody());
     }
 
     public static function parsingInvalidJsonProvider(): array
@@ -199,8 +195,8 @@ final class BodyParsingMiddlewareTest extends TestCase
         $builder->setDefinitions(
             [
                 BodyParsingMiddleware::class => function (ContainerInterface $container) {
-                    $negotiator = $container->get(ContentNegotiatorInterface::class);
-                    $middleware = new BodyParsingMiddleware($negotiator);
+                    $mediaTypeDetector = $container->get(MediaTypeDetector::class);
+                    $middleware = new BodyParsingMiddleware($mediaTypeDetector);
                     // $middleware->registerDefaultBodyParsers();
                     $middleware->registerBodyParser('application/vnd.api+json', function ($input) {
                         return ['data' => json_decode($input, true)];
@@ -258,8 +254,8 @@ final class BodyParsingMiddlewareTest extends TestCase
         $builder->setDefinitions(
             [
                 BodyParsingMiddleware::class => function (ContainerInterface $container) {
-                    $negotiator = $container->get(ContentNegotiatorInterface::class);
-                    $middleware = new BodyParsingMiddleware($negotiator);
+                    $mediaTypeDetector = $container->get(MediaTypeDetector::class);
+                    $middleware = new BodyParsingMiddleware($mediaTypeDetector);
 
                     $middleware->registerBodyParser('application/json', function () {
                         // invalid - should return null, array or object

@@ -18,20 +18,19 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Emitter\ResponseEmitter;
-use Slim\Formatting\ContentNegotiator;
-use Slim\Formatting\HtmlMediaTypeFormatter;
-use Slim\Formatting\JsonMediaTypeFormatter;
-use Slim\Formatting\PlainTextMediaTypeFormatter;
-use Slim\Formatting\XmlMediaTypeFormatter;
+use Slim\Formatting\HtmlErrorFormatter;
+use Slim\Formatting\JsonErrorFormatter;
+use Slim\Formatting\MediaTypeDetector;
+use Slim\Formatting\PlainTextErrorFormatter;
+use Slim\Formatting\XmlErrorFormatter;
 use Slim\Handlers\ExceptionHandler;
 use Slim\Interfaces\ContainerResolverInterface;
-use Slim\Interfaces\ContentNegotiatorInterface;
 use Slim\Interfaces\EmitterInterface;
+use Slim\Interfaces\ExceptionHandlerInterface;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
 use Slim\Logging\StdLogger;
 use Slim\Middleware\BodyParsingMiddleware;
-use Slim\Middleware\ExceptionHandlingMiddleware;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
 use Slim\Strategies\RequestResponse;
@@ -85,7 +84,7 @@ final class DefaultDefinitions
             RequestHandlerInvocationStrategyInterface::class => function (ContainerInterface $container) {
                 return $container->get(RequestResponse::class);
             },
-            ExceptionHandlingMiddleware::class => function (ContainerInterface $container) {
+            ExceptionHandlerInterface::class => function (ContainerInterface $container) {
                 // Default exception handler
                 $exceptionHandler = $container->get(ExceptionHandler::class);
 
@@ -96,25 +95,22 @@ final class DefaultDefinitions
                 }
 
                 $exceptionHandler->setDisplayErrorDetails($displayErrorDetails);
+                $exceptionHandler->setDefaultMediaType('text/html');
 
-                return new ExceptionHandlingMiddleware($exceptionHandler);
-            },
-            ContentNegotiatorInterface::class => function (ContainerInterface $container) {
-                $negotiator = $container->get(ContentNegotiator::class);
-
-                $negotiator
+                return $exceptionHandler
                     ->clearHandlers()
-                    ->setHandler('application/json', JsonMediaTypeFormatter::class)
-                    ->setHandler('text/html', HtmlMediaTypeFormatter::class)
-                    ->setHandler('application/xhtml+xml', HtmlMediaTypeFormatter::class)
-                    ->setHandler('application/xml', XmlMediaTypeFormatter::class)
-                    ->setHandler('text/plain', PlainTextMediaTypeFormatter::class);
-
-                return $negotiator;
+                    ->setHandler('application/json', JsonErrorFormatter::class)
+                    ->setHandler('application/problem+json', JsonErrorFormatter::class)
+                    ->setHandler('text/html', HtmlErrorFormatter::class)
+                    ->setHandler('application/xhtml+xml', HtmlErrorFormatter::class)
+                    ->setHandler('application/xml', XmlErrorFormatter::class)
+                    ->setHandler('text/xml', XmlErrorFormatter::class)
+                    ->setHandler('text/plain', PlainTextErrorFormatter::class);
             },
             BodyParsingMiddleware::class => function (ContainerInterface $container) {
-                $negotiator = $container->get(ContentNegotiatorInterface::class);
-                $middleware = new BodyParsingMiddleware($negotiator);
+                $mediaTypeDetector = $container->get(MediaTypeDetector::class);
+                $middleware = new BodyParsingMiddleware($mediaTypeDetector);
+                $middleware->setDefaultMediaType('text/html');
                 $middleware->registerDefaultBodyParsers();
 
                 return $middleware;

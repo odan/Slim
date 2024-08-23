@@ -13,10 +13,13 @@ namespace Slim\Handlers;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpMethodNotAllowedException;
-use Slim\Interfaces\ContentNegotiatorInterface;
+use Slim\Formatting\MediaTypeDetector;
+use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\ExceptionHandlerInterface;
+use Slim\Interfaces\MediaTypeFormatterInterface;
 use Throwable;
 
 /**
@@ -29,27 +32,36 @@ final class ExceptionHandler implements ExceptionHandlerInterface
 {
     private ResponseFactoryInterface $responseFactory;
 
+    private MediaTypeDetector $mediaTypeDetector;
+
+    private ContainerResolverInterface $resolver;
+
     private bool $displayErrorDetails = false;
 
-    private ContentNegotiatorInterface $contentNegotiator;
+    private string $defaultMediaType = 'text/html';
+
+    private array $handlers = [];
 
     public function __construct(
+        ContainerResolverInterface $resolver,
         ResponseFactoryInterface $responseFactory,
-        ContentNegotiatorInterface $contentNegotiator
+        MediaTypeDetector $mediaTypeDetector
     ) {
+        $this->resolver = $resolver;
         $this->responseFactory = $responseFactory;
-        $this->contentNegotiator = $contentNegotiator;
+        $this->mediaTypeDetector = $mediaTypeDetector;
     }
 
     public function __invoke(ServerRequestInterface $request, Throwable $exception): ResponseInterface
     {
         $statusCode = $this->determineStatusCode($request, $exception);
-        $negotiationResult = $this->contentNegotiator->negotiate($request);
-        $response = $this->createResponse($statusCode, $negotiationResult->getMediaType(), $exception);
+        $mediaType = $this->negotiateMediaType($request);
+        $response = $this->createResponse($statusCode, $mediaType, $exception);
+        $handler = $this->negotiateHandler($mediaType);
 
-        // Invoke the formatter
+        // Invoke the handler (formatter)
         return call_user_func(
-            $negotiationResult->getHandler(),
+            $handler,
             $request,
             $response,
             $exception,
@@ -64,14 +76,56 @@ final class ExceptionHandler implements ExceptionHandlerInterface
         return $this;
     }
 
-    private function determineStatusCode(ServerRequestInterface $request, Throwable $exception): int
+    public function setDefaultMediaType(string $mediaType): self
     {
-        if ($request->getMethod() === 'OPTIONS') {
-            return 200;
+        $this->defaultMediaType = $mediaType;
+
+        return $this;
+    }
+
+    public function setHandler(string $mediaType, MediaTypeFormatterInterface|callable|string $handler): self
+    {
+        $this->handlers[$mediaType] = $handler;
+
+        return $this;
+    }
+
+    public function clearHandlers(): self
+    {
+        $this->handlers = [];
+
+        return $this;
+    }
+
+    private function negotiateMediaType(ServerRequestInterface $request): mixed
+    {
+        $mediaTypes = $this->mediaTypeDetector->detect($request);
+
+        return $mediaTypes[0] ?? $this->defaultMediaType;
+    }
+
+    /**
+     * Determine which handler to use based on media type.
+     */
+    private function negotiateHandler(string $mediaType): callable
+    {
+        $handler = $this->handlers[$mediaType] ?? reset($this->handlers);
+
+        if (!$handler) {
+            throw new RuntimeException(sprintf('Exception handler for "%s" not found', $mediaType));
         }
 
+        return $this->resolver->resolveCallable($handler);
+    }
+
+    private function determineStatusCode(ServerRequestInterface $request, Throwable $exception): int
+    {
         if ($exception instanceof HttpException) {
             return $exception->getCode();
+        }
+
+        if ($request->getMethod() === 'OPTIONS') {
+            return 200;
         }
 
         return 500;

@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Formatting\XmlMediaTypeFormatter;
+use Slim\Formatting\XmlErrorFormatter;
 
 class XmlMediaTypeFormatterTest extends TestCase
 {
@@ -35,7 +35,7 @@ class XmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = new XmlMediaTypeFormatter();
+        $formatter = new XmlErrorFormatter();
         $result = $formatter($request, $response, $exception, true);
 
         // Assertions
@@ -66,7 +66,7 @@ class XmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = new XmlMediaTypeFormatter();
+        $formatter = new XmlErrorFormatter();
         $result = $formatter($request, $response, $exception, false);
 
         // Assertions
@@ -97,7 +97,7 @@ class XmlMediaTypeFormatterTest extends TestCase
         $outerException = new Exception('Outer exception message', 0, $innerException);
 
         // Instantiate the formatter and invoke it
-        $formatter = new XmlMediaTypeFormatter();
+        $formatter = new XmlErrorFormatter();
         $result = $formatter($request, $response, $outerException, true);
 
         // Assertions
@@ -127,7 +127,7 @@ class XmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter, set a custom content type, and invoke it
-        $formatter = new XmlMediaTypeFormatter();
+        $formatter = new XmlErrorFormatter();
         $formatter->setContentType('application/vnd.api+json');
         $result = $formatter($request, $response, $exception, false);
 

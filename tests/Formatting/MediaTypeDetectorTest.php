@@ -53,10 +53,10 @@ class MediaTypeDetectorTest extends TestCase
     public static function provideAcceptHeaderCases(): array
     {
         return [
-            ['application/json', ['application/json' => 'application/json']],
-            ['text/html', ['text/html' => 'text/html']],
-            ['application/xml, text/html', ['application/xml' => 'application/xml', 'text/html' => 'text/html']],
-            ['*/*', ['*/*' => '*/*']],
+            ['application/json', [0 => 'application/json']],
+            ['text/html', [0 => 'text/html']],
+            ['application/xml, text/html', [0 => 'application/xml', 1 => 'text/html']],
+            ['*/*', [0 => '*/*']],
             ['', []],
         ];
     }
@@ -64,10 +64,10 @@ class MediaTypeDetectorTest extends TestCase
     public static function provideContentTypeCases(): array
     {
         return [
-            ['application/json', ['application/json' => 'application/json']],
-            ['text/html', ['text/html' => 'text/html']],
-            ['application/xml; charset=UTF-8', ['application/xml' => 'application/xml']],
-            ['application/vnd.api+json', ['application/vnd.api+json' => 'application/vnd.api+json']],
+            ['application/json', [0 => 'application/json']],
+            ['text/html', [0 => 'text/html']],
+            ['application/xml; charset=UTF-8', [0 => 'application/xml']],
+            ['application/vnd.api+json', [0 => 'application/vnd.api+json']],
             ['', []],
         ];
     }

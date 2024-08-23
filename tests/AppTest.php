@@ -139,9 +139,9 @@ final class AppTest extends TestCase
 
         $response = $app->handle($request);
 
-        $this->assertSame('application/problem+json', $response->getHeaderLine('content-type'));
+        $this->assertSame('text/html', $response->getHeaderLine('content-type'));
 
-        $expected = '"message": "Test exception message"';
+        $expected = 'Test exception message';
         $this->assertStringContainsString($expected, (string)$response->getBody());
     }
 

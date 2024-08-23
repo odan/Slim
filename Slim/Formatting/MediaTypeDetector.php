@@ -42,7 +42,7 @@ final class MediaTypeDetector
         foreach ($acceptTypes as $type) {
             $tokens = explode(';', $type);
             $name = trim(strtolower(reset($tokens)));
-            $cleanTypes[$name] = $name;
+            $cleanTypes[] = $name;
         }
 
         return $cleanTypes;
@@ -53,6 +53,6 @@ final class MediaTypeDetector
         $parts = explode(';', $contentType ?? '');
         $name = strtolower(trim($parts[0] ?? ''));
 
-        return $name ? [$name => $name] : [];
+        return $name ? [$name] : [];
     }
 }

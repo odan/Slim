@@ -22,7 +22,7 @@ use function sprintf;
 /**
  * HTML Error Renderer.
  */
-final class HtmlMediaTypeFormatter implements MediaTypeFormatterInterface
+final class HtmlErrorFormatter implements MediaTypeFormatterInterface
 {
     use ExceptionFormatterTrait;
 

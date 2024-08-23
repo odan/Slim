@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Slim\Interfaces\ContentNegotiatorInterface;
+use Slim\Formatting\MediaTypeDetector;
 
 use function is_array;
 use function is_object;
@@ -27,11 +27,15 @@ use function simplexml_load_string;
 
 final class BodyParsingMiddleware implements MiddlewareInterface
 {
-    private ContentNegotiatorInterface $contentNegotiator;
+    private MediaTypeDetector $mediaTypeDetector;
 
-    public function __construct(ContentNegotiatorInterface $contentNegotiator)
+    private array $handlers = [];
+
+    private string $defaultMediaType = 'text/html';
+
+    public function __construct(MediaTypeDetector $mediaTypeDetector)
     {
-        $this->contentNegotiator = $contentNegotiator;
+        $this->mediaTypeDetector = $mediaTypeDetector;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -48,11 +52,18 @@ final class BodyParsingMiddleware implements MiddlewareInterface
 
     /**
      * @param string $mediaType The HTTP media type (excluding content-type params)
-     * @param callable $callable The callable that returns parsed contents for media type
+     * @param callable $handler The callable that returns parsed contents for media type
      */
-    public function registerBodyParser(string $mediaType, callable $callable): self
+    public function registerBodyParser(string $mediaType, callable $handler): self
     {
-        $this->contentNegotiator->setHandler($mediaType, $callable);
+        $this->handlers[$mediaType] = $handler;
+
+        return $this;
+    }
+
+    public function setDefaultMediaType(string $mediaType): self
+    {
+        $this->defaultMediaType = $mediaType;
 
         return $this;
     }
@@ -60,7 +71,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
     public function registerDefaultBodyParsers(): void
     {
         $this->registerBodyParser('application/json', function ($input) {
-            $result = json_decode($input, true, 512, JSON_THROW_ON_ERROR);
+            $result = json_decode($input, true);
 
             if (!is_array($result)) {
                 return null;
@@ -95,11 +106,16 @@ final class BodyParsingMiddleware implements MiddlewareInterface
 
     private function parseBody(ServerRequestInterface $request): array|object|null
     {
-        $negotiationResult = $this->contentNegotiator->negotiate($request);
+        // Negotiate content type
+        $contentTypes = $this->mediaTypeDetector->detect($request);
+        $contentType = $contentTypes[0] ?? $this->defaultMediaType;
+
+        // Determine which handler to use based on media type
+        $handler = $this->handlers[$contentType] ?? reset($this->handlers);
 
         // Invoke the parser
         $parsed = call_user_func(
-            $negotiationResult->getHandler(),
+            $handler,
             (string)$request->getBody()
         );
 

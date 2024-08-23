@@ -14,65 +14,54 @@ use DOMDocument;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Slim\Builder\AppBuilder;
-use Slim\Formatting\ContentNegotiator;
-use Slim\Formatting\HtmlMediaTypeFormatter;
-use Slim\Formatting\JsonMediaTypeFormatter;
-use Slim\Formatting\PlainTextMediaTypeFormatter;
-use Slim\Formatting\XmlMediaTypeFormatter;
+use Slim\Formatting\JsonErrorFormatter;
+use Slim\Formatting\XmlErrorFormatter;
 use Slim\Handlers\ExceptionHandler;
-use Slim\Interfaces\ContentNegotiatorInterface;
-use Slim\Interfaces\MediaTypeFormatterInterface;
+use Slim\Interfaces\ExceptionHandlerInterface;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\ExceptionHandlingMiddleware;
 use Slim\Middleware\RoutingMiddleware;
 use Slim\Tests\Traits\AppTestTrait;
-use Throwable;
 
 final class ExceptionHandlerTest extends TestCase
 {
     use AppTestTrait;
 
-    public function testRegisterRenderer(): void
+    #[DataProvider('textHmlHeaderProvider')]
+    public function testWithTextHtml(string $header, string $headerValue): void
     {
         $builder = new AppBuilder();
         $app = $builder->build();
 
-        $handler = $app->getContainer()->get(ExceptionHandler::class);
-
-        $customRenderer = new class implements MediaTypeFormatterInterface {
-            public function __invoke(
-                ServerRequestInterface $request,
-                ResponseInterface $response,
-                ?Throwable $exception = null,
-                bool $displayErrorDetails = false
-            ): ResponseInterface {
-                $response->getBody()->write('Error: ' . $exception->getMessage());
-
-                return $response->withStatus(400);
-            }
-        };
-
-        /** @var ContentNegotiator $negotiator */
-        $negotiator = $app->getContainer()->get(ContentNegotiatorInterface::class);
-        $negotiator
-            ->clearHandlers()
-            ->setHandler('text/html', $customRenderer);
+        $exceptionHandler = $app->getContainer()->get(ExceptionHandlerInterface::class);
+        $exceptionHandler->setDisplayErrorDetails(true);
 
         $request = $app->getContainer()
             ->get(ServerRequestFactoryInterface::class)
             ->createServerRequest('GET', '/')
-            ->withHeader('Accept', 'text/html');
+            ->withHeader($header, $headerValue);
 
-        $response = $handler($request, new RuntimeException('Error message'));
+        $response = $exceptionHandler($request, new RuntimeException('Test Error message'));
 
-        $this->assertSame(400, $response->getStatusCode());
-        $this->assertSame('Error: Error message', (string)$response->getBody());
+        $this->assertSame(500, $response->getStatusCode());
+        $this->assertSame('text/html', (string)$response->getHeaderLine('Content-Type'));
+        $this->assertStringContainsString('Test Error message', (string)$response->getBody());
     }
+
+    public static function textHmlHeaderProvider(): array
+    {
+        return [
+            ['Accept', 'text/html'],
+            ['Accept', 'text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8'],
+            ['Content-Type', 'text/html'],
+            ['Content-Type', 'text/html; charset=utf-8'],
+        ];
+    }
+
+    // todo: Add test for other media types
 
     public function testWithAcceptJson(): void
     {
@@ -84,7 +73,7 @@ final class ExceptionHandlerTest extends TestCase
             ->createServerRequest('GET', '/')
             ->withHeader('Accept', 'application/json');
 
-        $exceptionHandler = $app->getContainer()->get(ExceptionHandler::class);
+        $exceptionHandler = $app->getContainer()->get(ExceptionHandlerInterface::class);
 
         $response = $exceptionHandler($request, new RuntimeException('Test exception'));
 
@@ -97,7 +86,7 @@ final class ExceptionHandlerTest extends TestCase
         $this->assertJsonResponse($expected, $response);
     }
 
-    public function testInvokeWithDefaultRenderer(): void
+    public function testInvokeWithDefaultHtmlRenderer(): void
     {
         $builder = new AppBuilder();
         $app = $builder->build();
@@ -110,17 +99,15 @@ final class ExceptionHandlerTest extends TestCase
             ->createServerRequest('GET', '/');
 
         $app->get('/', function () {
-            throw new Exception('Test exception');
+            throw new Exception('Test Error message');
         });
 
         $response = $app->handle($request);
+
         $this->assertSame(500, $response->getStatusCode());
-        $expected = [
-            'type' => 'urn:ietf:rfc:7807',
-            'title' => 'Application Error',
-            'status' => 500,
-        ];
-        $this->assertJsonResponse($expected, $response);
+        $this->assertSame('text/html', (string)$response->getHeaderLine('Content-Type'));
+        $this->assertStringNotContainsString('Test Error message', (string)$response->getBody());
+        $this->assertStringContainsString('<h1>Application Error</h1>', (string)$response->getBody());
     }
 
     public static function xmlHeaderProvider(): array
@@ -128,12 +115,8 @@ final class ExceptionHandlerTest extends TestCase
         return [
             ['Accept', 'application/xml'],
             ['Accept', 'application/xml, application/json'],
-            ['Accept', 'application/json, application/xml'],
-            ['Accept', 'text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8'],
             ['Content-Type', 'application/xml'],
             ['Content-Type', 'application/xml; charset=utf-8'],
-            ['Content-Type', 'text/custom; charset=utf-8'],
-            ['Content-Type', 'multipart/form-data; boundary=ExampleBoundaryString'],
         ];
     }
 
@@ -148,19 +131,13 @@ final class ExceptionHandlerTest extends TestCase
             ->createServerRequest('GET', '/')
             ->withHeader($header, $headerValue);
 
-        $exceptionHandler = $app->getContainer()->get(ExceptionHandler::class);
+        /** @var ExceptionHandler $exceptionHandler */
+        $exceptionHandler = $app->getContainer()->get(ExceptionHandlerInterface::class);
         $exceptionHandler->setDisplayErrorDetails(false);
-
-        /** @var ContentNegotiator $negotiator */
-        $negotiator = $app->getContainer()->get(ContentNegotiatorInterface::class);
-        // The order is considered
-        $negotiator
+        $exceptionHandler
             ->clearHandlers()
-            ->setHandler('application/xml', XmlMediaTypeFormatter::class)
-            ->setHandler('application/xhtml+xml', HtmlMediaTypeFormatter::class)
-            ->setHandler('application/json', JsonMediaTypeFormatter::class)
-            ->setHandler('text/html', HtmlMediaTypeFormatter::class)
-            ->setHandler('text/plain', PlainTextMediaTypeFormatter::class);
+            ->setHandler('application/json', JsonErrorFormatter::class)
+            ->setHandler('application/xml', XmlErrorFormatter::class);
 
         $response = $exceptionHandler($request, new RuntimeException('Test exception'));
 

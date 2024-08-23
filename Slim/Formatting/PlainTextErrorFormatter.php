@@ -22,7 +22,7 @@ use function sprintf;
 /**
  * Plain Text Error Renderer.
  */
-final class PlainTextMediaTypeFormatter implements MediaTypeFormatterInterface
+final class PlainTextErrorFormatter implements MediaTypeFormatterInterface
 {
     use ExceptionFormatterTrait;
 

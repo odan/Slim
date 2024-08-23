@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Formatting\PlainTextMediaTypeFormatter;
+use Slim\Formatting\PlainTextErrorFormatter;
 
 class PlainTextMediaTypeFormatterTest extends TestCase
 {
@@ -35,7 +35,7 @@ class PlainTextMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = new PlainTextMediaTypeFormatter();
+        $formatter = new PlainTextErrorFormatter();
         $result = $formatter($request, $response, $exception, true);
 
         // Assertions
@@ -64,7 +64,7 @@ class PlainTextMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = new PlainTextMediaTypeFormatter();
+        $formatter = new PlainTextErrorFormatter();
         $result = $formatter($request, $response, $exception, false);
 
         // Assertions
@@ -93,7 +93,7 @@ class PlainTextMediaTypeFormatterTest extends TestCase
         $outerException = new Exception('Outer exception message', 0, $innerException);
 
         // Instantiate the formatter and invoke it
-        $formatter = new PlainTextMediaTypeFormatter();
+        $formatter = new PlainTextErrorFormatter();
         $result = $formatter($request, $response, $outerException, true);
 
         // Assertions

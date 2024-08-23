@@ -25,7 +25,7 @@ use function get_class;
  * Problem Details rfc7807:
  * https://datatracker.ietf.org/doc/html/rfc7807#page-14
  */
-final class XmlMediaTypeFormatter implements MediaTypeFormatterInterface
+final class XmlErrorFormatter implements MediaTypeFormatterInterface
 {
     use ExceptionFormatterTrait;
 

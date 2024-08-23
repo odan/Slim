@@ -133,15 +133,13 @@ final class ExceptionHandlingMiddlewareTest extends TestCase
 
         $response = $app->handle($request);
 
-        $expected = [
-            'type' => 'urn:ietf:rfc:7807',
-            'title' => 'Application Error',
-            'status' => 500,
-        ];
-        $this->assertJsonResponse($expected, $response);
+        $this->assertSame(500, $response->getStatusCode());
+        $this->assertSame('text/html', $response->getHeaderLine('Content-Type'));
+        $this->assertStringNotContainsString('Test Error message', (string)$response->getBody());
+        $this->assertStringContainsString('<h1>Application Error</h1>', (string)$response->getBody());
     }
 
-    public function testDefaultMediaTypeWithDetails(): void
+    public function testDefaultHtmlMediaTypeWithDetails(): void
     {
         $builder = new AppBuilder();
         $builder->setSettings(['display_error_details' => true]);
@@ -154,6 +152,33 @@ final class ExceptionHandlingMiddlewareTest extends TestCase
         $request = $app->getContainer()
             ->get(ServerRequestFactoryInterface::class)
             ->createServerRequest('GET', '/');
+
+        $app->get('/', function () {
+            throw new RuntimeException('Test error', 123);
+        });
+
+        $response = $app->handle($request);
+
+        $this->assertSame(500, $response->getStatusCode());
+        $this->assertSame('text/html', (string)$response->getHeaderLine('Content-Type'));
+        $this->assertStringNotContainsString('Test Error message', (string)$response->getBody());
+        $this->assertStringContainsString('<h1>Application Error</h1>', (string)$response->getBody());
+    }
+
+    public function testJsonMediaTypeWithDetails(): void
+    {
+        $builder = new AppBuilder();
+        $builder->setSettings(['display_error_details' => true]);
+        $app = $builder->build();
+
+        $app->add(ExceptionHandlingMiddleware::class);
+        $app->add(RoutingMiddleware::class);
+        $app->add(EndpointMiddleware::class);
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/')
+            ->withHeader('Accept', 'application/json');
 
         $app->get('/', function () {
             throw new RuntimeException('Test error', 123);

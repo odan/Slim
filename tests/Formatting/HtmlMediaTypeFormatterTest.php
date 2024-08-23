@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Formatting\HtmlMediaTypeFormatter;
+use Slim\Formatting\HtmlErrorFormatter;
 
 class HtmlMediaTypeFormatterTest extends TestCase
 {
@@ -36,7 +36,7 @@ class HtmlMediaTypeFormatterTest extends TestCase
 
         $exception = new Exception('Test exception message');
 
-        $formatter = new HtmlMediaTypeFormatter();
+        $formatter = new HtmlErrorFormatter();
         $result = $formatter($request, $response, $exception, true);
 
         $this->assertEquals('text/html', $result->getHeaderLine('Content-Type'));
@@ -69,7 +69,7 @@ class HtmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = new HtmlMediaTypeFormatter();
+        $formatter = new HtmlErrorFormatter();
         $result = $formatter($request, $response, $exception, false);
 
         // Expected HTML

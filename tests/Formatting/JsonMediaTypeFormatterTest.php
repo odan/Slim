@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Formatting\JsonMediaTypeFormatter;
+use Slim\Formatting\JsonErrorFormatter;
 
 class JsonMediaTypeFormatterTest extends TestCase
 {
@@ -35,7 +35,7 @@ class JsonMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter with JsonRenderer and invoke it
-        $formatter = $app->getContainer()->get(JsonMediaTypeFormatter::class);
+        $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
         $result = $formatter($request, $response, $exception, true);
 
         $this->assertEquals('application/problem+json', $result->getHeaderLine('Content-Type'));
@@ -66,7 +66,7 @@ class JsonMediaTypeFormatterTest extends TestCase
 
         $exception = new Exception('Test exception message');
 
-        $formatter = $app->getContainer()->get(JsonMediaTypeFormatter::class);
+        $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
         $result = $formatter($request, $response, $exception, false);
 
         $this->assertEquals('application/problem+json', $result->getHeaderLine('Content-Type'));
@@ -96,7 +96,7 @@ class JsonMediaTypeFormatterTest extends TestCase
 
         $exception = new HttpNotFoundException($request, 'Test exception message');
 
-        $formatter = $app->getContainer()->get(JsonMediaTypeFormatter::class);
+        $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
         $result = $formatter($request, $response, $exception, true);
 
         $this->assertEquals('application/problem+json', $result->getHeaderLine('Content-Type'));
@@ -129,7 +129,7 @@ class JsonMediaTypeFormatterTest extends TestCase
 
         $exception = new Exception('Test exception message');
 
-        $formatter = $app->getContainer()->get(JsonMediaTypeFormatter::class);
+        $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
         $formatter->setContentType('application/vnd.api+json');
 
         $result = $formatter($request, $response, $exception, false);
