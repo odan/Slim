@@ -28,6 +28,7 @@ use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Tests\Mocks\MockCustomException;
 use Slim\Tests\Traits\AppTestTrait;
 
+// todo: Compare with new behavior
 final class ErrorHandlerTest extends TestCase
 {
     use AppTestTrait;
