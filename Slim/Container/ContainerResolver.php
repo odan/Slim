@@ -30,6 +30,8 @@ final class ContainerResolver implements ContainerResolverInterface
 {
     private ContainerInterface $container;
 
+    private string $callablePattern = '!^([^\:]+)\:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$!';
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -96,11 +98,13 @@ final class ContainerResolver implements ContainerResolverInterface
 
     private function processStringNotation(string $toResolve): string|array
     {
-        if (substr_count($toResolve, ':') === 1) {
-            // Resolve Slim notation
-            return explode(':', $toResolve, 2);
+        // Resolve Slim notation
+        $matches = null;
+        if (preg_match($this->callablePattern, $toResolve, $matches)) {
+            return $matches ? [$matches[1], $matches[2]] : [$toResolve, null];
         }
 
+        // Resolve PHP notation
         if (str_contains($toResolve, '::')) {
             return explode('::', $toResolve, 2);
         }
