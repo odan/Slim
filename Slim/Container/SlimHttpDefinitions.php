@@ -26,8 +26,15 @@ use Slim\Psr7\Factory\ServerRequestFactory;
 
 final class SlimHttpDefinitions
 {
+    /**
+     * @var callable
+     */
+    private $classExists = 'class_exists';
+
     public function __invoke(): array
     {
+        $that = $this;
+
         return [
             ServerRequestFactoryInterface::class => function (ContainerInterface $container) {
                 $serverRequestFactory = $container->get(ServerRequestFactory::class);
@@ -59,7 +66,7 @@ final class SlimHttpDefinitions
                     }
                 };
             },
-            ResponseFactoryInterface::class => function (ContainerInterface $container) {
+            ResponseFactoryInterface::class => function (ContainerInterface $container) use ($that) {
                 $responseFactory = null;
 
                 $responseFactoryClasses = [
@@ -71,7 +78,7 @@ final class SlimHttpDefinitions
                 ];
 
                 foreach ($responseFactoryClasses as $responseFactoryClass) {
-                    if (class_exists($responseFactoryClass)) {
+                    if (call_user_func($that->classExists, $responseFactoryClass)) {
                         $responseFactory = $container->get($responseFactoryClass);
                         break;
                     }
@@ -89,7 +96,7 @@ final class SlimHttpDefinitions
                     'See https://github.com/slimphp/Slim/blob/5.x/README.md for a list of supported implementations.'
                 );
             },
-            StreamFactoryInterface::class => function (ContainerInterface $container) {
+            StreamFactoryInterface::class => function (ContainerInterface $container) use ($that) {
                 $factoryClasses = [
                     \Slim\Psr7\Factory\StreamFactory::class,
                     \Nyholm\Psr7\Factory\Psr17Factory::class,
@@ -99,14 +106,14 @@ final class SlimHttpDefinitions
                 ];
 
                 foreach ($factoryClasses as $factoryClass) {
-                    if (class_exists($factoryClass)) {
+                    if (call_user_func($that->classExists, $factoryClass)) {
                         return $container->get($factoryClass);
                     }
                 }
 
                 throw new RuntimeException('Could not instantiate a StreamFactory.');
             },
-            UriFactoryInterface::class => function (ContainerInterface $container) {
+            UriFactoryInterface::class => function (ContainerInterface $container) use ($that) {
                 $uriFactory = null;
 
                 $uriFactoryClasses = [
@@ -118,7 +125,7 @@ final class SlimHttpDefinitions
                 ];
 
                 foreach ($uriFactoryClasses as $uriFactoryClass) {
-                    if (class_exists($uriFactoryClass)) {
+                    if (call_user_func($that->classExists, $uriFactoryClass)) {
                         $uriFactory = $container->get($uriFactoryClass);
                         break;
                     }
@@ -134,7 +141,7 @@ final class SlimHttpDefinitions
 
                 throw new RuntimeException('Could not instantiate a URI factory.');
             },
-            UploadedFileFactoryInterface::class => function (ContainerInterface $container) {
+            UploadedFileFactoryInterface::class => function (ContainerInterface $container) use ($that) {
                 $factoryClasses = [
                     \Slim\Psr7\Factory\UploadedFileFactory::class,
                     \Nyholm\Psr7\Factory\Psr17Factory::class,
@@ -144,7 +151,7 @@ final class SlimHttpDefinitions
                 ];
 
                 foreach ($factoryClasses as $factoryClass) {
-                    if (class_exists($factoryClass)) {
+                    if (call_user_func($that->classExists, $factoryClass)) {
                         return $container->get($factoryClass);
                     }
                 }

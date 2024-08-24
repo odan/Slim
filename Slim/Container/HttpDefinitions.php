@@ -19,6 +19,11 @@ use Slim\Psr7\Factory\ServerRequestFactory;
 
 final class HttpDefinitions
 {
+    /**
+     * @var callable
+     */
+    private $classExists = 'class_exists';
+
     private array $classes = [
         DecoratedServerRequestFactory::class => SlimHttpDefinitions::class,
         ServerRequestFactory::class => SlimPsr7Definitions::class,
@@ -30,7 +35,7 @@ final class HttpDefinitions
     public function __invoke(): array
     {
         foreach ($this->classes as $factory => $definitionClass) {
-            if (class_exists($factory)) {
+            if (call_user_func($this->classExists, $factory)) {
                 return call_user_func(new $definitionClass());
             }
         }
