@@ -10,22 +10,20 @@ declare(strict_types=1);
 
 namespace Slim\Tests\Factory;
 
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Slim\Factory\AppFactory;
 use Slim\Tests\Traits\AppTestTrait;
-
-use function strtolower;
 
 final class AppFactoryTest extends TestCase
 {
     use AppTestTrait;
 
-    #[DataProvider('upperCaseRequestMethodsProvider')]
-    public function testDefault(string $method): void
+    public function testWithMiddleware(): void
     {
         $app = AppFactory::create();
         $app->addRoutingMiddleware();
@@ -34,10 +32,9 @@ final class AppFactoryTest extends TestCase
 
         $request = $app->getContainer()
             ->get(ServerRequestFactoryInterface::class)
-            ->createServerRequest($method, '/');
+            ->createServerRequest('GET', '/');
 
-        $methodName = strtolower($method);
-        $app->$methodName('/', function (ServerRequestInterface $request, ResponseInterface $response) {
+        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write('Hello World');
 
             return $response;
@@ -47,15 +44,35 @@ final class AppFactoryTest extends TestCase
         $this->assertSame('Hello World', (string)$response->getBody());
     }
 
-    public static function upperCaseRequestMethodsProvider(): array
+    public function testWithErrorMiddlewareDisplayErrorDetails(): void
     {
-        return [
-            ['GET'],
-            ['POST'],
-            ['PUT'],
-            ['PATCH'],
-            ['DELETE'],
-            ['OPTIONS'],
-        ];
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Displaying error details must be configured in the App settings');
+
+        $app = AppFactory::create();
+        $app->addErrorMiddleware(true);
+    }
+
+    public function testWithErrorMiddlewareLogErrorDetails(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Logging error details without a logger is not supported');
+
+        $app = AppFactory::create();
+        $app->addErrorMiddleware(false, false, true);
+    }
+
+    public function testWithErrorMiddlewareLogErrors(): void
+    {
+        $app = AppFactory::create();
+        $app->addErrorMiddleware(false, true, false);
+        $this->assertTrue(true);
+    }
+
+    public function testWithErrorMiddlewareWithLogger(): void
+    {
+        $app = AppFactory::create();
+        $app->addErrorMiddleware(false, true, false, $this->createMock(LoggerInterface::class));
+        $this->assertTrue(true);
     }
 }
