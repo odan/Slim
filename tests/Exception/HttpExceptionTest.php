@@ -22,11 +22,6 @@ final class HttpExceptionTest extends TestCase
 {
     use AppTestTrait;
 
-    public function setUp(): void
-    {
-        $this->setUpApp();
-    }
-
     public function testHttpExceptionRequestReponseGetterSetters()
     {
         $app = (new AppBuilder())->build();

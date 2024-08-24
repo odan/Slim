@@ -12,6 +12,7 @@ namespace Slim\Tests\Emitter;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use ReflectionClass;
 use Slim\Builder\AppBuilder;
@@ -45,13 +46,21 @@ final class ResponseEmitterTest extends TestCase
 
     public function setUp(): void
     {
-        $this->setUpApp();
         HeaderStack::reset();
     }
 
     public function tearDown(): void
     {
         HeaderStack::reset();
+    }
+
+    private function createResponse(int $statusCode = 200, string $reasonPhrase = ''): ResponseInterface
+    {
+        $app = (new AppBuilder())->build();
+
+        return $app->getContainer()
+            ->get(ResponseFactoryInterface::class)
+            ->createResponse($statusCode, $reasonPhrase);
     }
 
     public function testRespond(): void
@@ -67,6 +76,9 @@ final class ResponseEmitterTest extends TestCase
 
     public function testRespondWithPaddedStreamFilterOutput(): void
     {
+        $builder = new AppBuilder();
+        $streamFactory = $builder->build()->getContainer()->get(StreamFactoryInterface::class);
+
         $availableFilter = stream_get_filters();
 
         $filterName = 'string.rot13';
@@ -95,7 +107,7 @@ final class ResponseEmitterTest extends TestCase
                 'iv' => $iv,
             ]);
 
-            $body = $this->getStreamFactory()->createStreamFromResource($stream);
+            $body = $streamFactory->createStreamFromResource($stream);
             $response = $this
                 ->createResponse()
                 ->withHeader('Content-Length', $length)
@@ -214,8 +226,11 @@ final class ResponseEmitterTest extends TestCase
 
     public function testIsResponseEmptyDoesNotDrainNonSeekableResponseWithContent(): void
     {
+        $builder = new AppBuilder();
+        $streamFactory = $builder->build()->getContainer()->get(StreamFactoryInterface::class);
+
         $resource = popen('echo 12', 'r');
-        $body = $this->getStreamFactory()->createStreamFromResource($resource);
+        $body = $streamFactory->createStreamFromResource($resource);
         $response = $this->createResponse(200)->withBody($body);
         $responseEmitter = new ResponseEmitter();
 
@@ -267,7 +282,10 @@ final class ResponseEmitterTest extends TestCase
 
     public function testWillHandleInvalidConnectionStatusWithADeterminateBody(): void
     {
-        $body = $this->getStreamFactory()->createStreamFromResource(fopen('php://temp', 'r+'));
+        $builder = new AppBuilder();
+        $streamFactory = $builder->build()->getContainer()->get(StreamFactoryInterface::class);
+
+        $body = $streamFactory->createStreamFromResource(fopen('php://temp', 'r+'));
         $body->write('Hello!' . "\n");
         $body->write('Hello!' . "\n");
 
@@ -290,7 +308,10 @@ final class ResponseEmitterTest extends TestCase
 
     public function testWillHandleInvalidConnectionStatusWithAnIndeterminateBody(): void
     {
-        $body = $this->getStreamFactory()->createStreamFromResource(fopen('php://input', 'r+'));
+        $builder = new AppBuilder();
+        $streamFactory = $builder->build()->getContainer()->get(StreamFactoryInterface::class);
+
+        $body = $streamFactory->createStreamFromResource(fopen('php://input', 'r+'));
 
         // Tell connection_status() to fail.
         $GLOBALS['connection_status_return'] = CONNECTION_TIMEOUT;

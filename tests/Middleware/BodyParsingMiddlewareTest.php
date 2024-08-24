@@ -21,6 +21,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use Slim\Builder\AppBuilder;
+use Slim\Container\GuzzleDefinitions;
+use Slim\Container\HttpSoftDefinitions;
+use Slim\Container\LaminasDiactorosDefinitions;
 use Slim\Container\NyholmDefinitions;
 use Slim\Container\SlimHttpDefinitions;
 use Slim\Container\SlimPsr7Definitions;
@@ -278,6 +281,18 @@ final class BodyParsingMiddlewareTest extends TestCase
         $middlewares[] = $app->getContainer()->get(ResponseFactoryMiddleware::class);
 
         (new Runner($middlewares))->handle($request);
+    }
+
+    public static function httpDefinitionsProvider(): array
+    {
+        return [
+            'GuzzleDefinitions' => [GuzzleDefinitions::class],
+            'HttpSoftDefinitions' => [HttpSoftDefinitions::class],
+            'LaminasDiactorosDefinitions' => [LaminasDiactorosDefinitions::class],
+            'NyholmDefinitions' => [NyholmDefinitions::class],
+            'SlimHttpDefinitions' => [SlimHttpDefinitions::class],
+            'SlimPsr7Definitions' => [SlimPsr7Definitions::class],
+        ];
     }
 
     private function createParsedBodyMiddleware(): MiddlewareInterface

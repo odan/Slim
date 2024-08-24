@@ -20,11 +20,6 @@ final class HttpUnauthorizedExceptionTest extends TestCase
 {
     use AppTestTrait;
 
-    public function setUp(): void
-    {
-        $this->setUpApp();
-    }
-
     public function testHttpUnauthorizedException()
     {
         $app = (new AppBuilder())->build();

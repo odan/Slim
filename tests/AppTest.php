@@ -764,6 +764,45 @@ final class AppTest extends TestCase
         $this->assertSame('Hello World', (string)$response->getBody());
     }
 
+    public function testAddMiddleware(): void
+    {
+        $builder = new AppBuilder();
+        $app = $builder->build();
+
+        $container = $app->getContainer();
+        $routing = $container->get(RoutingMiddleware::class);
+        $endpoint = $container->get(EndpointMiddleware::class);
+
+        $app->addMiddleware($routing);
+        $app->add($endpoint);
+
+        $request = $app->getContainer()
+            ->get(ServerRequestFactoryInterface::class)
+            ->createServerRequest('GET', '/');
+
+        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
+            $response->getBody()->write('Hello World');
+
+            return $response;
+        });
+
+        $app->run($request);
+        $this->expectOutputString('Hello World');
+    }
+
+    public function testGetBasePath(): void
+    {
+        $builder = new AppBuilder();
+        $app = $builder->build();
+
+        $app->add(RoutingMiddleware::class);
+        $app->add(EndpointMiddleware::class);
+
+        $this->assertSame('', $app->getBasePath());
+        $app->setBasePath('/sub');
+        $this->assertSame('/sub', $app->getBasePath());
+    }
+
     public function testRun(): void
     {
         $builder = new AppBuilder();
