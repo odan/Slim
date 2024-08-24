@@ -12,34 +12,9 @@ trait RouteCollectionTrait
 
     abstract public function group(string $path, callable $handler): MiddlewareCollectionInterface;
 
-    public function any(string $pattern, callable|string $handler): Route
-    {
-        return $this->map(['*'], $pattern, $handler);
-    }
-
-    public function delete(string $path, callable|string $handler): Route
-    {
-        return $this->map(['DELETE'], $path, $handler);
-    }
-
     public function get(string $path, callable|string $handler): Route
     {
         return $this->map(['GET'], $path, $handler);
-    }
-
-    public function head(string $path, callable|string $handler): Route
-    {
-        return $this->map(['HEAD'], $path, $handler);
-    }
-
-    public function options(string $path, callable|string $handler): Route
-    {
-        return $this->map(['OPTIONS'], $path, $handler);
-    }
-
-    public function patch(string $path, callable|string $handler): Route
-    {
-        return $this->map(['PATCH'], $path, $handler);
     }
 
     public function post(string $path, callable|string $handler): Route
@@ -50,5 +25,25 @@ trait RouteCollectionTrait
     public function put(string $path, callable|string $handler): Route
     {
         return $this->map(['PUT'], $path, $handler);
+    }
+
+    public function patch(string $path, callable|string $handler): Route
+    {
+        return $this->map(['PATCH'], $path, $handler);
+    }
+
+    public function delete(string $path, callable|string $handler): Route
+    {
+        return $this->map(['DELETE'], $path, $handler);
+    }
+
+    public function options(string $path, callable|string $handler): Route
+    {
+        return $this->map(['OPTIONS'], $path, $handler);
+    }
+
+    public function any(string $pattern, callable|string $handler): Route
+    {
+        return $this->map(['*'], $pattern, $handler);
     }
 }

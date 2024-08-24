@@ -72,14 +72,6 @@ class RouterTest extends TestCase
                 ['GET'],
             ],
             [
-                'head',
-                '/head',
-                function () {
-                    return 'head_handler';
-                },
-                ['HEAD'],
-            ],
-            [
                 'options',
                 '/options',
                 function () {
