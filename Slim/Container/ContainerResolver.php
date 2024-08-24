@@ -104,11 +104,6 @@ final class ContainerResolver implements ContainerResolverInterface
             return $matches ? [$matches[1], $matches[2]] : [$toResolve, null];
         }
 
-        // Resolve PHP notation
-        if (str_contains($toResolve, '::')) {
-            return explode('::', $toResolve, 2);
-        }
-
         return $toResolve;
     }
 
