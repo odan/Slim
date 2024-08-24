@@ -24,7 +24,12 @@ final class HeaderStack
      */
     public static function stack(): array
     {
-        $headers = headers_list() ?: xdebug_get_headers();
+        $headers = headers_list();
+
+        if (!$headers && function_exists('xdebug_get_headers')) {
+            $headers = xdebug_get_headers();
+        }
+
         $result = [];
 
         foreach ($headers as $header) {
