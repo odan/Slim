@@ -17,6 +17,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Slim\App;
 use Slim\Builder\AppBuilder;
+use Slim\Container\GuzzleDefinitions;
+use Slim\Container\HttpSoftDefinitions;
+use Slim\Container\LaminasDiactorosDefinitions;
 use Slim\Container\NyholmDefinitions;
 use Slim\Container\SlimHttpDefinitions;
 use Slim\Container\SlimPsr7Definitions;
@@ -83,10 +86,12 @@ trait AppTestTrait
     public static function httpDefinitionsProvider(): array
     {
         return [
-            [SlimHttpDefinitions::class],
-            [SlimPsr7Definitions::class],
-            [SlimPsr7Definitions::class],
-            [NyholmDefinitions::class],
+            'GuzzleDefinitions' => [GuzzleDefinitions::class],
+            'HttpSoftDefinitions' => [HttpSoftDefinitions::class],
+            'LaminasDiactorosDefinitions' => [LaminasDiactorosDefinitions::class],
+            'NyholmDefinitions' => [NyholmDefinitions::class],
+            'SlimHttpDefinitions' => [SlimHttpDefinitions::class],
+            'SlimPsr7Definitions' => [SlimPsr7Definitions::class],
         ];
     }
 }

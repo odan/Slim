@@ -21,8 +21,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use Slim\Builder\AppBuilder;
-use Slim\Container\GuzzleDefinitions;
-use Slim\Container\HttpSoftDefinitions;
 use Slim\Container\NyholmDefinitions;
 use Slim\Container\SlimHttpDefinitions;
 use Slim\Container\SlimPsr7Definitions;
@@ -230,22 +228,17 @@ final class BodyParsingMiddlewareTest extends TestCase
         $this->assertSame(['data' => ['foo' => 'bar']], json_decode((string)$response->getBody(), true));
     }
 
-    public static function nonDecoratedHttpDefinitionsProvider(): array
-    {
-        return [
-            // Note: The slim/http package has its own body parser, so this middleware will not be used.
-            // So SlimHttpDefinitions::class will not fail here, because the body parser will not be executed.
-            [SlimPsr7Definitions::class],
-            [SlimPsr7Definitions::class],
-            [NyholmDefinitions::class],
-            [GuzzleDefinitions::class],
-            [HttpSoftDefinitions::class],
-        ];
-    }
-
-    #[DataProvider('nonDecoratedHttpDefinitionsProvider')]
+    #[DataProvider('httpDefinitionsProvider')]
     public function testParsingFailsWhenAnInvalidTypeIsReturned(string $definitions)
     {
+        // The slim/http package has its own body parser, so this middleware will not be used.
+        // The SlimHttpDefinitions::class will not fail here, because the body parser will not be executed.
+        if ($definitions === SlimHttpDefinitions::class) {
+            $this->assertTrue(true);
+
+            return;
+        }
+
         $this->expectException(RuntimeException::class);
 
         $builder = new AppBuilder();

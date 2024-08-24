@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Slim\Tests\Container;
 
 use DI\Container;
+use GuzzleHttp\Psr7\HttpFactory;
+use HttpSoft\Message\ServerRequestFactory as HttpSoftServerRequestFactory;
+use Laminas\Diactoros\ServerRequestFactory as LaminasServerRequestFactory;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
@@ -16,6 +20,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Container\DefaultDefinitions;
+use Slim\Container\GuzzleDefinitions;
+use Slim\Container\HttpSoftDefinitions;
+use Slim\Container\LaminasDiactorosDefinitions;
 use Slim\Container\NyholmDefinitions;
 use Slim\Container\SlimHttpDefinitions;
 use Slim\Container\SlimPsr7Definitions;
@@ -25,6 +32,7 @@ use Slim\Interfaces\EmitterInterface;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ExceptionHandlingMiddleware;
+use Slim\Psr7\Factory\ServerRequestFactory;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
 use Slim\Strategies\RequestResponse;
@@ -76,39 +84,29 @@ final class DefaultDefinitionsTest extends TestCase
         $this->assertInstanceOf(ServerRequestFactoryInterface::class, $requestFactory);
     }
 
-    public function testServerRequestFactoryInterfaceWithSlimDecoratedServerRequestFactory(): void
+    #[DataProvider('serverRequestFactoryDefinitionsProvider')]
+    public function testServerRequestFactoryInterfaceWithDefinitions(callable $definition, string $instanceOf): void
     {
         $definitions = call_user_func(new DefaultDefinitions());
-        $definitions = array_merge($definitions, call_user_func(new SlimHttpDefinitions()));
+        $definitions = array_merge($definitions, call_user_func($definition));
 
         $container = new Container($definitions);
         $requestFactory = $container->get(ServerRequestFactoryInterface::class);
 
         $this->assertInstanceOf(ServerRequestFactoryInterface::class, $requestFactory);
+        $this->assertInstanceOf($instanceOf, $requestFactory);
     }
 
-    public function testServerRequestFactoryInterfaceWithSlimServerRequestFactory(): void
+    public static function serverRequestFactoryDefinitionsProvider(): array
     {
-        $definitions = call_user_func(new DefaultDefinitions());
-        $definitions = array_merge($definitions, call_user_func(new SlimPsr7Definitions()));
-
-        $container = new Container($definitions);
-        $requestFactory = $container->get(ServerRequestFactoryInterface::class);
-
-        $this->assertInstanceOf(ServerRequestFactoryInterface::class, $requestFactory);
-        $this->assertInstanceOf(\Slim\Psr7\Factory\ServerRequestFactory::class, $requestFactory);
-    }
-
-    public function testServerRequestFactoryInterfaceWithNyholmServerRequestFactory(): void
-    {
-        $definitions = call_user_func(new DefaultDefinitions());
-        $definitions = array_merge($definitions, call_user_func(new NyholmDefinitions()));
-
-        $container = new Container($definitions);
-        $requestFactory = $container->get(ServerRequestFactoryInterface::class);
-
-        $this->assertInstanceOf(ServerRequestFactoryInterface::class, $requestFactory);
-        $this->assertInstanceOf(Psr17Factory::class, $requestFactory);
+        return [
+            'GuzzleDefinitions' => [new GuzzleDefinitions(), HttpFactory::class],
+            'HttpSoftDefinitions' => [new HttpSoftDefinitions(), HttpSoftServerRequestFactory::class],
+            'LaminasDiactorosDefinitions' => [new LaminasDiactorosDefinitions(), LaminasServerRequestFactory::class],
+            'NyholmDefinitions' => [new NyholmDefinitions(), Psr17Factory::class],
+            'SlimHttpDefinitions' => [new SlimHttpDefinitions(), ServerRequestFactoryInterface::class],
+            'SlimPsr7Definitions' => [new SlimPsr7Definitions(), ServerRequestFactory::class],
+        ];
     }
 
     public function testResponseFactoryInterface(): void
