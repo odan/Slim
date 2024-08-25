@@ -50,11 +50,12 @@ final class ExceptionLoggingMiddleware implements MiddlewareInterface
         }
     }
 
-    public function setLogErrorDetails(bool $logErrorDetails): self
+    public function withLogErrorDetails(bool $logErrorDetails): self
     {
-        $this->logErrorDetails = $logErrorDetails;
+        $clone = clone $this;
+        $clone->logErrorDetails = $logErrorDetails;
 
-        return $this;
+        return $clone;
     }
 
     private function getContext(Throwable $exception, ServerRequestInterface $request): array

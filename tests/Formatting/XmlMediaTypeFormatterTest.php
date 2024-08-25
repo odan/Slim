@@ -128,7 +128,7 @@ class XmlMediaTypeFormatterTest extends TestCase
 
         // Instantiate the formatter, set a custom content type, and invoke it
         $formatter = new XmlErrorFormatter();
-        $formatter->setContentType('application/vnd.api+json');
+        $formatter = $formatter->withContentType('application/vnd.api+json');
         $result = $formatter($request, $response, $exception, false);
 
         $this->assertEquals('application/vnd.api+json', $result->getHeaderLine('Content-Type'));

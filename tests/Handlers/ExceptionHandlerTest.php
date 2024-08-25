@@ -37,7 +37,7 @@ final class ExceptionHandlerTest extends TestCase
         $app = $builder->build();
 
         $exceptionHandler = $app->getContainer()->get(ExceptionHandlerInterface::class);
-        $exceptionHandler->setDisplayErrorDetails(true);
+        $exceptionHandler = $exceptionHandler->withDisplayErrorDetails(true);
 
         $request = $app->getContainer()
             ->get(ServerRequestFactoryInterface::class)
@@ -133,11 +133,11 @@ final class ExceptionHandlerTest extends TestCase
 
         /** @var ExceptionHandler $exceptionHandler */
         $exceptionHandler = $app->getContainer()->get(ExceptionHandlerInterface::class);
-        $exceptionHandler->setDisplayErrorDetails(false);
+        $exceptionHandler->withDisplayErrorDetails(false);
         $exceptionHandler
-            ->clearHandlers()
-            ->setHandler('application/json', JsonErrorFormatter::class)
-            ->setHandler('application/xml', XmlErrorFormatter::class);
+            ->withoutHandlers()
+            ->withHandler('application/json', JsonErrorFormatter::class)
+            ->withHandler('application/xml', XmlErrorFormatter::class);
 
         $response = $exceptionHandler($request, new RuntimeException('Test exception'));
 

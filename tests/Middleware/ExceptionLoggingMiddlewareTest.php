@@ -35,8 +35,7 @@ class ExceptionLoggingMiddlewareTest extends TestCase
         $logger = new TestLogger();
 
         $middleware = new ExceptionLoggingMiddleware($logger);
-        $middleware->setLogErrorDetails(true);
-        $app->add($middleware);
+        $app->add($middleware->withLogErrorDetails(true));
 
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
@@ -73,8 +72,7 @@ class ExceptionLoggingMiddlewareTest extends TestCase
         $logger = new TestLogger();
 
         $middleware = new ExceptionLoggingMiddleware($logger);
-        $middleware->setLogErrorDetails(true);
-        $app->add($middleware);
+        $app->add($middleware->withLogErrorDetails(true));
 
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
@@ -111,9 +109,8 @@ class ExceptionLoggingMiddlewareTest extends TestCase
         $app->add(ErrorHandlingMiddleware::class);
 
         $middleware = new ExceptionLoggingMiddleware($logger);
-        $middleware->setLogErrorDetails(true);
 
-        $app->add($middleware);
+        $app->add($middleware->withLogErrorDetails(true));
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
 

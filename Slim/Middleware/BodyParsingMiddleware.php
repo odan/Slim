@@ -55,23 +55,26 @@ final class BodyParsingMiddleware implements MiddlewareInterface
      * @param string $mediaType The HTTP media type (excluding content-type params)
      * @param callable $handler The callable that returns parsed contents for media type
      */
-    public function registerBodyParser(string $mediaType, callable $handler): self
+    public function withBodyParser(string $mediaType, callable $handler): self
     {
-        $this->handlers[$mediaType] = $handler;
+        $clone = clone $this;
+        $clone->handlers[$mediaType] = $handler;
 
-        return $this;
+        return $clone;
     }
 
-    public function setDefaultMediaType(string $mediaType): self
+    public function withDefaultMediaType(string $mediaType): self
     {
-        $this->defaultMediaType = $mediaType;
+        $clone = clone $this;
+        $clone->defaultMediaType = $mediaType;
 
-        return $this;
+        return $clone;
     }
 
-    public function registerDefaultBodyParsers(): self
+    public function withDefaultBodyParsers(): self
     {
-        $this->registerBodyParser(MediaType::APPLICATION_JSON, function ($input) {
+        $clone = clone $this;
+        $clone = $clone->withBodyParser(MediaType::APPLICATION_JSON, function ($input) {
             $result = json_decode($input, true);
 
             if (!is_array($result)) {
@@ -81,7 +84,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
             return $result;
         });
 
-        $this->registerBodyParser(MediaType::APPLICATION_FORM_URLENCODED, function ($input) {
+        $clone = $clone->withBodyParser(MediaType::APPLICATION_FORM_URLENCODED, function ($input) {
             parse_str($input, $data);
 
             return $data;
@@ -101,10 +104,9 @@ final class BodyParsingMiddleware implements MiddlewareInterface
             return $result;
         };
 
-        $this->registerBodyParser(MediaType::APPLICATION_XML, $xmlCallable);
-        $this->registerBodyParser(MediaType::TEXT_XML, $xmlCallable);
-
-        return $this;
+        return $clone
+            ->withBodyParser(MediaType::APPLICATION_XML, $xmlCallable)
+            ->withBodyParser(MediaType::TEXT_XML, $xmlCallable);
     }
 
     private function parseBody(ServerRequestInterface $request): array|object|null

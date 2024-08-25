@@ -50,7 +50,7 @@ class JsonRendererTest extends TestCase
         $app = (new AppBuilder())->build();
         $renderer = $app->getContainer()->get(JsonRenderer::class);
 
-        $renderer->setContentType('application/vnd.api+json');
+        $renderer = $renderer->withContentType('application/vnd.api+json');
 
         $response = $app->getContainer()
             ->get(ResponseFactoryInterface::class)
@@ -65,7 +65,7 @@ class JsonRendererTest extends TestCase
         $app = (new AppBuilder())->build();
         $renderer = $app->getContainer()->get(JsonRenderer::class);
 
-        $renderer->setJsonOptions(JSON_UNESCAPED_UNICODE);
+        $renderer = $renderer->withJsonOptions(JSON_UNESCAPED_UNICODE);
 
         // Mock JSON data
         $jsonData = ['key' => 'value'];

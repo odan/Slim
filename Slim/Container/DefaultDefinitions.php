@@ -97,18 +97,19 @@ final class DefaultDefinitions
                     $displayErrorDetails = (bool)($container->get('settings')['display_error_details'] ?? false);
                 }
 
-                $exceptionHandler->setDisplayErrorDetails($displayErrorDetails);
-                $exceptionHandler->setDefaultMediaType(MediaType::TEXT_HTML);
+                $exceptionHandler = $exceptionHandler
+                    ->withDisplayErrorDetails($displayErrorDetails)
+                    ->withDefaultMediaType(MediaType::TEXT_HTML);
 
                 return $exceptionHandler
-                    ->clearHandlers()
-                    ->setHandler(MediaType::APPLICATION_JSON, JsonErrorFormatter::class)
-                    ->setHandler(MediaType::APPLICATION_PROBLEM_JSON, JsonErrorFormatter::class)
-                    ->setHandler(MediaType::TEXT_HTML, HtmlErrorFormatter::class)
-                    ->setHandler(MediaType::APPLICATION_XHTML_XML, HtmlErrorFormatter::class)
-                    ->setHandler(MediaType::APPLICATION_XML, XmlErrorFormatter::class)
-                    ->setHandler(MediaType::TEXT_XML, XmlErrorFormatter::class)
-                    ->setHandler(MediaType::TEXT_PLAIN, PlainTextErrorFormatter::class);
+                    ->withoutHandlers()
+                    ->withHandler(MediaType::APPLICATION_JSON, JsonErrorFormatter::class)
+                    ->withHandler(MediaType::APPLICATION_PROBLEM_JSON, JsonErrorFormatter::class)
+                    ->withHandler(MediaType::TEXT_HTML, HtmlErrorFormatter::class)
+                    ->withHandler(MediaType::APPLICATION_XHTML_XML, HtmlErrorFormatter::class)
+                    ->withHandler(MediaType::APPLICATION_XML, XmlErrorFormatter::class)
+                    ->withHandler(MediaType::TEXT_XML, XmlErrorFormatter::class)
+                    ->withHandler(MediaType::TEXT_PLAIN, PlainTextErrorFormatter::class);
             },
 
             ExceptionLoggingMiddleware::class => function (ContainerInterface $container) {
@@ -122,15 +123,15 @@ final class DefaultDefinitions
                     $logErrorDetails = (bool)($container->get('settings')['log_error_details'] ?? false);
                 }
 
-                return $middleware->setLogErrorDetails($logErrorDetails);
+                return $middleware->withLogErrorDetails($logErrorDetails);
             },
             BodyParsingMiddleware::class => function (ContainerInterface $container) {
                 $mediaTypeDetector = $container->get(MediaTypeDetector::class);
                 $middleware = new BodyParsingMiddleware($mediaTypeDetector);
 
                 return $middleware
-                    ->setDefaultMediaType('text/html')
-                    ->registerDefaultBodyParsers();
+                    ->withDefaultMediaType('text/html')
+                    ->withDefaultBodyParsers();
             },
             LoggerInterface::class => function () {
                 return new StdLogger();

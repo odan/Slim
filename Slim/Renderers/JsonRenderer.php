@@ -41,11 +41,12 @@ final class JsonRenderer
     /**
      * Change the content type of the response
      */
-    public function setContentType(string $type): self
+    public function withContentType(string $type): self
     {
-        $this->contentType = $type;
+        $clone = clone $this;
+        $clone->contentType = $type;
 
-        return $this;
+        return $clone;
     }
 
     /**
@@ -54,10 +55,11 @@ final class JsonRenderer
      * @see https://php.net/manual/function.json-encode.php
      * @see https://php.net/manual/json.constants.php
      */
-    public function setJsonOptions(int $options): self
+    public function withJsonOptions(int $options): self
     {
-        $this->jsonOptions = $options;
+        $clone = clone $this;
+        $clone->jsonOptions = $options;
 
-        return $this;
+        return $clone;
     }
 }

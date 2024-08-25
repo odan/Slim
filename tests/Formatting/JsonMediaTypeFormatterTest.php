@@ -130,7 +130,7 @@ class JsonMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
-        $formatter->setContentType('application/vnd.api+json');
+        $formatter = $formatter->withContentType('application/vnd.api+json');
 
         $result = $formatter($request, $response, $exception, false);
 

@@ -36,17 +36,18 @@ final class JsonErrorFormatter implements MediaTypeFormatterInterface
 
     public function __construct(JsonRenderer $jsonRenderer)
     {
-        $this->jsonRenderer = $jsonRenderer->setContentType($this->contentType);
+        $this->jsonRenderer = $jsonRenderer->withContentType($this->contentType);
     }
 
     /**
      * Change the content type of the response
      */
-    public function setContentType(string $type): self
+    public function withContentType(string $type): self
     {
-        $this->jsonRenderer->setContentType($type);
+        $clone = clone $this;
+        $clone->jsonRenderer = $clone->jsonRenderer->withContentType($type);
 
-        return $this;
+        return $clone;
     }
 
     public function __invoke(

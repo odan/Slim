@@ -95,10 +95,11 @@ final class XmlErrorFormatter implements MediaTypeFormatterInterface
     /**
      * Change the content type of the response
      */
-    public function setContentType(string $type): self
+    public function withContentType(string $type): self
     {
-        $this->contentType = $type;
+        $clone = clone $this;
+        $clone->contentType = $type;
 
-        return $this;
+        return $clone;
     }
 }

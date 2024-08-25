@@ -198,12 +198,10 @@ final class BodyParsingMiddlewareTest extends TestCase
                 BodyParsingMiddleware::class => function (ContainerInterface $container) {
                     $mediaTypeDetector = $container->get(MediaTypeDetector::class);
                     $middleware = new BodyParsingMiddleware($mediaTypeDetector);
-                    // $middleware->registerDefaultBodyParsers();
-                    $middleware->registerBodyParser('application/vnd.api+json', function ($input) {
+
+                    return $middleware->withBodyParser('application/vnd.api+json', function ($input) {
                         return ['data' => json_decode($input, true)];
                     });
-
-                    return $middleware;
                 },
             ]
         );
@@ -253,7 +251,7 @@ final class BodyParsingMiddlewareTest extends TestCase
                     $mediaTypeDetector = $container->get(MediaTypeDetector::class);
                     $middleware = new BodyParsingMiddleware($mediaTypeDetector);
 
-                    $middleware->registerBodyParser('application/json', function () {
+                    $middleware = $middleware->withBodyParser('application/json', function () {
                         // invalid - should return null, array or object
                         return 10;
                     });

@@ -69,32 +69,36 @@ final class ExceptionHandler implements ExceptionHandlerInterface
         );
     }
 
-    public function setDisplayErrorDetails(bool $displayErrorDetails): self
+    public function withDisplayErrorDetails(bool $displayErrorDetails): self
     {
-        $this->displayErrorDetails = $displayErrorDetails;
+        $clone = clone $this;
+        $clone->displayErrorDetails = $displayErrorDetails;
 
-        return $this;
+        return $clone;
     }
 
-    public function setDefaultMediaType(string $mediaType): self
+    public function withDefaultMediaType(string $mediaType): self
     {
-        $this->defaultMediaType = $mediaType;
+        $clone = clone $this;
+        $clone->defaultMediaType = $mediaType;
 
-        return $this;
+        return $clone;
     }
 
-    public function setHandler(string $mediaType, MediaTypeFormatterInterface|callable|string $handler): self
+    public function withHandler(string $mediaType, MediaTypeFormatterInterface|callable|string $handler): self
     {
-        $this->handlers[$mediaType] = $handler;
+        $clone = clone $this;
+        $clone->handlers[$mediaType] = $handler;
 
-        return $this;
+        return $clone;
     }
 
-    public function clearHandlers(): self
+    public function withoutHandlers(): self
     {
-        $this->handlers = [];
+        $clone = clone $this;
+        $clone->handlers = [];
 
-        return $this;
+        return $clone;
     }
 
     private function negotiateMediaType(ServerRequestInterface $request): mixed
