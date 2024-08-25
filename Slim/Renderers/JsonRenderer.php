@@ -33,9 +33,9 @@ final class JsonRenderer
     public function json(ResponseInterface $response, mixed $data = null): ResponseInterface
     {
         $response = $response->withHeader('Content-Type', $this->contentType);
-        $exceptionJson = (string)json_encode($data, $this->jsonOptions);
+        $json = (string)json_encode($data, $this->jsonOptions);
 
-        return $response->withBody($this->streamFactory->createStream($exceptionJson));
+        return $response->withBody($this->streamFactory->createStream($json));
     }
 
     /**
