@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New custom error handlers using a new `ExceptionHandlerInterface`. See new `ExceptionHandlingMiddleware`.
   - New `JsonExceptionRenderer` generates a JSON problem details (rfc7807) response
   - New `XmlExceptionRenderer` generates a XML problem details (rfc7807) response
-- New `BasePathMiddleware` for dealing with Apache sub-directories.
+- New `BasePathMiddleware` for dealing with Apache subdirectories.
 - New `HeadMethodMiddleware` ensures that the response body is empty for HEAD requests.
 - New `JsonRenderer` utility class for rendering JSON responses.
 - New `RequestResponseTypedArgs` invocation strategy for route parameters with type declarations.
@@ -62,8 +62,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolving middleware breaks if resolver throws unexpected exception type #3071. Resolved with the new CallableResolver.
 - Forward logger to own `ErrorHandlingMiddleware` #2943. See new `ExceptionLoggingMiddleware`.
 - Code styles (PSR-12)
-
-## Todo
 
 ## Files
 

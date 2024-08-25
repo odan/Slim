@@ -28,7 +28,7 @@ composer require php-di/php-di
 ```
 
 PHP-DI is the recommended DI container implementation.
-Of course you can install any other [PSR-11](https://packagist.org/search/?tags=PSR-11) compatible package.
+Of course, you can install any other [PSR-11](https://packagist.org/search/?tags=PSR-11) compatible package.
 
 ## Choose a PSR-7 HTTP Implementation
 

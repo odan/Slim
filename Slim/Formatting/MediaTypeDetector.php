@@ -18,7 +18,7 @@ use function strtolower;
 final class MediaTypeDetector
 {
     /**
-     * Determine which content type we know about is wanted Accept header.
+     * Determine which content type we know about is wanted 'Accept' header.
      *
      * https://www.iana.org/assignments/media-types/media-types.xhtml
      */
