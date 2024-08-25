@@ -43,22 +43,49 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
     use RouteCollectionTrait;
 
     /**
-     * Current version.
+     * Current Slim Framework version.
      *
      * @var string
      */
     public const VERSION = '5.0.0-alpha';
 
+    /**
+     * The dependency injection container instance.
+     */
     private ContainerInterface $container;
 
+    /**
+     * The server request creator instance.
+     */
     private ServerRequestCreatorInterface $serverRequestCreator;
 
+    /**
+     * The request handler responsible for processing the request through middleware and routing.
+     */
     private RequestHandlerInterface $requestHandler;
 
+    /**
+     * The router instance for handling route definitions and matching.
+     */
     private Router $router;
 
+    /**
+     * The emitter instance for sending the HTTP response to the client.
+     */
     private EmitterInterface $emitter;
 
+    /**
+     * The constructor.
+     *
+     * Initializes the Slim application with the provided container, request creator,
+     * request handler, router, and emitter.
+     *
+     * @param ContainerInterface $container The dependency injection container
+     * @param ServerRequestCreatorInterface $serverRequestCreator The server request creator
+     * @param RequestHandlerInterface $requestHandler The request handler
+     * @param Router $router The router instance
+     * @param EmitterInterface $emitter The response emitter
+     */
     public function __construct(
         ContainerInterface $container,
         ServerRequestCreatorInterface $serverRequestCreator,
@@ -73,23 +100,47 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
         $this->emitter = $emitter;
     }
 
+    /**
+     * Get the dependency injection container.
+     *
+     * @return ContainerInterface The DI container instance
+     */
     public function getContainer(): ContainerInterface
     {
         return $this->container;
     }
 
-    public function map(array $methods, string $pattern, callable|string $handler): Route
+    /**
+     * Define a new route with the specified HTTP methods and URI pattern.
+     *
+     * @param array $methods The HTTP methods the route should respond to
+     * @param string $path The URI pattern for the route
+     * @param callable|string $handler The route handler callable or controller method
+     *
+     * @return Route The newly created route instance
+     */
+    public function map(array $methods, string $path, callable|string $handler): Route
     {
-        return $this->router->map($methods, $pattern, $handler);
-    }
-
-    public function group(string $pattern, callable $handler): RouteGroup
-    {
-        return $this->router->group($pattern, $handler);
+        return $this->router->map($methods, $path, $handler);
     }
 
     /**
-     * Get the routing base path
+     * Define a route group with a common URI prefix and a set of routes or middleware.
+     *
+     * @param string $path The URI pattern prefix for the group
+     * @param callable $handler The group handler which defines routes or middleware
+     *
+     * @return RouteGroup The newly created route group instance
+     */
+    public function group(string $path, callable $handler): RouteGroup
+    {
+        return $this->router->group($path, $handler);
+    }
+
+    /**
+     * Get the base path used for routing.
+     *
+     * @return string The base path used for routing
      */
     public function getBasePath(): string
     {
@@ -97,7 +148,11 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
     }
 
     /**
-     * Set the routing base path
+     * Set the base path used for routing.
+     *
+     * @param string $basePath The base path to use for routing
+     *
+     * @return self The current App instance for method chaining
      */
     public function setBasePath(string $basePath): self
     {
@@ -117,7 +172,11 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
     }
 
     /**
-     * Add a new middleware to the stack.
+     * Add a new middleware to the application's middleware stack.
+     *
+     * @param MiddlewareInterface|callable|string|array $middleware The middleware to add
+     *
+     * @return self The current App instance for method chaining
      */
     public function addMiddleware(MiddlewareInterface|callable|string|array $middleware): self
     {
@@ -127,10 +186,15 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
     }
 
     /**
-     * Run application.
+     * Run the Slim application.
      *
-     * This method traverses the application middleware stack and then sends the
-     * resultant Response object to the HTTP client.
+     * This method traverses the application's middleware stack, processes the incoming HTTP request,
+     * and emits the resultant HTTP response to the client.
+     *
+     * @param ServerRequestInterface|null $request The HTTP request to handle.
+     *                                             If null, it creates a request from globals.
+     *
+     * @return void
      */
     public function run(?ServerRequestInterface $request = null): void
     {
@@ -144,10 +208,14 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
     }
 
     /**
-     * Handle a request.
+     * Handle an incoming HTTP request.
      *
-     * This method traverses the application middleware stack and then returns the
-     * resultant Response object.
+     * This method processes the request through the application's middleware stack and router,
+     * returning the resulting HTTP response.
+     *
+     * @param ServerRequestInterface $request The HTTP request to handle
+     *
+     * @return ResponseInterface The HTTP response
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
