@@ -30,25 +30,44 @@ use Slim\Interfaces\ContainerResolverInterface;
  */
 final class AppBuilder
 {
+    /**
+     * @var array Service definitions for the DI container.
+     */
     private array $definitions = [];
 
     /**
-     * @var callable|null
+     * @var callable|null Factory function for creating a custom DI container.
      */
     private $containerFactory = null;
 
+    /**
+     * The constructor.
+     *
+     * Initializes the builder with the default service definitions.
+     */
     public function __construct()
     {
         $this->setDefinitions(DefaultDefinitions::class);
     }
 
-    // Set up Slim with the DI container
+    /**
+     * Builds the Slim application instance using the configured DI container.
+     *
+     * @return App The fully built Slim application instance.
+     */
     public function build(): App
     {
         return $this->buildContainer()->get(App::class);
     }
 
-    // Create the container
+    /**
+     * Creates and configures the DI container.
+     *
+     * If a custom container factory is set, it will be used to create the container;
+     * otherwise, a default container with the provided definitions will be created.
+     *
+     * @return ContainerInterface The configured DI container.
+     */
     private function buildContainer(): ContainerInterface
     {
         return $this->containerFactory
@@ -56,6 +75,16 @@ final class AppBuilder
             : new Container($this->definitions);
     }
 
+    /**
+     * Sets the service definitions for the DI container.
+     *
+     * The method accepts either an array of definitions or the name of a class that provides definitions.
+     * If a class name is provided, its definitions are added to the existing ones.
+     *
+     * @param array|string $definitions An array of service definitions or a class name providing them.
+     *
+     * @return self The current AppBuilder instance for method chaining.
+     */
     public function setDefinitions(array|string $definitions): self
     {
         if (is_string($definitions)) {
@@ -67,6 +96,13 @@ final class AppBuilder
         return $this;
     }
 
+    /**
+     * Sets a custom factory for creating the DI container.
+     *
+     * @param callable $factory A callable that returns a configured DI container.
+     *
+     * @return self The current AppBuilder instance for method chaining.
+     */
     public function setContainerFactory(callable $factory): self
     {
         $this->containerFactory = $factory;
@@ -74,6 +110,15 @@ final class AppBuilder
         return $this;
     }
 
+    /**
+     * Configures the order of middleware execution in the application.
+     *
+     * This method sets up a MiddlewareResolver with the specified order of middleware.
+     *
+     * @param MiddlewareOrder $order The desired order of middleware execution.
+     *
+     * @return self The current AppBuilder instance for method chaining.
+     */
     public function setMiddlewareOrder(MiddlewareOrder $order): self
     {
         $this->setDefinitions(
@@ -91,6 +136,16 @@ final class AppBuilder
         return $this;
     }
 
+    /**
+     * Sets application-wide settings in the DI container.
+     *
+     * This method allows the user to configure various settings for the Slim application,
+     * such as display_error_details, log_error_details, etc., by passing an associative array of settings.
+     *
+     * @param array $settings An associative array of application settings.
+     *
+     * @return self The current AppBuilder instance for method chaining.
+     */
     public function setSettings(array $settings): self
     {
         $this->setDefinitions(
