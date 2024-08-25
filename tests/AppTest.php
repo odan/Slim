@@ -418,7 +418,7 @@ final class AppTest extends TestCase
             return $response;
         })
             ->add($middleware)
-            ->addMiddleware($middleware2);
+            ->add($middleware2);
 
         $response = $app->handle($request);
 

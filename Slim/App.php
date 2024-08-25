@@ -164,9 +164,9 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
     /**
      * Add a new middleware to the stack.
      */
-    public function add(MiddlewareInterface|callable|string|array $middleware): self
+    public function add(MiddlewareInterface|callable|string $middleware): self
     {
-        $this->router->addMiddleware($middleware);
+        $this->router->add($middleware);
 
         return $this;
     }
@@ -174,11 +174,11 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
     /**
      * Add a new middleware to the application's middleware stack.
      *
-     * @param MiddlewareInterface|callable|string|array $middleware The middleware to add
+     * @param MiddlewareInterface $middleware The middleware to add
      *
      * @return self The current App instance for method chaining
      */
-    public function addMiddleware(MiddlewareInterface|callable|string|array $middleware): self
+    public function addMiddleware(MiddlewareInterface $middleware): self
     {
         $this->router->addMiddleware($middleware);
 

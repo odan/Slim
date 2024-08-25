@@ -26,7 +26,7 @@ use function sprintf;
  */
 final class Runner implements RequestHandlerInterface
 {
-    private array $queue = [];
+    private array $queue;
 
     public function __construct(array $queue)
     {

@@ -10,7 +10,7 @@ interface MiddlewareCollectionInterface
 {
     public function getMiddlewareStack(): array;
 
-    public function add(MiddlewareInterface|callable|string|array $middleware): self;
+    public function add(MiddlewareInterface|callable|string $middleware): self;
 
-    public function addMiddleware(MiddlewareInterface|callable|string|array $middleware): self;
+    public function addMiddleware(MiddlewareInterface $middleware): self;
 }
