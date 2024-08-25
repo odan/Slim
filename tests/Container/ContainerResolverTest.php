@@ -48,7 +48,7 @@ final class ContainerResolverTest extends TestCase
         $builder = new AppBuilder();
         $builder->setDefinitions(
             [
-                'ultimateAnswer' => fn() => 42,
+                'ultimateAnswer' => fn () => 42,
             ]
         );
         $app = $builder->build();
@@ -132,7 +132,7 @@ final class ContainerResolverTest extends TestCase
         $builder = new AppBuilder();
         $builder->setDefinitions(
             [
-                'callable_service' => fn() => new CallableTester(),
+                'callable_service' => fn () => new CallableTester(),
             ]
         );
         $app = $builder->build();
@@ -147,7 +147,7 @@ final class ContainerResolverTest extends TestCase
         $builder = new AppBuilder();
         $builder->setDefinitions(
             [
-                'an_invokable' => fn() => new InvokableTester(),
+                'an_invokable' => fn () => new InvokableTester(),
             ]
         );
         $app = $builder->build();
@@ -229,7 +229,7 @@ final class ContainerResolverTest extends TestCase
         $builder = new AppBuilder();
         $builder->setDefinitions(
             [
-                'callable_service' => fn() => 'NOT AN OBJECT',
+                'callable_service' => fn () => 'NOT AN OBJECT',
             ]
         );
         $app = $builder->build();
@@ -246,7 +246,7 @@ final class ContainerResolverTest extends TestCase
         $builder = new AppBuilder();
         $builder->setDefinitions(
             [
-                'callable_service' => fn() => new CallableTester(),
+                'callable_service' => fn () => new CallableTester(),
             ]
         );
         $app = $builder->build();

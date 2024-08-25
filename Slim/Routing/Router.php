@@ -32,10 +32,10 @@ final class Router
         return $route;
     }
 
-    public function group(string $pattern, callable $callable): RouteGroup
+    public function group(string $path, callable $handler): RouteGroup
     {
-        $routePattern = $this->basePath . $pattern;
-        $routeGroup = new RouteGroup($routePattern, $callable, $this);
+        $routePattern = $this->basePath . $path;
+        $routeGroup = new RouteGroup($routePattern, $handler, $this);
         $this->collector->addGroup($routePattern, $routeGroup);
 
         return $routeGroup;
