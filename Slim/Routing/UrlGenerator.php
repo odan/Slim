@@ -51,9 +51,7 @@ final class UrlGenerator implements UrlGeneratorInterface
      */
     public function urlFor(string $routeName, array $data = [], array $queryParams = []): string
     {
-        $url = $this->relativeUrlFor($routeName, $data, $queryParams);
-
-        return $url;
+        return $this->relativeUrlFor($routeName, $data, $queryParams);
     }
 
     /**

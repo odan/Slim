@@ -34,9 +34,7 @@ final class ResponseEmitter implements EmitterInterface
     }
 
     /**
-     * Send the response the client
-     *
-     * @param ResponseInterface $response
+     * Send the response the client.
      */
     public function emit(ResponseInterface $response): void
     {
@@ -90,8 +88,6 @@ final class ResponseEmitter implements EmitterInterface
 
     /**
      * Emit Body
-     *
-     * @param ResponseInterface $response
      */
     private function emitBody(ResponseInterface $response): void
     {
@@ -128,9 +124,7 @@ final class ResponseEmitter implements EmitterInterface
     }
 
     /**
-     * Asserts response body is empty or status code is 204, 205 or 304
-     *
-     * @param ResponseInterface $response
+     * Asserts response body is empty or status code is 204, 205 or 304.
      */
     public function isResponseEmpty(ResponseInterface $response): bool
     {

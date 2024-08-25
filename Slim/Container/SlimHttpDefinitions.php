@@ -58,7 +58,7 @@ final class SlimHttpDefinitions
                     }
                 };
             },
-            ServerRequestCreatorInterface::class => function (ContainerInterface $container) {
+            ServerRequestCreatorInterface::class => function () {
                 return new class implements ServerRequestCreatorInterface {
                     public function createServerRequestFromGlobals(): ServerRequestInterface
                     {
