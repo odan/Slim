@@ -14,6 +14,7 @@ use DOMDocument;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Constants\MediaType;
 use Slim\Interfaces\MediaTypeFormatterInterface;
 use Throwable;
 
@@ -29,7 +30,7 @@ final class XmlErrorFormatter implements MediaTypeFormatterInterface
 {
     use ExceptionFormatterTrait;
 
-    private string $contentType = 'application/problem+xml';
+    private string $contentType = MediaType::APPLICATION_PROBLEM_XML;
 
     public function __invoke(
         ServerRequestInterface $request,

@@ -13,6 +13,7 @@ namespace Slim\Formatting;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Constants\MediaType;
 use Slim\Interfaces\MediaTypeFormatterInterface;
 use Slim\Renderers\JsonRenderer;
 use Throwable;
@@ -31,7 +32,7 @@ final class JsonErrorFormatter implements MediaTypeFormatterInterface
 
     private JsonRenderer $jsonRenderer;
 
-    private string $contentType = 'application/problem+json';
+    private string $contentType = MediaType::APPLICATION_PROBLEM_JSON;
 
     public function __construct(JsonRenderer $jsonRenderer)
     {

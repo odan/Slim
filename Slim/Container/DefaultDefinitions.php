@@ -17,6 +17,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
+use Slim\Constants\MediaType;
 use Slim\Emitter\ResponseEmitter;
 use Slim\Formatting\HtmlErrorFormatter;
 use Slim\Formatting\JsonErrorFormatter;
@@ -97,17 +98,17 @@ final class DefaultDefinitions
                 }
 
                 $exceptionHandler->setDisplayErrorDetails($displayErrorDetails);
-                $exceptionHandler->setDefaultMediaType('text/html');
+                $exceptionHandler->setDefaultMediaType(MediaType::TEXT_HTML);
 
                 return $exceptionHandler
                     ->clearHandlers()
-                    ->setHandler('application/json', JsonErrorFormatter::class)
-                    ->setHandler('application/problem+json', JsonErrorFormatter::class)
-                    ->setHandler('text/html', HtmlErrorFormatter::class)
-                    ->setHandler('application/xhtml+xml', HtmlErrorFormatter::class)
-                    ->setHandler('application/xml', XmlErrorFormatter::class)
-                    ->setHandler('text/xml', XmlErrorFormatter::class)
-                    ->setHandler('text/plain', PlainTextErrorFormatter::class);
+                    ->setHandler(MediaType::APPLICATION_JSON, JsonErrorFormatter::class)
+                    ->setHandler(MediaType::APPLICATION_PROBLEM_JSON, JsonErrorFormatter::class)
+                    ->setHandler(MediaType::TEXT_HTML, HtmlErrorFormatter::class)
+                    ->setHandler(MediaType::APPLICATION_XHTML_XML, HtmlErrorFormatter::class)
+                    ->setHandler(MediaType::APPLICATION_XML, XmlErrorFormatter::class)
+                    ->setHandler(MediaType::TEXT_XML, XmlErrorFormatter::class)
+                    ->setHandler(MediaType::TEXT_PLAIN, PlainTextErrorFormatter::class);
             },
 
             ExceptionLoggingMiddleware::class => function (ContainerInterface $container) {

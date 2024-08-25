@@ -15,6 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
+use Slim\Constants\MediaType;
 use Slim\Formatting\MediaTypeDetector;
 
 use function is_array;
@@ -70,7 +71,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
 
     public function registerDefaultBodyParsers(): self
     {
-        $this->registerBodyParser('application/json', function ($input) {
+        $this->registerBodyParser(MediaType::APPLICATION_JSON, function ($input) {
             $result = json_decode($input, true);
 
             if (!is_array($result)) {
@@ -80,7 +81,7 @@ final class BodyParsingMiddleware implements MiddlewareInterface
             return $result;
         });
 
-        $this->registerBodyParser('application/x-www-form-urlencoded', function ($input) {
+        $this->registerBodyParser(MediaType::APPLICATION_FORM_URLENCODED, function ($input) {
             parse_str($input, $data);
 
             return $data;
@@ -100,8 +101,8 @@ final class BodyParsingMiddleware implements MiddlewareInterface
             return $result;
         };
 
-        $this->registerBodyParser('application/xml', $xmlCallable);
-        $this->registerBodyParser('text/xml', $xmlCallable);
+        $this->registerBodyParser(MediaType::APPLICATION_XML, $xmlCallable);
+        $this->registerBodyParser(MediaType::TEXT_XML, $xmlCallable);
 
         return $this;
     }

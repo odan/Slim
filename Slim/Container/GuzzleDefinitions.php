@@ -29,7 +29,7 @@ final class GuzzleDefinitions
             ServerRequestFactoryInterface::class => function (ContainerInterface $container) {
                 return $container->get(HttpFactory::class);
             },
-            ServerRequestCreatorInterface::class => function (ContainerInterface $container) {
+            ServerRequestCreatorInterface::class => function () {
                 return new class implements ServerRequestCreatorInterface {
                     public function createServerRequestFromGlobals(): ServerRequestInterface
                     {
