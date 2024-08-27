@@ -34,6 +34,10 @@
             "name": "Gabriel Manricks",
             "email": "gmanricks@me.com",
             "homepage": "https://gabrielmanricks.com"
+        },
+        {
+            "name": "Daniel Opitz",
+            "homepage": "https://odan.github.io/"
         }
     ],
     "homepage": "https://www.slimframework.com",
