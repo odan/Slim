@@ -36,7 +36,7 @@ class HtmlMediaTypeFormatterTest extends TestCase
 
         $exception = new Exception('Test exception message');
 
-        $formatter = new HtmlErrorFormatter();
+        $formatter = $app->getContainer()->get(HtmlErrorFormatter::class);
         $result = $formatter($request, $response, $exception, true);
 
         $this->assertEquals('text/html', $result->getHeaderLine('Content-Type'));
@@ -69,7 +69,7 @@ class HtmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = new HtmlErrorFormatter();
+        $formatter = $app->getContainer()->get(HtmlErrorFormatter::class);
         $result = $formatter($request, $response, $exception, false);
 
         // Expected HTML

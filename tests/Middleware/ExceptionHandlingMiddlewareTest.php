@@ -187,13 +187,10 @@ final class ExceptionHandlingMiddlewareTest extends TestCase
         $response = $app->handle($request);
 
         $actual = json_decode((string)$response->getBody(), true);
-        $this->assertSame('urn:ietf:rfc:7807', $actual['type']);
-        $this->assertSame('Application Error', $actual['title']);
-        $this->assertSame(500, $actual['status']);
-        $this->assertSame('A website error has occurred. Sorry for the temporary inconvenience.', $actual['detail']);
-        $this->assertSame(1, count($actual['exceptions']));
-        $this->assertSame('RuntimeException', $actual['exceptions'][0]['type']);
-        $this->assertSame(123, $actual['exceptions'][0]['code']);
-        $this->assertSame('Test error', $actual['exceptions'][0]['message']);
+        $this->assertSame('Application Error', $actual['message']);
+        $this->assertSame(1, count($actual['exception']));
+        $this->assertSame('RuntimeException', $actual['exception'][0]['type']);
+        $this->assertSame(123, $actual['exception'][0]['code']);
+        $this->assertSame('Test error', $actual['exception'][0]['message']);
     }
 }

@@ -13,6 +13,8 @@ namespace Slim\Formatting;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Slim\Constants\MediaType;
 use Slim\Interfaces\MediaTypeFormatterInterface;
 use Throwable;
 
@@ -20,11 +22,18 @@ use function get_class;
 use function sprintf;
 
 /**
- * HTML Error Renderer.
+ * Formats exceptions into a HTML response.
  */
 final class HtmlErrorFormatter implements MediaTypeFormatterInterface
 {
     use ExceptionFormatterTrait;
+
+    private StreamFactoryInterface $streamFactory;
+
+    public function __construct(StreamFactoryInterface $streamFactory)
+    {
+        $this->streamFactory = $streamFactory;
+    }
 
     public function __invoke(
         ServerRequestInterface $request,
@@ -42,9 +51,10 @@ final class HtmlErrorFormatter implements MediaTypeFormatterInterface
 
         $html = $this->renderHtmlBody($this->getErrorTitle($exception), $html);
 
-        $response->getBody()->write($html);
+        $body = $this->streamFactory->createStream($html);
+        $response = $response->withBody($body);
 
-        return $response->withHeader('Content-Type', 'text/html');
+        return $response->withHeader('Content-Type', MediaType::TEXT_HTML);
     }
 
     private function renderExceptionFragment(Throwable $exception): string
@@ -107,8 +117,8 @@ final class HtmlErrorFormatter implements MediaTypeFormatterInterface
         );
     }
 
-    private function escapeHtml(string $input = null): string
+    private function escapeHtml(?string $input = null): string
     {
-        return htmlspecialchars($input, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars($input ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 }

@@ -38,18 +38,16 @@ class JsonMediaTypeFormatterTest extends TestCase
         $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
         $result = $formatter($request, $response, $exception, true);
 
-        $this->assertEquals('application/problem+json', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('application/json', $result->getHeaderLine('Content-Type'));
 
         $json = (string)$result->getBody();
         $data = json_decode($json, true);
 
         // Assertions
-        $this->assertEquals('urn:ietf:rfc:7807', $data['type']);
-        $this->assertEquals('Application Error', $data['title']);
-        $this->assertEquals(200, $data['status']);
-        $this->assertArrayHasKey('exceptions', $data);
-        $this->assertCount(1, $data['exceptions']);
-        $this->assertEquals('Test exception message', $data['exceptions'][0]['message']);
+        $this->assertEquals('Application Error', $data['message']);
+        $this->assertArrayHasKey('exception', $data);
+        $this->assertCount(1, $data['exception']);
+        $this->assertEquals('Test exception message', $data['exception'][0]['message']);
     }
 
     public function testInvokeWithExceptionAndWithoutErrorDetails()
@@ -69,16 +67,14 @@ class JsonMediaTypeFormatterTest extends TestCase
         $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
         $result = $formatter($request, $response, $exception, false);
 
-        $this->assertEquals('application/problem+json', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('application/json', $result->getHeaderLine('Content-Type'));
 
         $json = (string)$result->getBody();
         $data = json_decode($json, true);
 
         // Assertions
-        $this->assertEquals('urn:ietf:rfc:7807', $data['type']);
-        $this->assertEquals('Application Error', $data['title']);
-        $this->assertEquals(200, $data['status']);
-        $this->assertArrayNotHasKey('exceptions', $data);
+        $this->assertEquals('Application Error', $data['message']);
+        $this->assertArrayNotHasKey('exception', $data);
     }
 
     public function testInvokeWithHttpExceptionAndWithoutErrorDetails()
@@ -99,41 +95,13 @@ class JsonMediaTypeFormatterTest extends TestCase
         $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
         $result = $formatter($request, $response, $exception, true);
 
-        $this->assertEquals('application/problem+json', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('application/json', $result->getHeaderLine('Content-Type'));
 
         $json = (string)$result->getBody();
         $data = json_decode($json, true);
 
         // Assertions
-        $this->assertEquals('urn:ietf:rfc:7807', $data['type']);
-        $this->assertEquals('404 Not Found', $data['title']);
-        $this->assertEquals(
-            'The requested resource could not be found. Please verify the URI and try again.',
-            $data['detail']
-        );
-        $this->assertEquals(404, $data['status']);
-        $this->assertArrayHasKey('exceptions', $data);
-    }
-
-    public function testSetContentType()
-    {
-        $app = (new AppBuilder())->build();
-
-        $request = $app->getContainer()
-            ->get(ServerRequestFactoryInterface::class)
-            ->createServerRequest('GET', '/');
-
-        $response = $app->getContainer()
-            ->get(ResponseFactoryInterface::class)
-            ->createResponse();
-
-        $exception = new Exception('Test exception message');
-
-        $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
-        $formatter = $formatter->withContentType('application/vnd.api+json');
-
-        $result = $formatter($request, $response, $exception, false);
-
-        $this->assertEquals('application/vnd.api+json', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('404 Not Found', $data['message']);
+        $this->assertArrayHasKey('exception', $data);
     }
 }

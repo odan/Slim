@@ -104,7 +104,6 @@ final class DefaultDefinitions
                 return $exceptionHandler
                     ->withoutHandlers()
                     ->withHandler(MediaType::APPLICATION_JSON, JsonErrorFormatter::class)
-                    ->withHandler(MediaType::APPLICATION_PROBLEM_JSON, JsonErrorFormatter::class)
                     ->withHandler(MediaType::TEXT_HTML, HtmlErrorFormatter::class)
                     ->withHandler(MediaType::APPLICATION_XHTML_XML, HtmlErrorFormatter::class)
                     ->withHandler(MediaType::APPLICATION_XML, XmlErrorFormatter::class)

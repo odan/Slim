@@ -13,6 +13,8 @@ namespace Slim\Formatting;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Slim\Constants\MediaType;
 use Slim\Interfaces\MediaTypeFormatterInterface;
 use Throwable;
 
@@ -20,11 +22,18 @@ use function get_class;
 use function sprintf;
 
 /**
- * Plain Text Error Renderer.
+ * Formats exceptions into a plain text response.
  */
 final class PlainTextErrorFormatter implements MediaTypeFormatterInterface
 {
     use ExceptionFormatterTrait;
+
+    private StreamFactoryInterface $streamFactory;
+
+    public function __construct(StreamFactoryInterface $streamFactory)
+    {
+        $this->streamFactory = $streamFactory;
+    }
 
     public function __invoke(
         ServerRequestInterface $request,
@@ -43,9 +52,10 @@ final class PlainTextErrorFormatter implements MediaTypeFormatterInterface
             }
         }
 
-        $response->getBody()->write($text);
+        $body = $this->streamFactory->createStream($text);
+        $response = $response->withBody($body);
 
-        return $response->withHeader('Content-Type', 'text/plain');
+        return $response->withHeader('Content-Type', MediaType::TEXT_PLAIN);
     }
 
     private function formatExceptionFragment(Throwable $exception): string

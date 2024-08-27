@@ -14,6 +14,7 @@ use DOMDocument;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Slim\Constants\MediaType;
 use Slim\Interfaces\MediaTypeFormatterInterface;
 use Throwable;
@@ -21,16 +22,18 @@ use Throwable;
 use function get_class;
 
 /**
- * Generates a XML problem details response.
- *
- * Problem Details rfc7807:
- * https://datatracker.ietf.org/doc/html/rfc7807#page-14
+ * Formats exceptions into a XML response.
  */
 final class XmlErrorFormatter implements MediaTypeFormatterInterface
 {
     use ExceptionFormatterTrait;
 
-    private string $contentType = MediaType::APPLICATION_PROBLEM_XML;
+    private StreamFactoryInterface $streamFactory;
+
+    public function __construct(StreamFactoryInterface $streamFactory)
+    {
+        $this->streamFactory = $streamFactory;
+    }
 
     public function __invoke(
         ServerRequestInterface $request,
@@ -38,68 +41,43 @@ final class XmlErrorFormatter implements MediaTypeFormatterInterface
         ?Throwable $exception = null,
         bool $displayErrorDetails = false
     ): ResponseInterface {
-        $doc = new DOMDocument('1.0', 'UTF-8');
-        $doc->formatOutput = true;
+        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
 
-        // Create the root element
-        $problem = $doc->createElement('problem');
-        $doc->appendChild($problem);
+        $errorElement = $dom->createElement('error');
+        $dom->appendChild($errorElement);
 
-        // Namespace
-        $problem->setAttribute('xmlns', 'urn:ietf:rfc:7807');
+        $messageElement = $dom->createElement('message', $this->getErrorTitle($exception));
+        $errorElement->appendChild($messageElement);
 
-        // Add title element
-        $errorTitle = $this->getErrorTitle($exception);
-        $title = $doc->createElement('title', $errorTitle);
-        $problem->appendChild($title);
-
-        // Add the status element
-        $status = $doc->createElement('status', (string)$response->getStatusCode());
-        $problem->appendChild($status);
-
-        // Add details for each exception
+        // If error details should be displayed
         if ($displayErrorDetails) {
-            $exceptions = $doc->createElement('exceptions');
-            $problem->appendChild($exceptions);
-
             do {
-                $error = $doc->createElement('exception');
-                $exceptions->appendChild($error);
+                $exceptionElement = $dom->createElement('exception');
 
-                $type = $doc->createElement('type', get_class($exception));
-                $error->appendChild($type);
+                $typeElement = $dom->createElement('type', get_class($exception));
+                $exceptionElement->appendChild($typeElement);
 
-                $errorCode = $exception instanceof ErrorException ? $exception->getSeverity() : $exception->getCode();
-                $code = $doc->createElement('code', (string)$errorCode);
-                $error->appendChild($code);
+                $code = $exception instanceof ErrorException ? $exception->getSeverity() : $exception->getCode();
+                $codeElement = $dom->createElement('code', (string)$code);
+                $exceptionElement->appendChild($codeElement);
 
-                $message = $doc->createElement('message', $exception->getMessage());
-                $error->appendChild($message);
+                $messageElement = $dom->createElement('message', $exception->getMessage());
+                $exceptionElement->appendChild($messageElement);
 
-                $file = $doc->createElement('file', $exception->getFile());
-                $error->appendChild($file);
+                $fileElement = $dom->createElement('file', $exception->getFile());
+                $exceptionElement->appendChild($fileElement);
 
-                $line = $doc->createElement('line', (string)$exception->getLine());
-                $error->appendChild($line);
+                $lineElement = $dom->createElement('line', (string)$exception->getLine());
+                $exceptionElement->appendChild($lineElement);
 
-                $trace = $doc->createElement('trace', $exception->getTraceAsString());
-                $error->appendChild($trace);
+                $errorElement->appendChild($exceptionElement);
             } while ($exception = $exception->getPrevious());
         }
 
-        $response->getBody()->write((string)$doc->saveXML());
+        $body = $this->streamFactory->createStream((string)$dom->saveXML());
+        $response = $response->withBody($body);
 
-        return $response->withHeader('Content-Type', $this->contentType);
-    }
-
-    /**
-     * Change the content type of the response
-     */
-    public function withContentType(string $type): self
-    {
-        $clone = clone $this;
-        $clone->contentType = $type;
-
-        return $clone;
+        return $response->withHeader('Content-Type', MediaType::APPLICATION_XML);
     }
 }

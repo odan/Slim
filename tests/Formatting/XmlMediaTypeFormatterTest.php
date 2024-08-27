@@ -35,17 +35,15 @@ class XmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = new XmlErrorFormatter();
+        $formatter = $app->getContainer()->get(XmlErrorFormatter::class);
         $result = $formatter($request, $response, $exception, true);
 
         // Assertions
-        $this->assertEquals('application/problem+xml', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('application/xml', $result->getHeaderLine('Content-Type'));
 
         $xml = (string)$result->getBody();
-        $this->assertStringContainsString('<problem xmlns="urn:ietf:rfc:7807">', $xml);
-        $this->assertStringContainsString('<title>Application Error</title>', $xml);
-        $this->assertStringContainsString('<status>200</status>', $xml);
-        $this->assertStringContainsString('<exceptions>', $xml);
+        $this->assertStringContainsString('<message>Application Error</message>', $xml);
+        $this->assertStringContainsString('<exception>', $xml);
         $this->assertStringContainsString('<type>Exception</type>', $xml);
         $this->assertStringContainsString('<message>Test exception message</message>', $xml);
     }
@@ -66,17 +64,15 @@ class XmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = new XmlErrorFormatter();
+        $formatter = $app->getContainer()->get(XmlErrorFormatter::class);
         $result = $formatter($request, $response, $exception, false);
 
         // Assertions
-        $this->assertEquals('application/problem+xml', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('application/xml', $result->getHeaderLine('Content-Type'));
 
         $xml = (string)$result->getBody();
-        $this->assertStringContainsString('<problem xmlns="urn:ietf:rfc:7807">', $xml);
-        $this->assertStringContainsString('<title>Application Error</title>', $xml);
-        $this->assertStringContainsString('<status>200</status>', $xml);
-        $this->assertStringNotContainsString('<exceptions>', $xml);
+        $this->assertStringContainsString('<message>Application Error</message>', $xml);
+        $this->assertStringNotContainsString('<exception>', $xml);
         $this->assertStringNotContainsString('<type>Exception</type>', $xml);
     }
 
@@ -97,44 +93,16 @@ class XmlMediaTypeFormatterTest extends TestCase
         $outerException = new Exception('Outer exception message', 0, $innerException);
 
         // Instantiate the formatter and invoke it
-        $formatter = new XmlErrorFormatter();
+        $formatter = $app->getContainer()->get(XmlErrorFormatter::class);
         $result = $formatter($request, $response, $outerException, true);
 
         // Assertions
-        $this->assertEquals('application/problem+xml', $result->getHeaderLine('Content-Type'));
+        $this->assertEquals('application/xml', $result->getHeaderLine('Content-Type'));
 
         $xml = (string)$result->getBody();
-        $this->assertStringContainsString('<problem xmlns="urn:ietf:rfc:7807">', $xml);
-        $this->assertStringContainsString('<title>Application Error</title>', $xml);
-        $this->assertStringContainsString('<status>200</status>', $xml);
-        $this->assertStringContainsString('<exceptions>', $xml);
+        $this->assertStringContainsString('<message>Application Error</message>', $xml);
+        $this->assertStringContainsString('<exception>', $xml);
         $this->assertStringContainsString('<message>Outer exception message</message>', $xml);
         $this->assertStringContainsString('<message>Inner exception message</message>', $xml);
-    }
-
-    public function testSetContentType()
-    {
-        $app = (new AppBuilder())->build();
-
-        $request = $app->getContainer()
-            ->get(ServerRequestFactoryInterface::class)
-            ->createServerRequest('GET', '/');
-
-        $response = $app->getContainer()
-            ->get(ResponseFactoryInterface::class)
-            ->createResponse();
-
-        $exception = new Exception('Test exception message');
-
-        // Instantiate the formatter, set a custom content type, and invoke it
-        $formatter = new XmlErrorFormatter();
-        $formatter = $formatter->withContentType('application/vnd.api+json');
-        $result = $formatter($request, $response, $exception, false);
-
-        $this->assertEquals('application/vnd.api+json', $result->getHeaderLine('Content-Type'));
-
-        $xml = (string)$result->getBody();
-        $this->assertStringContainsString('<problem xmlns="urn:ietf:rfc:7807">', $xml);
-        $this->assertStringContainsString('<title>Application Error</title>', $xml);
     }
 }

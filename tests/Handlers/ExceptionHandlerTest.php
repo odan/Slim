@@ -79,9 +79,7 @@ final class ExceptionHandlerTest extends TestCase
 
         $this->assertSame(500, $response->getStatusCode());
         $expected = [
-            'type' => 'urn:ietf:rfc:7807',
-            'title' => 'Application Error',
-            'status' => 500,
+            'message' => 'Application Error',
         ];
         $this->assertJsonResponse($expected, $response);
     }
@@ -143,10 +141,9 @@ final class ExceptionHandlerTest extends TestCase
 
         $this->assertSame(500, $response->getStatusCode());
         $expected = '<?xml version="1.0" encoding="UTF-8"?>
-                    <problem xmlns="urn:ietf:rfc:7807">
-                      <title>Application Error</title>
-                      <status>500</status>
-                    </problem>';
+                    <error>
+                      <message>Application Error</message>
+                    </error>';
 
         $dom = new DOMDocument();
         $dom->preserveWhiteSpace = false;

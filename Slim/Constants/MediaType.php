@@ -14,8 +14,6 @@ final class MediaType
 {
     public const APPLICATION_FORM_URLENCODED = 'application/x-www-form-urlencoded';
     public const APPLICATION_JSON = 'application/json';
-    public const APPLICATION_PROBLEM_JSON = 'application/problem+json';
-    public const APPLICATION_PROBLEM_XML = 'application/problem+xml';
     public const APPLICATION_XHTML_XML = 'application/xhtml+xml';
     public const APPLICATION_XML = 'application/xml';
     public const MULTIPART_FORM_DATA = 'multipart/form-data';
