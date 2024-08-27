@@ -101,7 +101,7 @@ final class ExceptionHandler implements ExceptionHandlerInterface
         return $clone;
     }
 
-    private function negotiateMediaType(ServerRequestInterface $request): mixed
+    private function negotiateMediaType(ServerRequestInterface $request): string
     {
         $mediaTypes = $this->mediaTypeDetector->detect($request);
 
