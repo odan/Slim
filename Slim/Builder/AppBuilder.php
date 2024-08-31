@@ -140,7 +140,7 @@ final class AppBuilder
      * Sets application-wide settings in the DI container.
      *
      * This method allows the user to configure various settings for the Slim application,
-     * such as display_error_details, log_error_details, etc., by passing an associative array of settings.
+     * by passing an associative array of settings.
      *
      * @param array $settings An associative array of application settings
      *

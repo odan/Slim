@@ -56,7 +56,7 @@ final class AppTest extends TestCase
     public function testAppWithExceptionAndErrorDetails(): void
     {
         $builder = new AppBuilder();
-        $builder->setSettings(['display_error_details' => true]);
+        $builder->setSettings(['exception_handler' => ['display_error_details' => true]]);
         $app = $builder->build();
 
         $app->add(RoutingMiddleware::class);

@@ -25,6 +25,7 @@ use Slim\Formatting\MediaTypeDetector;
 use Slim\Formatting\PlainTextErrorFormatter;
 use Slim\Formatting\XmlErrorFormatter;
 use Slim\Handlers\ExceptionHandler;
+use Slim\Interfaces\ConfigInterface;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\EmitterInterface;
 use Slim\Interfaces\ExceptionHandlerInterface;
@@ -35,6 +36,7 @@ use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
+use Slim\Settings\Config;
 use Slim\Strategies\RequestResponse;
 
 /**
@@ -60,9 +62,16 @@ final class DefaultDefinitions
         return [
             // Configuration
             'settings' => [
-                'display_error_details' => false,
-                'log_error_details' => false,
+                'exception_handler' => [
+                    'display_error_details' => false,
+                ],
+                'exception_logging_middleware' => [
+                    'log_error_details' => false,
+                ],
             ],
+            ConfigInterface::class => function (ContainerInterface $container) {
+                return new Config($container->get('settings'));
+            },
             // Slim application
             App::class => function (ContainerInterface $container) {
                 $serverRequestCreator = $container->get(ServerRequestCreatorInterface::class);
@@ -92,10 +101,8 @@ final class DefaultDefinitions
                 $exceptionHandler = $container->get(ExceptionHandler::class);
 
                 // Settings
-                $displayErrorDetails = false;
-                if ($container->has('settings')) {
-                    $displayErrorDetails = (bool)($container->get('settings')['display_error_details'] ?? false);
-                }
+                $displayErrorDetails = (bool)$container->get(ConfigInterface::class)
+                    ->get('exception_handler.display_error_details', false);
 
                 $exceptionHandler = $exceptionHandler
                     ->withDisplayErrorDetails($displayErrorDetails)
@@ -117,10 +124,8 @@ final class DefaultDefinitions
                 $middleware = new ExceptionLoggingMiddleware($logger);
 
                 // Read settings
-                $logErrorDetails = false;
-                if ($container->has('settings')) {
-                    $logErrorDetails = (bool)($container->get('settings')['log_error_details'] ?? false);
-                }
+                $logErrorDetails = (bool)$container->get(ConfigInterface::class)
+                    ->get('exception_logging_middleware.log_error_details', false);
 
                 return $middleware->withLogErrorDetails($logErrorDetails);
             },

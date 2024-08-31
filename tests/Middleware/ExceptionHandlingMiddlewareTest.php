@@ -168,7 +168,7 @@ final class ExceptionHandlingMiddlewareTest extends TestCase
     public function testJsonMediaTypeWithDetails(): void
     {
         $builder = new AppBuilder();
-        $builder->setSettings(['display_error_details' => true]);
+        $builder->setSettings(['exception_handler' => ['display_error_details' => true]]);
         $app = $builder->build();
 
         $app->add(ExceptionHandlingMiddleware::class);

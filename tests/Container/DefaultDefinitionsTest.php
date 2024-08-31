@@ -33,6 +33,7 @@ use Slim\Container\NyholmDefinitions;
 use Slim\Container\SlimHttpDefinitions;
 use Slim\Container\SlimPsr7Definitions;
 use Slim\Emitter\ResponseEmitter;
+use Slim\Interfaces\ConfigInterface;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\EmitterInterface;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
@@ -50,11 +51,25 @@ final class DefaultDefinitionsTest extends TestCase
         $container = new Container((new DefaultDefinitions())->__invoke());
         $settings = $container->get('settings');
         $expected = [
-            'display_error_details' => false,
-            'log_error_details' => false,
+            'exception_handler' => [
+                'display_error_details' => false,
+            ],
+            'exception_logging_middleware' => [
+                'log_error_details' => false,
+            ],
         ];
 
         $this->assertSame($expected, $settings);
+    }
+
+    public function testConfig(): void
+    {
+        $container = new Container((new DefaultDefinitions())->__invoke());
+        $details = $container->get(ConfigInterface::class)->get('exception_handler.display_error_details');
+        $this->assertFalse($details);
+
+        $details = $container->get(ConfigInterface::class)->get('exception_logging_middleware.log_error_details');
+        $this->assertFalse($details);
     }
 
     public function testApp(): void

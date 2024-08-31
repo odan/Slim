@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New `UrlGeneratorMiddleware` injects the `UrlGenerator` into the request attributes.
 - Support to build a custom middleware pipeline without the Slim App class. See new `ResponseFactoryMiddleware`
 - Add content negotiator
+- Add Config class and ConfigInterface
 
 ### Changed
 
