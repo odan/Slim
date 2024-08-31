@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Strategies\RequestHandler;
+use Slim\Routing\Strategies\RequestHandler;
 use Slim\Tests\Traits\AppTestTrait;
 
 final class RequestHandlerTest extends TestCase

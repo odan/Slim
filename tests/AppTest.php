@@ -41,8 +41,8 @@ use Slim\Psr7\Request;
 use Slim\Psr7\Stream;
 use Slim\Psr7\Uri;
 use Slim\Routing\RouteGroup;
-use Slim\Strategies\RequestResponseArgs;
-use Slim\Strategies\RequestResponseNamedArgs;
+use Slim\Routing\Strategies\RequestResponseArgs;
+use Slim\Routing\Strategies\RequestResponseNamedArgs;
 use Slim\Tests\Traits\AppTestTrait;
 use UnexpectedValueException;
 

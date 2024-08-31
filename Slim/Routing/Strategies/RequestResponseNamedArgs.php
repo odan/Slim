@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Strategies;
+namespace Slim\Routing\Strategies;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -42,7 +42,7 @@ use Slim\Middleware\ExceptionHandlingMiddleware;
 use Slim\Psr7\Factory\ServerRequestFactory;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
-use Slim\Strategies\RequestResponse;
+use Slim\Routing\Strategies\RequestResponse;
 
 final class DefaultDefinitionsTest extends TestCase
 {

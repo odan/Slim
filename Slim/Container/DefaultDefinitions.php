@@ -36,8 +36,8 @@ use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
+use Slim\Routing\Strategies\RequestResponse;
 use Slim\Settings\Config;
-use Slim\Strategies\RequestResponse;
 
 /**
  * This class provides the default dependency definitions for a Slim application. It implements the
