@@ -8,11 +8,11 @@
 
 declare(strict_types=1);
 
-namespace Slim\Settings;
+namespace Slim\Configuration;
 
-use Slim\Interfaces\ConfigInterface;
+use Slim\Interfaces\ConfigurationInterface;
 
-final class Config implements ConfigInterface
+final class Config implements ConfigurationInterface
 {
     private array $data;
 

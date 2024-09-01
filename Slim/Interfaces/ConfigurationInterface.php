@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Slim\Interfaces;
 
-interface ConfigInterface
+interface ConfigurationInterface
 {
     public function get(string $key, mixed $default = null): mixed;
 }

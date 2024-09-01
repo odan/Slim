@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Slim\Tests\Settings;
 
 use PHPUnit\Framework\TestCase;
-use Slim\Settings\Config;
+use Slim\Configuration\Config;
 
 final class ConfigTest extends TestCase
 {

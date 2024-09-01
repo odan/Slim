@@ -17,27 +17,27 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
-use Slim\Constants\MediaType;
+use Slim\Configuration\Config;
 use Slim\Emitter\ResponseEmitter;
-use Slim\Formatting\HtmlErrorFormatter;
-use Slim\Formatting\JsonErrorFormatter;
-use Slim\Formatting\MediaTypeDetector;
-use Slim\Formatting\PlainTextErrorFormatter;
-use Slim\Formatting\XmlErrorFormatter;
 use Slim\Handlers\ExceptionHandler;
-use Slim\Interfaces\ConfigInterface;
+use Slim\Handlers\Formatting\HtmlErrorFormatter;
+use Slim\Handlers\Formatting\JsonErrorFormatter;
+use Slim\Handlers\Formatting\PlainTextErrorFormatter;
+use Slim\Handlers\Formatting\XmlErrorFormatter;
+use Slim\Interfaces\ConfigurationInterface;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\EmitterInterface;
 use Slim\Interfaces\ExceptionHandlerInterface;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
 use Slim\Logging\StdLogger;
+use Slim\Media\MediaType;
+use Slim\Media\MediaTypeDetector;
 use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
 use Slim\Routing\Strategies\RequestResponse;
-use Slim\Settings\Config;
 
 /**
  * This class provides the default dependency definitions for a Slim application. It implements the
@@ -46,7 +46,9 @@ use Slim\Settings\Config;
  * factories, and other essential services.
  *
  * This class ensures that the Slim application can be properly instantiated with the necessary
- * components and services. It also selects the appropriate PSR-17 implementations based on the available libraries.
+ * components and services.
+ *
+ * It also selects the appropriate PSR-17 implementations based on the available libraries.
  */
 final class DefaultDefinitions
 {
@@ -60,19 +62,6 @@ final class DefaultDefinitions
     private function getDefaultDefinitions(): array
     {
         return [
-            // Configuration
-            'settings' => [
-                'exception_handler' => [
-                    'display_error_details' => false,
-                ],
-                'exception_logging_middleware' => [
-                    'log_error_details' => false,
-                ],
-            ],
-            ConfigInterface::class => function (ContainerInterface $container) {
-                return new Config($container->get('settings'));
-            },
-            // Slim application
             App::class => function (ContainerInterface $container) {
                 $serverRequestCreator = $container->get(ServerRequestCreatorInterface::class);
                 $requestHandler = $container->get(RequestHandlerInterface::class);
@@ -81,28 +70,39 @@ final class DefaultDefinitions
 
                 return new App($container, $serverRequestCreator, $requestHandler, $router, $emitter);
             },
+
+            BodyParsingMiddleware::class => function (ContainerInterface $container) {
+                $mediaTypeDetector = $container->get(MediaTypeDetector::class);
+                $middleware = new BodyParsingMiddleware($mediaTypeDetector);
+
+                return $middleware
+                    ->withDefaultMediaType('text/html')
+                    ->withDefaultBodyParsers();
+            },
+
+            Config::class => function (ContainerInterface $container) {
+                return new Config($container->has('settings') ? (array)$container->get('settings') : []);
+            },
+
+            ConfigurationInterface::class => function (ContainerInterface $container) {
+                return $container->get(Config::class);
+            },
+
             ContainerResolverInterface::class => function (ContainerInterface $container) {
                 return $container->get(ContainerResolver::class);
             },
-            RequestHandlerInterface::class => function (ContainerInterface $container) {
-                return $container->get(MiddlewareRequestHandler::class);
-            },
+
             EmitterInterface::class => function () {
                 return new ResponseEmitter();
             },
-            Router::class => function () {
-                return new Router(new RouteCollector(new Std(), new GroupCountBased()));
-            },
-            RequestHandlerInvocationStrategyInterface::class => function (ContainerInterface $container) {
-                return $container->get(RequestResponse::class);
-            },
+
             ExceptionHandlerInterface::class => function (ContainerInterface $container) {
                 // Default exception handler
                 $exceptionHandler = $container->get(ExceptionHandler::class);
 
                 // Settings
-                $displayErrorDetails = (bool)$container->get(ConfigInterface::class)
-                    ->get('exception_handler.display_error_details', false);
+                $displayErrorDetails = (bool)$container->get(ConfigurationInterface::class)
+                    ->get('display_error_details', false);
 
                 $exceptionHandler = $exceptionHandler
                     ->withDisplayErrorDetails($displayErrorDetails)
@@ -124,21 +124,26 @@ final class DefaultDefinitions
                 $middleware = new ExceptionLoggingMiddleware($logger);
 
                 // Read settings
-                $logErrorDetails = (bool)$container->get(ConfigInterface::class)
-                    ->get('exception_logging_middleware.log_error_details', false);
+                $logErrorDetails = (bool)$container->get(ConfigurationInterface::class)
+                    ->get('log_error_details', false);
 
                 return $middleware->withLogErrorDetails($logErrorDetails);
             },
-            BodyParsingMiddleware::class => function (ContainerInterface $container) {
-                $mediaTypeDetector = $container->get(MediaTypeDetector::class);
-                $middleware = new BodyParsingMiddleware($mediaTypeDetector);
 
-                return $middleware
-                    ->withDefaultMediaType('text/html')
-                    ->withDefaultBodyParsers();
-            },
             LoggerInterface::class => function () {
                 return new StdLogger();
+            },
+
+            RequestHandlerInterface::class => function (ContainerInterface $container) {
+                return $container->get(MiddlewareRequestHandler::class);
+            },
+
+            RequestHandlerInvocationStrategyInterface::class => function (ContainerInterface $container) {
+                return $container->get(RequestResponse::class);
+            },
+
+            Router::class => function () {
+                return new Router(new RouteCollector(new Std(), new GroupCountBased()));
             },
         ];
     }
