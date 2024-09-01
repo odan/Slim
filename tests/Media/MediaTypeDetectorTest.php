@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Tests\Formatting;
+namespace Slim\Tests\Media;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

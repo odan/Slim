@@ -8,14 +8,14 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers\Formatting;
+namespace Slim\Error\Renderers;
 
 use DOMDocument;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Slim\Interfaces\MediaTypeFormatterInterface;
+use Slim\Interfaces\ExceptionRendererInterface;
 use Slim\Media\MediaType;
 use Throwable;
 
@@ -24,9 +24,9 @@ use function get_class;
 /**
  * Formats exceptions into a XML response.
  */
-final class XmlErrorFormatter implements MediaTypeFormatterInterface
+final class XmlExceptionRenderer implements ExceptionRendererInterface
 {
-    use ExceptionFormatterTrait;
+    use ExceptionRendererTrait;
 
     private StreamFactoryInterface $streamFactory;
 

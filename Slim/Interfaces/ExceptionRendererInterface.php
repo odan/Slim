@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
-interface MediaTypeFormatterInterface
+interface ExceptionRendererInterface
 {
     public function __invoke(
         ServerRequestInterface $request,

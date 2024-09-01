@@ -8,17 +8,17 @@
 
 declare(strict_types=1);
 
-namespace Slim\Tests\Formatting;
+namespace Slim\Tests\Error\Renderers;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
+use Slim\Error\Renderers\JsonExceptionRenderer;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Handlers\Formatting\JsonErrorFormatter;
 
-class JsonMediaTypeFormatterTest extends TestCase
+class JsonExceptionFormatterTest extends TestCase
 {
     public function testInvokeWithExceptionAndWithErrorDetails()
     {
@@ -35,7 +35,7 @@ class JsonMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter with JsonRenderer and invoke it
-        $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
+        $formatter = $app->getContainer()->get(JsonExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, true);
 
         $this->assertEquals('application/json', $result->getHeaderLine('Content-Type'));
@@ -64,7 +64,7 @@ class JsonMediaTypeFormatterTest extends TestCase
 
         $exception = new Exception('Test exception message');
 
-        $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
+        $formatter = $app->getContainer()->get(JsonExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, false);
 
         $this->assertEquals('application/json', $result->getHeaderLine('Content-Type'));
@@ -92,7 +92,7 @@ class JsonMediaTypeFormatterTest extends TestCase
 
         $exception = new HttpNotFoundException($request, 'Test exception message');
 
-        $formatter = $app->getContainer()->get(JsonErrorFormatter::class);
+        $formatter = $app->getContainer()->get(JsonExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, true);
 
         $this->assertEquals('application/json', $result->getHeaderLine('Content-Type'));

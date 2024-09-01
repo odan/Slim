@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Tests\Handlers;
+namespace Slim\Tests\Error\Handlers;
 
 use DOMDocument;
 use Exception;
@@ -17,9 +17,9 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use RuntimeException;
 use Slim\Builder\AppBuilder;
-use Slim\Handlers\ExceptionHandler;
-use Slim\Handlers\Formatting\JsonErrorFormatter;
-use Slim\Handlers\Formatting\XmlErrorFormatter;
+use Slim\Error\Handlers\ExceptionHandler;
+use Slim\Error\Renderers\JsonExceptionRenderer;
+use Slim\Error\Renderers\XmlExceptionRenderer;
 use Slim\Interfaces\ExceptionHandlerInterface;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\ExceptionHandlingMiddleware;
@@ -134,8 +134,8 @@ final class ExceptionHandlerTest extends TestCase
         $exceptionHandler->withDisplayErrorDetails(false);
         $exceptionHandler
             ->withoutHandlers()
-            ->withHandler('application/json', JsonErrorFormatter::class)
-            ->withHandler('application/xml', XmlErrorFormatter::class);
+            ->withHandler('application/json', JsonExceptionRenderer::class)
+            ->withHandler('application/xml', XmlExceptionRenderer::class);
 
         $response = $exceptionHandler($request, new RuntimeException('Test exception'));
 

@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Tests\Settings;
+namespace Slim\Tests\Configuration;
 
 use PHPUnit\Framework\TestCase;
 use Slim\Configuration\Config;

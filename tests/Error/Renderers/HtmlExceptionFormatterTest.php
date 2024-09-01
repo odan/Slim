@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Tests\Formatting;
+namespace Slim\Tests\Error\Renderers;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
@@ -16,9 +16,9 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Handlers\Formatting\HtmlErrorFormatter;
+use Slim\Error\Renderers\HtmlExceptionRenderer;
 
-class HtmlMediaTypeFormatterTest extends TestCase
+class HtmlExceptionFormatterTest extends TestCase
 {
     public function testInvokeWithExceptionAndWithErrorDetails()
     {
@@ -36,7 +36,7 @@ class HtmlMediaTypeFormatterTest extends TestCase
 
         $exception = new Exception('Test exception message');
 
-        $formatter = $app->getContainer()->get(HtmlErrorFormatter::class);
+        $formatter = $app->getContainer()->get(HtmlExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, true);
 
         $this->assertEquals('text/html', $result->getHeaderLine('Content-Type'));
@@ -69,7 +69,7 @@ class HtmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = $app->getContainer()->get(HtmlErrorFormatter::class);
+        $formatter = $app->getContainer()->get(HtmlExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, false);
 
         // Expected HTML

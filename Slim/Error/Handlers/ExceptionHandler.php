@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers;
+namespace Slim\Error\Handlers;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,7 +18,7 @@ use Slim\Exception\HttpException;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\ExceptionHandlerInterface;
-use Slim\Interfaces\MediaTypeFormatterInterface;
+use Slim\Interfaces\ExceptionRendererInterface;
 use Slim\Media\MediaTypeDetector;
 use Throwable;
 
@@ -59,7 +59,7 @@ final class ExceptionHandler implements ExceptionHandlerInterface
         $response = $this->createResponse($statusCode, $mediaType, $exception);
         $handler = $this->negotiateHandler($mediaType);
 
-        // Invoke the handler (formatter)
+        // Invoke the formatter handler
         return call_user_func(
             $handler,
             $request,
@@ -85,7 +85,7 @@ final class ExceptionHandler implements ExceptionHandlerInterface
         return $clone;
     }
 
-    public function withHandler(string $mediaType, MediaTypeFormatterInterface|callable|string $handler): self
+    public function withHandler(string $mediaType, ExceptionRendererInterface|callable|string $handler): self
     {
         $clone = clone $this;
         $clone->handlers[$mediaType] = $handler;

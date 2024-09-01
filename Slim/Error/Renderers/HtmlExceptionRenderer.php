@@ -8,13 +8,13 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers\Formatting;
+namespace Slim\Error\Renderers;
 
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Slim\Interfaces\MediaTypeFormatterInterface;
+use Slim\Interfaces\ExceptionRendererInterface;
 use Slim\Media\MediaType;
 use Throwable;
 
@@ -24,9 +24,9 @@ use function sprintf;
 /**
  * Formats exceptions into a HTML response.
  */
-final class HtmlErrorFormatter implements MediaTypeFormatterInterface
+final class HtmlExceptionRenderer implements ExceptionRendererInterface
 {
-    use ExceptionFormatterTrait;
+    use ExceptionRendererTrait;
 
     private StreamFactoryInterface $streamFactory;
 
@@ -46,7 +46,7 @@ final class HtmlErrorFormatter implements MediaTypeFormatterInterface
             $html .= '<h2>Details</h2>';
             $html .= $this->renderExceptionFragment($exception);
         } else {
-            $html = "<p>{$this->getErrorDescription($exception)}</p>";
+            $html = sprintf('<p>%s</p>', $this->getErrorDescription($exception));
         }
 
         $html = $this->renderHtmlBody($this->getErrorTitle($exception), $html);

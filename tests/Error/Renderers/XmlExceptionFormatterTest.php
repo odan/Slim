@@ -8,16 +8,16 @@
 
 declare(strict_types=1);
 
-namespace Slim\Tests\Formatting;
+namespace Slim\Tests\Error\Renderers;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Handlers\Formatting\XmlErrorFormatter;
+use Slim\Error\Renderers\XmlExceptionRenderer;
 
-class XmlMediaTypeFormatterTest extends TestCase
+class XmlExceptionFormatterTest extends TestCase
 {
     public function testInvokeWithExceptionAndWithErrorDetails()
     {
@@ -35,7 +35,7 @@ class XmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = $app->getContainer()->get(XmlErrorFormatter::class);
+        $formatter = $app->getContainer()->get(XmlExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, true);
 
         // Assertions
@@ -64,7 +64,7 @@ class XmlMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = $app->getContainer()->get(XmlErrorFormatter::class);
+        $formatter = $app->getContainer()->get(XmlExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, false);
 
         // Assertions
@@ -93,7 +93,7 @@ class XmlMediaTypeFormatterTest extends TestCase
         $outerException = new Exception('Outer exception message', 0, $innerException);
 
         // Instantiate the formatter and invoke it
-        $formatter = $app->getContainer()->get(XmlErrorFormatter::class);
+        $formatter = $app->getContainer()->get(XmlExceptionRenderer::class);
         $result = $formatter($request, $response, $outerException, true);
 
         // Assertions

@@ -104,6 +104,7 @@ class ExceptionLoggingMiddlewareTest extends TestCase
         $this->expectException(ErrorException::class);
 
         $app = (new AppBuilder())->build();
+        error_reporting(E_ALL);
 
         $logger = new TestLogger();
         $app->add(ErrorHandlingMiddleware::class);

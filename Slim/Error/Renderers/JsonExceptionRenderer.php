@@ -8,12 +8,12 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers\Formatting;
+namespace Slim\Error\Renderers;
 
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Interfaces\MediaTypeFormatterInterface;
+use Slim\Interfaces\ExceptionRendererInterface;
 use Slim\Renderers\JsonRenderer;
 use Throwable;
 
@@ -22,9 +22,9 @@ use function get_class;
 /**
  * Formats exceptions into a JSON response.
  */
-final class JsonErrorFormatter implements MediaTypeFormatterInterface
+final class JsonExceptionRenderer implements ExceptionRendererInterface
 {
-    use ExceptionFormatterTrait;
+    use ExceptionRendererTrait;
 
     private JsonRenderer $jsonRenderer;
 

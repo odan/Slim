@@ -8,16 +8,16 @@
 
 declare(strict_types=1);
 
-namespace Slim\Tests\Formatting;
+namespace Slim\Tests\Error\Renderers;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Handlers\Formatting\PlainTextErrorFormatter;
+use Slim\Error\Renderers\PlainTextExceptionRenderer;
 
-class PlainTextMediaTypeFormatterTest extends TestCase
+class PlainTextExceptionFormatterTest extends TestCase
 {
     public function testInvokeWithExceptionAndWithErrorDetails()
     {
@@ -35,7 +35,7 @@ class PlainTextMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = $app->getContainer()->get(PlainTextErrorFormatter::class);
+        $formatter = $app->getContainer()->get(PlainTextExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, true);
 
         // Assertions
@@ -64,7 +64,7 @@ class PlainTextMediaTypeFormatterTest extends TestCase
         $exception = new Exception('Test exception message');
 
         // Instantiate the formatter and invoke it
-        $formatter = $app->getContainer()->get(PlainTextErrorFormatter::class);
+        $formatter = $app->getContainer()->get(PlainTextExceptionRenderer::class);
         $result = $formatter($request, $response, $exception, false);
 
         // Assertions
@@ -93,7 +93,7 @@ class PlainTextMediaTypeFormatterTest extends TestCase
         $outerException = new Exception('Outer exception message', 0, $innerException);
 
         // Instantiate the formatter and invoke it
-        $formatter = $app->getContainer()->get(PlainTextErrorFormatter::class);
+        $formatter = $app->getContainer()->get(PlainTextExceptionRenderer::class);
         $result = $formatter($request, $response, $outerException, true);
 
         // Assertions

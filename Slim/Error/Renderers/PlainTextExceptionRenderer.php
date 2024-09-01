@@ -8,13 +8,13 @@
 
 declare(strict_types=1);
 
-namespace Slim\Handlers\Formatting;
+namespace Slim\Error\Renderers;
 
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Slim\Interfaces\MediaTypeFormatterInterface;
+use Slim\Interfaces\ExceptionRendererInterface;
 use Slim\Media\MediaType;
 use Throwable;
 
@@ -24,9 +24,9 @@ use function sprintf;
 /**
  * Formats exceptions into a plain text response.
  */
-final class PlainTextErrorFormatter implements MediaTypeFormatterInterface
+final class PlainTextExceptionRenderer implements ExceptionRendererInterface
 {
-    use ExceptionFormatterTrait;
+    use ExceptionRendererTrait;
 
     private StreamFactoryInterface $streamFactory;
 

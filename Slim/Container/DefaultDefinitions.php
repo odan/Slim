@@ -19,11 +19,11 @@ use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Configuration\Config;
 use Slim\Emitter\ResponseEmitter;
-use Slim\Handlers\ExceptionHandler;
-use Slim\Handlers\Formatting\HtmlErrorFormatter;
-use Slim\Handlers\Formatting\JsonErrorFormatter;
-use Slim\Handlers\Formatting\PlainTextErrorFormatter;
-use Slim\Handlers\Formatting\XmlErrorFormatter;
+use Slim\Error\Handlers\ExceptionHandler;
+use Slim\Error\Renderers\HtmlExceptionRenderer;
+use Slim\Error\Renderers\JsonExceptionRenderer;
+use Slim\Error\Renderers\PlainTextExceptionRenderer;
+use Slim\Error\Renderers\XmlExceptionRenderer;
 use Slim\Interfaces\ConfigurationInterface;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\EmitterInterface;
@@ -110,12 +110,12 @@ final class DefaultDefinitions
 
                 return $exceptionHandler
                     ->withoutHandlers()
-                    ->withHandler(MediaType::APPLICATION_JSON, JsonErrorFormatter::class)
-                    ->withHandler(MediaType::TEXT_HTML, HtmlErrorFormatter::class)
-                    ->withHandler(MediaType::APPLICATION_XHTML_XML, HtmlErrorFormatter::class)
-                    ->withHandler(MediaType::APPLICATION_XML, XmlErrorFormatter::class)
-                    ->withHandler(MediaType::TEXT_XML, XmlErrorFormatter::class)
-                    ->withHandler(MediaType::TEXT_PLAIN, PlainTextErrorFormatter::class);
+                    ->withHandler(MediaType::APPLICATION_JSON, JsonExceptionRenderer::class)
+                    ->withHandler(MediaType::TEXT_HTML, HtmlExceptionRenderer::class)
+                    ->withHandler(MediaType::APPLICATION_XHTML_XML, HtmlExceptionRenderer::class)
+                    ->withHandler(MediaType::APPLICATION_XML, XmlExceptionRenderer::class)
+                    ->withHandler(MediaType::TEXT_XML, XmlExceptionRenderer::class)
+                    ->withHandler(MediaType::TEXT_PLAIN, PlainTextExceptionRenderer::class);
             },
 
             ExceptionLoggingMiddleware::class => function (ContainerInterface $container) {
