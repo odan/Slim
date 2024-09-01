@@ -15,8 +15,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Slim\Constants\MediaType;
-use Slim\Formatting\MediaTypeDetector;
+use Slim\Media\MediaType;
+use Slim\Media\MediaTypeDetector;
 
 use function is_array;
 use function is_object;

@@ -4,7 +4,7 @@ namespace Slim\Renderers;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Slim\Constants\MediaType;
+use Slim\Media\MediaType;
 
 /**
  * A utility class for rendering JSON responses.
@@ -39,7 +39,7 @@ final class JsonRenderer
     }
 
     /**
-     * Change the content type of the response
+     * Change the content type of the response.
      */
     public function withContentType(string $type): self
     {
@@ -50,7 +50,7 @@ final class JsonRenderer
     }
 
     /**
-     * Set options for JSON encoding
+     * Set options for JSON encoding.
      *
      * @see https://php.net/manual/function.json-encode.php
      * @see https://php.net/manual/json.constants.php

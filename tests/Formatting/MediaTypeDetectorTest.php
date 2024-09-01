@@ -14,7 +14,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Formatting\MediaTypeDetector;
+use Slim\Media\MediaTypeDetector;
 
 class MediaTypeDetectorTest extends TestCase
 {

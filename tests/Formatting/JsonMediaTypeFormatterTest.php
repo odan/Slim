@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Formatting\JsonErrorFormatter;
+use Slim\Handlers\Formatting\JsonErrorFormatter;
 
 class JsonMediaTypeFormatterTest extends TestCase
 {

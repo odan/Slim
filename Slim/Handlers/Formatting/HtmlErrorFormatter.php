@@ -8,14 +8,14 @@
 
 declare(strict_types=1);
 
-namespace Slim\Formatting;
+namespace Slim\Handlers\Formatting;
 
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Slim\Constants\MediaType;
 use Slim\Interfaces\MediaTypeFormatterInterface;
+use Slim\Media\MediaType;
 use Throwable;
 
 use function get_class;

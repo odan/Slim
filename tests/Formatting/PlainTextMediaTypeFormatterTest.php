@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Formatting\PlainTextErrorFormatter;
+use Slim\Handlers\Formatting\PlainTextErrorFormatter;
 
 class PlainTextMediaTypeFormatterTest extends TestCase
 {

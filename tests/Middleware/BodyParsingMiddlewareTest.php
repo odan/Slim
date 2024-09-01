@@ -27,7 +27,7 @@ use Slim\Container\LaminasDiactorosDefinitions;
 use Slim\Container\NyholmDefinitions;
 use Slim\Container\SlimHttpDefinitions;
 use Slim\Container\SlimPsr7Definitions;
-use Slim\Formatting\MediaTypeDetector;
+use Slim\Media\MediaTypeDetector;
 use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ResponseFactoryMiddleware;
 use Slim\RequestHandler\Runner;

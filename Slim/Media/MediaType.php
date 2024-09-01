@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Constants;
+namespace Slim\Media;
 
 final class MediaType
 {

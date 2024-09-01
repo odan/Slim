@@ -16,10 +16,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpMethodNotAllowedException;
-use Slim\Formatting\MediaTypeDetector;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\ExceptionHandlerInterface;
 use Slim\Interfaces\MediaTypeFormatterInterface;
+use Slim\Media\MediaTypeDetector;
 use Throwable;
 
 /**

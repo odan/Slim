@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Formatting\HtmlErrorFormatter;
+use Slim\Handlers\Formatting\HtmlErrorFormatter;
 
 class HtmlMediaTypeFormatterTest extends TestCase
 {

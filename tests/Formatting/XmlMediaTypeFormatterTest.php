@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Formatting\XmlErrorFormatter;
+use Slim\Handlers\Formatting\XmlErrorFormatter;
 
 class XmlMediaTypeFormatterTest extends TestCase
 {

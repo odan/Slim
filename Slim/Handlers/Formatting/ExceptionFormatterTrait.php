@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\Formatting;
+namespace Slim\Handlers\Formatting;
 
 use Slim\Exception\HttpException;
 use Throwable;
