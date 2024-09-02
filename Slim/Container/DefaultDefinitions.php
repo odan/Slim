@@ -80,12 +80,8 @@ final class DefaultDefinitions
                     ->withDefaultBodyParsers();
             },
 
-            Config::class => function (ContainerInterface $container) {
-                return new Config($container->has('settings') ? (array)$container->get('settings') : []);
-            },
-
             ConfigurationInterface::class => function (ContainerInterface $container) {
-                return $container->get(Config::class);
+                return new Config($container->has('settings') ? (array)$container->get('settings') : []);
             },
 
             ContainerResolverInterface::class => function (ContainerInterface $container) {
@@ -109,7 +105,6 @@ final class DefaultDefinitions
                     ->withDefaultMediaType(MediaType::TEXT_HTML);
 
                 return $exceptionHandler
-                    ->withoutHandlers()
                     ->withHandler(MediaType::APPLICATION_JSON, JsonExceptionRenderer::class)
                     ->withHandler(MediaType::TEXT_HTML, HtmlExceptionRenderer::class)
                     ->withHandler(MediaType::APPLICATION_XHTML_XML, HtmlExceptionRenderer::class)

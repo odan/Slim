@@ -19,6 +19,7 @@ use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\ExceptionHandlerInterface;
 use Slim\Interfaces\ExceptionRendererInterface;
+use Slim\Media\MediaType;
 use Slim\Media\MediaTypeDetector;
 use Throwable;
 
@@ -38,7 +39,7 @@ final class ExceptionHandler implements ExceptionHandlerInterface
 
     private bool $displayErrorDetails = false;
 
-    private string $defaultMediaType = 'text/html';
+    private string $defaultMediaType = MediaType::TEXT_HTML;
 
     private array $handlers = [];
 
