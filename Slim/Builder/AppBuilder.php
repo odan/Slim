@@ -12,8 +12,10 @@ namespace Slim\Builder;
 
 use DI\Container;
 use Psr\Container\ContainerInterface;
+use RuntimeException;
 use Slim\App;
 use Slim\Container\DefaultDefinitions;
+use Slim\Container\HttpDefinitions;
 use Slim\Container\MiddlewareResolver;
 use Slim\Enums\MiddlewareOrder;
 use Slim\Interfaces\ContainerResolverInterface;
@@ -47,7 +49,8 @@ final class AppBuilder
      */
     public function __construct()
     {
-        $this->setDefinitions(DefaultDefinitions::class);
+        $this->addDefinitions(DefaultDefinitions::class);
+        $this->addDefinitions(HttpDefinitions::class);
     }
 
     /**
@@ -85,10 +88,18 @@ final class AppBuilder
      *
      * @return self The current AppBuilder instance for method chaining
      */
-    public function setDefinitions(array|string $definitions): self
+    public function addDefinitions(array|string $definitions): self
     {
         if (is_string($definitions)) {
-            $definitions = (array)call_user_func(new $definitions());
+            if (class_exists($definitions)) {
+                $definitions = (array)call_user_func(new $definitions());
+            } else {
+                $definitions = require $definitions;
+
+                if (!is_array($definitions)) {
+                    throw new RuntimeException("Definition file should return an array of definitions");
+                }
+            }
         }
 
         $this->definitions = array_merge($this->definitions, $definitions);
@@ -121,7 +132,7 @@ final class AppBuilder
      */
     public function setMiddlewareOrder(MiddlewareOrder $order): self
     {
-        $this->setDefinitions(
+        $this->addDefinitions(
             [
                 MiddlewareResolver::class => function (ContainerInterface $container) use ($order) {
                     return new MiddlewareResolver(
@@ -148,7 +159,7 @@ final class AppBuilder
      */
     public function setSettings(array $settings): self
     {
-        $this->setDefinitions(
+        $this->addDefinitions(
             [
                 'settings' => $settings,
             ]
