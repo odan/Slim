@@ -65,6 +65,7 @@ return (new Config())
             'phpdoc_add_missing_param_annotation' => false,
             'no_useless_concat_operator' => false,
             'fully_qualified_strict_types' => false,
+            'trailing_comma_in_multiline' => ['elements' => ['arrays']],
         ]
     )
     ->setFinder(

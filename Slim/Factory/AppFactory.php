@@ -28,5 +28,4 @@ final class AppFactory
 
         return new App($container, $serverRequestCreator, $requestHandler, $router, $emitter);
     }
-
 }

@@ -298,7 +298,7 @@ final class BodyParsingMiddlewareTest extends TestCase
         return new class implements MiddlewareInterface {
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 $response = $handler->handle($request);
 
@@ -325,7 +325,7 @@ final class BodyParsingMiddlewareTest extends TestCase
 
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 $response = $handler->handle($request);
 
