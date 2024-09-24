@@ -22,6 +22,8 @@ final class UrlGenerator implements UrlGeneratorInterface
 
     private Std $routeParser;
 
+    private ?string $basePath;
+
     public function __construct(Router $router)
     {
         $this->router = $router;
