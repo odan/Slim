@@ -29,7 +29,7 @@ final class BasePathMiddlewareTest extends TestCase
     public function testEmptyScriptName(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 BasePathMiddleware::class => function (ContainerInterface $container) {
                     $app = $container->get(App::class);
@@ -69,7 +69,7 @@ final class BasePathMiddlewareTest extends TestCase
     public function testScriptNameWithIndexPhp(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 BasePathMiddleware::class => function (ContainerInterface $container) {
                     $app = $container->get(App::class);
@@ -110,7 +110,7 @@ final class BasePathMiddlewareTest extends TestCase
     public function testScriptNameWithPublicIndexPhp(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 BasePathMiddleware::class => function (ContainerInterface $container) {
                     $app = $container->get(App::class);
@@ -151,7 +151,7 @@ final class BasePathMiddlewareTest extends TestCase
     public function testSubDirectoryWithSlash(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 BasePathMiddleware::class => function (ContainerInterface $container) {
                     $app = $container->get(App::class);
@@ -192,7 +192,7 @@ final class BasePathMiddlewareTest extends TestCase
     public function testSubDirectoryWithoutSlash(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 BasePathMiddleware::class => function (ContainerInterface $container) {
                     $app = $container->get(App::class);
@@ -234,7 +234,7 @@ final class BasePathMiddlewareTest extends TestCase
     public function testSubDirectoryWithFooPath(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 BasePathMiddleware::class => function (ContainerInterface $container) {
                     $app = $container->get(App::class);

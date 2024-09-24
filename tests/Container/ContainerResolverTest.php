@@ -46,7 +46,7 @@ final class ContainerResolverTest extends TestCase
     public function testClosureContainer(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 'ultimateAnswer' => fn () => 42,
             ]
@@ -130,7 +130,7 @@ final class ContainerResolverTest extends TestCase
     public function testContainer(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 'callable_service' => fn () => new CallableTester(),
             ]
@@ -145,7 +145,7 @@ final class ContainerResolverTest extends TestCase
     public function testResolutionToAnInvokableClassInContainer(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 'an_invokable' => fn () => new InvokableTester(),
             ]
@@ -184,7 +184,7 @@ final class ContainerResolverTest extends TestCase
         $this->expectExceptionMessage('The definition "a_requesthandler" is not a callable');
 
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 'a_requesthandler' => function ($container) {
                     return new RequestHandlerTester($container->get(ResponseFactoryInterface::class));
@@ -227,7 +227,7 @@ final class ContainerResolverTest extends TestCase
         $this->expectExceptionMessage('The definition "callable_service" is not a callable');
 
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 'callable_service' => fn () => 'NOT AN OBJECT',
             ]
@@ -244,7 +244,7 @@ final class ContainerResolverTest extends TestCase
         $this->expectExceptionMessage('The method "notFound" does not exists');
 
         $builder = new AppBuilder();
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 'callable_service' => fn () => new CallableTester(),
             ]

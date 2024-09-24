@@ -45,7 +45,7 @@ final class BodyParsingMiddlewareTest extends TestCase
         $builder = new AppBuilder();
 
         // Replace or change the PSR-17 factory because slim/http has its own parser
-        $builder->setDefinitions(NyholmDefinitions::class);
+        $builder->addDefinitions(NyholmDefinitions::class);
         $app = $builder->build();
 
         $responseFactory = $app->getContainer()->get(ResponseFactoryMiddleware::class);
@@ -151,7 +151,7 @@ final class BodyParsingMiddlewareTest extends TestCase
         $builder = new AppBuilder();
 
         // Replace or change the PSR-17 factory because slim/http has its own parser
-        $builder->setDefinitions(SlimPsr7Definitions::class);
+        $builder->addDefinitions(SlimPsr7Definitions::class);
         $app = $builder->build();
         $container = $app->getContainer();
 
@@ -192,8 +192,8 @@ final class BodyParsingMiddlewareTest extends TestCase
         $builder = new AppBuilder();
 
         // Replace or change the PSR-17 factory because slim/http has its own parser
-        $builder->setDefinitions(SlimHttpDefinitions::class);
-        $builder->setDefinitions(
+        $builder->addDefinitions(SlimHttpDefinitions::class);
+        $builder->addDefinitions(
             [
                 BodyParsingMiddleware::class => function (ContainerInterface $container) {
                     $mediaTypeDetector = $container->get(MediaTypeDetector::class);
@@ -243,9 +243,9 @@ final class BodyParsingMiddlewareTest extends TestCase
         $this->expectException(RuntimeException::class);
 
         $builder = new AppBuilder();
-        $builder->setDefinitions($definitions);
+        $builder->addDefinitions($definitions);
 
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 BodyParsingMiddleware::class => function (ContainerInterface $container) {
                     $mediaTypeDetector = $container->get(MediaTypeDetector::class);
