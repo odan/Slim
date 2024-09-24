@@ -2,7 +2,6 @@
 
 namespace Slim\Routing;
 
-use Psr\Http\Server\MiddlewareInterface;
 use Slim\Interfaces\MiddlewareCollectionInterface;
 
 final class Route implements MiddlewareCollectionInterface
@@ -41,25 +40,6 @@ final class Route implements MiddlewareCollectionInterface
         return $this->handler;
     }
 
-    /**
-     * @return array<MiddlewareInterface|string>
-     */
-    public function getMiddlewareStack(): array
-    {
-        $middlewares = $this->middleware;
-
-        // Append middleware from all parent route groups
-        $group = $this->group;
-        while ($group) {
-            foreach ($group->getMiddlewareStack() as $middleware) {
-                $middlewares[] = $middleware;
-            }
-            $group = $group->getRouteGroup();
-        }
-
-        return $middlewares;
-    }
-
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -80,5 +60,10 @@ final class Route implements MiddlewareCollectionInterface
     public function getMethods(): array
     {
         return $this->methods;
+    }
+
+    public function getRouteGroup(): ?RouteGroup
+    {
+        return $this->group;
     }
 }
