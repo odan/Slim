@@ -34,9 +34,9 @@ final class MiddlewareRequestHandler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $queue = $request->getAttribute(self::MIDDLEWARE) ?? [];
-
-        $queue = $this->resolver->resolveStack($queue);
+        /** @var array $middlewares */
+        $middlewares = $request->getAttribute(self::MIDDLEWARE) ?: [];
+        $queue = $this->resolver->resolveStack($middlewares);
 
         reset($queue);
         $runner = new Runner($queue);

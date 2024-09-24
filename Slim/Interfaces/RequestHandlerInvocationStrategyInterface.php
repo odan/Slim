@@ -32,6 +32,6 @@ interface RequestHandlerInvocationStrategyInterface
         callable $callable,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $routeArguments
+        array $routeArguments,
     ): ResponseInterface;
 }

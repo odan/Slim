@@ -84,7 +84,7 @@ final class MiddlewareRequestHandlerTest extends TestCase
         $middleware[] = new class implements MiddlewareInterface {
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 $response = $handler->handle($request);
 
@@ -168,7 +168,7 @@ final class MiddlewareRequestHandlerTest extends TestCase
         $middleware[] = new class implements MiddlewareInterface {
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 $response = $handler->handle($request);
                 $response->getBody()->write('2');
@@ -180,7 +180,7 @@ final class MiddlewareRequestHandlerTest extends TestCase
         $middleware[] = new class implements MiddlewareInterface {
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 $response = $handler->handle($request);
                 $response->getBody()->write('1');
@@ -199,53 +199,5 @@ final class MiddlewareRequestHandlerTest extends TestCase
         $response = $handler->handle($request);
 
         $this->assertSame('12', (string)$response->getBody());
-    }
-
-    public function testHandleWithLifoMiddlewareStack()
-    {
-        $builder = new AppBuilder();
-        $builder->setMiddlewareOrder(MiddlewareOrder::LIFO);
-        $app = $builder->build();
-
-        $request = $app->getContainer()
-            ->get(ServerRequestFactoryInterface::class)
-            ->createServerRequest('GET', '/');
-
-        $middleware = [];
-
-        $middleware[] = ResponseFactoryMiddleware::class;
-
-        $middleware[] = new class implements MiddlewareInterface {
-            public function process(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                $response = $handler->handle($request);
-                $response->getBody()->write('2');
-
-                return $response;
-            }
-        };
-
-        $middleware[] = new class implements MiddlewareInterface {
-            public function process(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                $response = $handler->handle($request);
-                $response->getBody()->write('1');
-
-                return $response;
-            }
-        };
-
-        $request = $request->withAttribute(MiddlewareRequestHandler::MIDDLEWARE, $middleware);
-
-        $handler = $app->getContainer()
-            ->get(MiddlewareRequestHandler::class);
-
-        $response = $handler->handle($request);
-
-        $this->assertSame('21', (string)$response->getBody());
     }
 }

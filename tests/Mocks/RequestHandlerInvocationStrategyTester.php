@@ -32,7 +32,7 @@ class RequestHandlerInvocationStrategyTester implements RequestHandlerInvocation
         callable $callable,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $routeArguments
+        array $routeArguments,
     ): ResponseInterface {
         static::$LastCalledFor = $callable;
 
