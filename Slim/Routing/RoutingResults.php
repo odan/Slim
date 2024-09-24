@@ -21,9 +21,13 @@ final class RoutingResults
     private string $uri;
 
     /**
-     * @var array<string, string>
+     * @var array<string, mixed>
      */
     private array $routeArguments;
+
+    /**
+     * @var array<int, string>
+     */
     private array $allowedMethods;
 
     /**
@@ -66,11 +70,16 @@ final class RoutingResults
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function getRouteArguments(): array
     {
         return $this->routeArguments;
+    }
+
+    public function getRouteArgument(string $key): mixed
+    {
+        return $this->routeArguments[$key] ?? null;
     }
 
     /**
