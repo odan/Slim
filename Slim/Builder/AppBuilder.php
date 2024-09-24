@@ -16,9 +16,6 @@ use RuntimeException;
 use Slim\App;
 use Slim\Container\DefaultDefinitions;
 use Slim\Container\HttpDefinitions;
-use Slim\Container\MiddlewareResolver;
-use Slim\Enums\MiddlewareOrder;
-use Slim\Interfaces\ContainerResolverInterface;
 
 /**
  * This class is responsible for building and configuring a Slim application with a dependency injection (DI) container.
@@ -97,7 +94,7 @@ final class AppBuilder
                 $definitions = require $definitions;
 
                 if (!is_array($definitions)) {
-                    throw new RuntimeException("Definition file should return an array of definitions");
+                    throw new RuntimeException('Definition file should return an array of definitions');
                 }
             }
         }
@@ -117,32 +114,6 @@ final class AppBuilder
     public function setContainerFactory(callable $factory): self
     {
         $this->containerFactory = $factory;
-
-        return $this;
-    }
-
-    /**
-     * Configures the order of middleware execution in the application.
-     *
-     * This method sets up a MiddlewareResolver with the specified order of middleware.
-     *
-     * @param MiddlewareOrder $order The desired order of middleware execution
-     *
-     * @return self The current AppBuilder instance for method chaining
-     */
-    public function setMiddlewareOrder(MiddlewareOrder $order): self
-    {
-        $this->addDefinitions(
-            [
-                MiddlewareResolver::class => function (ContainerInterface $container) use ($order) {
-                    return new MiddlewareResolver(
-                        $container,
-                        $container->get(ContainerResolverInterface::class),
-                        $order
-                    );
-                },
-            ]
-        );
 
         return $this;
     }

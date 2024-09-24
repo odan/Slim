@@ -44,6 +44,7 @@ use Slim\Routing\RouteGroup;
 use Slim\Routing\Strategies\RequestResponseArgs;
 use Slim\Routing\Strategies\RequestResponseNamedArgs;
 use Slim\Tests\Traits\AppTestTrait;
+use SplStack;
 use UnexpectedValueException;
 
 use function count;
@@ -422,21 +423,29 @@ final class AppTest extends TestCase
 
         $response = $app->handle($request);
 
-        $this->assertSame('_MW2__MW1__ROUTE1_', (string)$response->getBody());
+        $this->assertSame('_ROUTE1__MW2__MW1_', (string)$response->getBody());
     }
 
     public function testAddMiddlewareOnRouteGroup(): void
     {
         $app = $this->createApp();
 
-        $authMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+        $trace = new SplStack();
+
+        $authMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($trace) {
+            $trace->push('_AUTH_');
+
+            return $handler->handle($request);
+        };
+
+        $outgoingMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($trace) {
             $response = $handler->handle($request);
-            $response->getBody()->write('_AUTH_');
+            $response->getBody()->write('_OUTGOING_');
+            $trace->push('_OUTGOING_');
 
             return $response;
         };
 
-        $app = $this->createApp();
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
 
@@ -445,31 +454,43 @@ final class AppTest extends TestCase
             ->createServerRequest('GET', '/api/users');
 
         // Add middleware to group
-        $app->group('/api', function (RouteGroup $group) {
-            $group->get('/users', function (ServerRequestInterface $request, ResponseInterface $response) {
+        $app->group('/api', function (RouteGroup $group) use ($trace) {
+            $group->get('/users', function (ServerRequestInterface $request, ResponseInterface $response) use ($trace) {
+                $trace->push('_ROUTE1_');
                 $response->getBody()->write('_ROUTE1_');
 
                 return $response;
             });
-        })->add($authMiddleware);
+        })->add($authMiddleware)->add($outgoingMiddleware);
 
         $response = $app->handle($request);
 
-        $this->assertSame('_AUTH__ROUTE1_', (string)$response->getBody());
+        $this->assertSame('_ROUTE1__OUTGOING_', (string)$response->getBody());
+        $this->assertSame(
+            [
+                2 => '_OUTGOING_',
+                1 => '_ROUTE1_',
+                0 => '_AUTH_',
+            ],
+            iterator_to_array($trace)
+        );
     }
 
     public function testAddMiddlewareOnTwoRouteGroup(): void
     {
         $app = $this->createApp();
 
-        $authMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+        $trace = new SplStack();
+
+        $authMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($trace) {
+            $trace->push('_AUTH_');
             $response = $handler->handle($request);
-            $response->getBody()->write('_AUTH_');
 
             return $response;
         };
 
-        $usersMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+        $usersMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($trace) {
+            $trace->push('_USERS_');
             $response = $handler->handle($request);
             $response->getBody()->write('_USERS_');
 
@@ -484,19 +505,32 @@ final class AppTest extends TestCase
             ->createServerRequest('GET', '/api/users/123');
 
         // Add middleware to groups
-        $app->group('/api', function (RouteGroup $group) use ($usersMiddleware) {
-            $group->group('/users', function (RouteGroup $group) {
-                $group->get('/{id}', function (ServerRequestInterface $request, ResponseInterface $response) {
-                    $response->getBody()->write('_ROUTE1_');
+        $app->group('/api', function (RouteGroup $group) use ($usersMiddleware, $trace) {
+            $group->group('/users', function (RouteGroup $group) use ($trace) {
+                $group->get(
+                    '/{id}',
+                    function (ServerRequestInterface $request, ResponseInterface $response) use ($trace) {
+                        $trace->push('_ROUTE1_');
+                        $response->getBody()->write('_ROUTE1_');
 
-                    return $response;
-                });
+                        return $response;
+                    }
+                );
             })->add($usersMiddleware);
         })->add($authMiddleware);
 
         $response = $app->handle($request);
 
-        $this->assertSame('_AUTH__USERS__ROUTE1_', (string)$response->getBody());
+        $this->assertSame('_ROUTE1__USERS_', (string)$response->getBody());
+
+        $this->assertSame(
+            [
+                2 => '_ROUTE1_',
+                1 => '_USERS_',
+                0 => '_AUTH_',
+            ],
+            iterator_to_array($trace)
+        );
     }
 
     public function testInvokeReturnMethodNotAllowed(): void

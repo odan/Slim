@@ -18,7 +18,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use Slim\Builder\AppBuilder;
 use Slim\Container\MiddlewareResolver;
-use Slim\Enums\MiddlewareOrder;
 use Slim\Interfaces\ContainerResolverInterface;
 
 class MiddlewareResolverTest extends TestCase
@@ -32,8 +31,7 @@ class MiddlewareResolverTest extends TestCase
 
         $middlewareResolver = new MiddlewareResolver(
             $container,
-            $containerResolver,
-            MiddlewareOrder::FIFO
+            $containerResolver
         );
 
         $middleware1 = $this->createCallableMiddleware();
@@ -55,31 +53,6 @@ class MiddlewareResolverTest extends TestCase
 
         $response = $resolvedStack[1]->process($request, $handler);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-    }
-
-    public function testResolveStackWithLifoOrder()
-    {
-        $builder = new AppBuilder();
-        $app = $builder->build();
-        $container = $app->getContainer();
-        $containerResolver = $container->get(ContainerResolverInterface::class);
-
-        $middlewareResolver = new MiddlewareResolver(
-            $container,
-            $containerResolver,
-            MiddlewareOrder::LIFO
-        );
-
-        $middleware1 = $this->createCallableMiddleware();
-        $middleware2 = $this->createMiddleware();
-
-        $queue = [$middleware1, $middleware2];
-
-        $resolvedStack = $middlewareResolver->resolveStack($queue);
-
-        $this->assertCount(2, $resolvedStack);
-        $this->assertInstanceOf(MiddlewareInterface::class, $resolvedStack[0]);
-        $this->assertInstanceOf(MiddlewareInterface::class, $resolvedStack[1]);
     }
 
     public function testResolveMiddlewareWithValidMiddleware()
@@ -144,7 +117,7 @@ class MiddlewareResolverTest extends TestCase
 
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 return $this->response;
             }

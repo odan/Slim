@@ -16,11 +16,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Interfaces\EmitterInterface;
-use Slim\Interfaces\MiddlewareCollectionInterface;
 use Slim\Interfaces\RouteCollectionInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
 use Slim\RequestHandler\MiddlewareRequestHandler;
-use Slim\Routing\MiddlewareAwareTrait;
 use Slim\Routing\Route;
 use Slim\Routing\RouteCollectionTrait;
 use Slim\Routing\RouteGroup;
@@ -37,9 +35,8 @@ use Slim\Routing\Router;
  *
  * @api
  */
-class App implements RouteCollectionInterface, MiddlewareCollectionInterface
+class App implements RouteCollectionInterface
 {
-    use MiddlewareAwareTrait;
     use RouteCollectionTrait;
 
     /**
@@ -91,7 +88,7 @@ class App implements RouteCollectionInterface, MiddlewareCollectionInterface
         ServerRequestCreatorInterface $serverRequestCreator,
         RequestHandlerInterface $requestHandler,
         Router $router,
-        EmitterInterface $emitter
+        EmitterInterface $emitter,
     ) {
         $this->container = $container;
         $this->serverRequestCreator = $serverRequestCreator;

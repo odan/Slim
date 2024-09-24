@@ -17,7 +17,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Slim\Enums\MiddlewareOrder;
 use Slim\Interfaces\ContainerResolverInterface;
 
 final class MiddlewareResolver
@@ -26,31 +25,24 @@ final class MiddlewareResolver
 
     private ContainerResolverInterface $containerResolver;
 
-    private MiddlewareOrder $middlewareOrder;
-
     public function __construct(
         ContainerInterface $container,
         ContainerResolverInterface $containerResolver,
-        MiddlewareOrder $middlewareOrder = MiddlewareOrder::FIFO
     ) {
         $this->container = $container;
         $this->containerResolver = $containerResolver;
-        $this->middlewareOrder = $middlewareOrder;
     }
 
     /**
      * Resolve the middleware stack.
      *
-     * @param array<int,mixed> $queue
+     * @param array $queue
      *
      * @return array<int,mixed>
      */
     public function resolveStack(array $queue): array
     {
-        if ($this->middlewareOrder === MiddlewareOrder::LIFO) {
-            $queue = array_reverse($queue);
-        }
-
+        // @todo respect
         foreach ($queue as $key => $value) {
             $queue[$key] = $this->resolveMiddleware($value);
         }
@@ -65,12 +57,12 @@ final class MiddlewareResolver
     {
         $middleware = $this->containerResolver->resolve($middleware);
 
-        if (is_callable($middleware)) {
-            return $this->addCallable($middleware);
-        }
-
         if ($middleware instanceof MiddlewareInterface) {
             return $middleware;
+        }
+
+        if (is_callable($middleware)) {
+            return $this->addCallable($middleware);
         }
 
         throw new RuntimeException('A middleware must be an object or callable that implements "MiddlewareInterface".');
@@ -101,7 +93,7 @@ final class MiddlewareResolver
 
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 return ($this->middleware)($request, $handler);
             }

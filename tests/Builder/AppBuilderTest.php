@@ -17,7 +17,7 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Builder\AppBuilder;
 use Slim\Container\DefaultDefinitions;
-use Slim\Enums\MiddlewareOrder;
+use Slim\Container\HttpDefinitions;
 use Slim\Middleware\EndpointMiddleware;
 use Slim\Middleware\RoutingMiddleware;
 use Slim\Tests\Traits\AppTestTrait;
@@ -84,6 +84,8 @@ final class AppBuilderTest extends TestCase
         $builder = new AppBuilder();
         $builder->setContainerFactory(function () {
             $defaults = (new DefaultDefinitions())->__invoke();
+            $defaults = array_merge($defaults, (new HttpDefinitions())->__invoke());
+
             $defaults['foo'] = 'bar';
 
             return new Container($defaults);
@@ -106,35 +108,12 @@ final class AppBuilderTest extends TestCase
         $this->assertSame('bar', (string)$response->getBody());
     }
 
-    public function testSetMiddlewareOrderFifo(): void
+    public function testMiddlewareOrderFifo(): void
     {
         $builder = new AppBuilder();
-        $builder->setMiddlewareOrder(MiddlewareOrder::FIFO);
         $app = $builder->build();
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
-
-        $request = $app->getContainer()
-            ->get(ServerRequestFactoryInterface::class)
-            ->createServerRequest('GET', '/');
-
-        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
-            $response->getBody()->write('OK');
-
-            return $response;
-        });
-
-        $response = $app->handle($request);
-        $this->assertSame('OK', (string)$response->getBody());
-    }
-
-    public function testSetMiddlewareOrderLifo(): void
-    {
-        $builder = new AppBuilder();
-        $builder->setMiddlewareOrder(MiddlewareOrder::LIFO);
-        $app = $builder->build();
-        $app->add(EndpointMiddleware::class);
-        $app->add(RoutingMiddleware::class);
 
         $request = $app->getContainer()
             ->get(ServerRequestFactoryInterface::class)

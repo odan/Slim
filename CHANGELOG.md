@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New `AppBuilder` to create a Slim App instance for different scenarios. Replaces the `AppFactory`.
 - Unified DI container resolution. All the factory logic has been removed and moved to the DI container. This reduces the internal complexity by delegating the building logic into the DI container.
-- Provide FIFO (first in, first out) middleware order support. FIFO is used as default but can be changed to LIFO using the AppBuilder.
+- Provide FIFO (first in, first out) middleware order support. LIFO is not supported anymore.
 - Optimized internal routing concept for better separation of concern and flexibility.
     - `RoutingMiddleware` handles the routing process.
     - `EndpointMiddleware` processes the routing results and invokes the controller/action handler.
@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+* Remove LIFO middleware order support. Use FIFO instead.
 * Router cache file support (File IO was never sufficient. PHP OpCache is much faster)
 * The `$app->redirect()` method because it was not aware of the basePath. Use the `UrlGenerator` instead.
 * The route `setArguments` and `setArgument` methods. Use a middleware for custom route arguments now.
