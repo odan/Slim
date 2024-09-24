@@ -22,8 +22,6 @@ final class UrlGenerator implements UrlGeneratorInterface
 
     private Std $routeParser;
 
-    private ?string $basePath;
-
     public function __construct(Router $router)
     {
         $this->router = $router;
@@ -142,12 +140,5 @@ final class UrlGenerator implements UrlGeneratorInterface
         }
 
         return $segments;
-    }
-
-    public function setBasePath(?string $basePath): self
-    {
-        $this->basePath = $basePath;
-
-        return $this;
     }
 }

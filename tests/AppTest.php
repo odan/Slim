@@ -438,7 +438,10 @@ final class AppTest extends TestCase
             return $handler->handle($request);
         };
 
-        $outgoingMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($trace) {
+        $outgoingMiddleware = function (
+            ServerRequestInterface $request,
+            RequestHandlerInterface $handler
+        ) use ($trace) {
             $response = $handler->handle($request);
             $response->getBody()->write('_OUTGOING_');
             $trace->push('_OUTGOING_');
@@ -455,7 +458,10 @@ final class AppTest extends TestCase
 
         // Add middleware to group
         $app->group('/api', function (RouteGroup $group) use ($trace) {
-            $group->get('/users', function (ServerRequestInterface $request, ResponseInterface $response) use ($trace) {
+            $group->get('/users', function (
+                ServerRequestInterface $request,
+                ResponseInterface $response
+            ) use ($trace) {
                 $trace->push('_ROUTE1_');
                 $response->getBody()->write('_ROUTE1_');
 
