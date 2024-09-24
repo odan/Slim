@@ -34,6 +34,7 @@ use Slim\Interfaces\ServerRequestCreatorInterface;
 use Slim\Media\MediaType;
 use Slim\Media\MediaTypeDetector;
 use Slim\Middleware\BodyParsingMiddleware;
+use Slim\Middleware\ExceptionHandlingMiddleware;
 use Slim\Middleware\ExceptionLoggingMiddleware;
 use Slim\RequestHandler\MiddlewareRequestHandler;
 use Slim\Routing\Router;
@@ -85,6 +86,12 @@ final class DefaultDefinitions
 
             EmitterInterface::class => function () {
                 return new ResponseEmitter();
+            },
+
+            ExceptionHandlingMiddleware::class => function (ContainerInterface $container) {
+                $handler = $container->get(ExceptionHandlerInterface::class);
+
+                return (new ExceptionHandlingMiddleware())->withExceptionHandler($handler);
             },
 
             ExceptionHandlerInterface::class => function (ContainerInterface $container) {

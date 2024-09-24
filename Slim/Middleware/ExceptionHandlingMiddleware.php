@@ -27,19 +27,26 @@ use Throwable;
  */
 final class ExceptionHandlingMiddleware implements MiddlewareInterface
 {
-    private ExceptionHandlerInterface $exceptionHandler;
-
-    public function __construct(ExceptionHandlerInterface $exceptionHandler)
-    {
-        $this->exceptionHandler = $exceptionHandler;
-    }
+    private ?ExceptionHandlerInterface $exceptionHandler = null;
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
             return $handler->handle($request);
         } catch (Throwable $exception) {
-            return ($this->exceptionHandler)($request, $exception);
+            if ($this->exceptionHandler) {
+                return ($this->exceptionHandler)($request, $exception);
+            }
+
+            throw $exception;
         }
+    }
+
+    public function withExceptionHandler(ExceptionHandlerInterface $exceptionHandler): self
+    {
+        $clone = clone $this;
+        $clone->exceptionHandler = $exceptionHandler;
+
+        return $clone;
     }
 }
