@@ -2,7 +2,6 @@
 
 namespace Slim\Routing;
 
-use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
 use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
@@ -19,13 +18,13 @@ use function is_string;
 
 final class UrlGenerator implements UrlGeneratorInterface
 {
-    private RouteCollector $routeCollector;
+    private Router $router;
 
     private Std $routeParser;
 
     public function __construct(Router $router)
     {
-        $this->routeCollector = $router->getRouteCollector();
+        $this->router = $router;
         $this->routeParser = new Std();
     }
 
@@ -41,6 +40,11 @@ final class UrlGenerator implements UrlGeneratorInterface
         $url = implode('', $segments);
         if ($queryParams) {
             $url .= '?' . http_build_query($queryParams);
+        }
+
+        $basePath = $this->router->getBasePath();
+        if ($basePath) {
+            $url = $basePath . $url;
         }
 
         return $url;
@@ -69,7 +73,7 @@ final class UrlGenerator implements UrlGeneratorInterface
 
     private function getNamedRoute(string $name): Route
     {
-        $routes = $this->routeCollector->getData();
+        $routes = $this->router->getRouteCollector()->getData();
 
         $iterator = new RecursiveIteratorIterator(
             new RecursiveArrayIterator($routes, RecursiveArrayIterator::CHILD_ARRAYS_ONLY)
@@ -136,5 +140,12 @@ final class UrlGenerator implements UrlGeneratorInterface
         }
 
         return $segments;
+    }
+
+    public function setBasePath(?string $basePath): self
+    {
+        $this->basePath = $basePath;
+
+        return $this;
     }
 }
