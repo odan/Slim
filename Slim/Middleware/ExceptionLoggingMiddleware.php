@@ -30,6 +30,10 @@ final class ExceptionLoggingMiddleware implements MiddlewareInterface
         $this->logger = $logger;
     }
 
+    /**
+     * @throws Throwable
+     * @throws ErrorException
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {

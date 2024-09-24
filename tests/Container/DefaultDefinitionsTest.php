@@ -25,8 +25,9 @@ use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
-use Slim\Container\DefaultDefinitions;
+use Slim\Builder\AppBuilder;
 use Slim\Container\GuzzleDefinitions;
+use Slim\Container\HttpDefinitions;
 use Slim\Container\HttpSoftDefinitions;
 use Slim\Container\LaminasDiactorosDefinitions;
 use Slim\Container\NyholmDefinitions;
@@ -48,7 +49,7 @@ final class DefaultDefinitionsTest extends TestCase
 {
     public function testConfig(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $details = $container->get(ConfigurationInterface::class)
             ->get('display_error_details', false);
 
@@ -62,7 +63,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testApp(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $app = $container->get(App::class);
 
         $this->assertInstanceOf(App::class, $app);
@@ -70,7 +71,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testContainerResolverInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $resolver = $container->get(ContainerResolverInterface::class);
 
         $this->assertInstanceOf(ContainerResolverInterface::class, $resolver);
@@ -78,7 +79,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testRequestHandlerInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $requestHandler = $container->get(RequestHandlerInterface::class);
 
         $this->assertInstanceOf(RequestHandlerInterface::class, $requestHandler);
@@ -87,7 +88,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testServerRequestFactoryInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $requestFactory = $container->get(ServerRequestFactoryInterface::class);
 
         $this->assertInstanceOf(ServerRequestFactoryInterface::class, $requestFactory);
@@ -96,7 +97,7 @@ final class DefaultDefinitionsTest extends TestCase
     #[DataProvider('serverRequestFactoryDefinitionsProvider')]
     public function testServerRequestFactoryInterfaceWithDefinitions(callable $definition, string $instanceOf): void
     {
-        $definitions = call_user_func(new DefaultDefinitions());
+        $definitions = call_user_func(new HttpDefinitions());
         $definitions = array_merge($definitions, call_user_func($definition));
 
         $container = new Container($definitions);
@@ -120,7 +121,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testResponseFactoryInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $responseFactory = $container->get(ResponseFactoryInterface::class);
 
         $this->assertInstanceOf(ResponseFactoryInterface::class, $responseFactory);
@@ -128,7 +129,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testStreamFactoryInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $streamFactory = $container->get(StreamFactoryInterface::class);
 
         $this->assertInstanceOf(StreamFactoryInterface::class, $streamFactory);
@@ -136,7 +137,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testUriFactoryInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $uriFactory = $container->get(UriFactoryInterface::class);
 
         $this->assertInstanceOf(UriFactoryInterface::class, $uriFactory);
@@ -144,7 +145,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testUploadedFileFactoryInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $uploadedFileFactory = $container->get(UploadedFileFactoryInterface::class);
 
         $this->assertInstanceOf(UploadedFileFactoryInterface::class, $uploadedFileFactory);
@@ -152,7 +153,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testEmitterInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $emitter = $container->get(EmitterInterface::class);
 
         $this->assertInstanceOf(ResponseEmitter::class, $emitter);
@@ -160,7 +161,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testRouter(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $router = $container->get(Router::class);
 
         $this->assertInstanceOf(Router::class, $router);
@@ -168,7 +169,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testRequestHandlerInvocationStrategyInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $invocationStrategy = $container->get(RequestHandlerInvocationStrategyInterface::class);
 
         $this->assertInstanceOf(RequestResponse::class, $invocationStrategy);
@@ -176,7 +177,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testExceptionHandlingMiddleware(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $exceptionHandlingMiddleware = $container->get(ExceptionHandlingMiddleware::class);
 
         $this->assertInstanceOf(ExceptionHandlingMiddleware::class, $exceptionHandlingMiddleware);
@@ -184,7 +185,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testBodyParsingMiddleware(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $bodyParsingMiddleware = $container->get(BodyParsingMiddleware::class);
 
         $this->assertInstanceOf(BodyParsingMiddleware::class, $bodyParsingMiddleware);
@@ -192,7 +193,7 @@ final class DefaultDefinitionsTest extends TestCase
 
     public function testLoggerInterface(): void
     {
-        $container = new Container((new DefaultDefinitions())->__invoke());
+        $container = (new AppBuilder())->build()->getContainer();
         $logger = $container->get(LoggerInterface::class);
 
         $this->assertInstanceOf(LoggerInterface::class, $logger);

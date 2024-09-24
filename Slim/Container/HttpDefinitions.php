@@ -17,6 +17,9 @@ use RuntimeException;
 use Slim\Http\Factory\DecoratedServerRequestFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
+/**
+ * Selects the appropriate PSR-17 implementations based on the available libraries.
+ */
 final class HttpDefinitions
 {
     /**

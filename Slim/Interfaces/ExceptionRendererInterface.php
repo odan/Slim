@@ -20,6 +20,6 @@ interface ExceptionRendererInterface
         ServerRequestInterface $request,
         ResponseInterface $response,
         ?Throwable $exception = null,
-        bool $displayErrorDetails = false
+        bool $displayErrorDetails = false,
     ): ResponseInterface;
 }

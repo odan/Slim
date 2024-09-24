@@ -19,7 +19,6 @@ use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Interfaces\ContainerResolverInterface;
 use Slim\Interfaces\ExceptionHandlerInterface;
 use Slim\Interfaces\ExceptionRendererInterface;
-use Slim\Media\MediaType;
 use Slim\Media\MediaTypeDetector;
 use Throwable;
 
@@ -39,14 +38,14 @@ final class ExceptionHandler implements ExceptionHandlerInterface
 
     private bool $displayErrorDetails = false;
 
-    private string $defaultMediaType = MediaType::TEXT_HTML;
+    private string $defaultMediaType = 'text/html';
 
     private array $handlers = [];
 
     public function __construct(
         ContainerResolverInterface $resolver,
         ResponseFactoryInterface $responseFactory,
-        MediaTypeDetector $mediaTypeDetector
+        MediaTypeDetector $mediaTypeDetector,
     ) {
         $this->resolver = $resolver;
         $this->responseFactory = $responseFactory;
@@ -139,7 +138,7 @@ final class ExceptionHandler implements ExceptionHandlerInterface
     private function createResponse(
         int $statusCode,
         string $contentType,
-        Throwable $exception
+        Throwable $exception,
     ): ResponseInterface {
         $response = $this->responseFactory
             ->createResponse($statusCode)
