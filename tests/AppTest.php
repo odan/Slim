@@ -566,7 +566,7 @@ final class AppTest extends TestCase
     public function testInvokeWithMatchingRouteWithNamedParameterRequestResponseArgStrategy(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions([
+        $builder->addDefinitions([
             RequestHandlerInvocationStrategyInterface::class => fn () => new RequestResponseArgs(),
         ]);
         $app = $builder->build();
@@ -595,7 +595,7 @@ final class AppTest extends TestCase
     public function testInvokeWithMatchingRouteWithNamedParameterRequestResponseNamedArgsStrategy(): void
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions([
+        $builder->addDefinitions([
             RequestHandlerInvocationStrategyInterface::class => fn () => new RequestResponseNamedArgs(),
         ]);
         $app = $builder->build();
@@ -653,7 +653,7 @@ final class AppTest extends TestCase
             }
         };
 
-        $builder->setDefinitions([
+        $builder->addDefinitions([
             'handler' => $handler,
         ]);
 
@@ -686,7 +686,7 @@ final class AppTest extends TestCase
             }
         };
 
-        $builder->setDefinitions([
+        $builder->addDefinitions([
             'handler' => function () use ($handler) {
                 return $handler;
             },
@@ -715,7 +715,7 @@ final class AppTest extends TestCase
 
         $builder = new AppBuilder();
 
-        $builder->setDefinitions([
+        $builder->addDefinitions([
             'handler' => new class {
                 public function foo()
                 {
@@ -829,7 +829,7 @@ final class AppTest extends TestCase
     {
         $builder = new AppBuilder();
 
-        $builder->setDefinitions(
+        $builder->addDefinitions(
             [
                 ServerRequestCreatorInterface::class => function () {
                     return new class implements ServerRequestCreatorInterface {

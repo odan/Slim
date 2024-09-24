@@ -20,7 +20,7 @@ trait AppTestTrait
     protected function createApp(array $definitions = []): App
     {
         $builder = new AppBuilder();
-        $builder->setDefinitions($definitions);
+        $builder->addDefinitions($definitions);
 
         return $builder->build();
     }
