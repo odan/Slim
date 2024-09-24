@@ -53,7 +53,7 @@ final class ExceptionHandlingMiddlewareTest extends TestCase
             }
         };
 
-        $app->add(new ExceptionHandlingMiddleware($exceptionHandler));
+        $app->add((new ExceptionHandlingMiddleware())->withExceptionHandler($exceptionHandler));
         $app->add(RoutingMiddleware::class);
         $app->add(EndpointMiddleware::class);
 
