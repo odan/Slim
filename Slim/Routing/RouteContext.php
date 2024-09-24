@@ -21,15 +21,15 @@ final class RouteContext
 
     public const BASE_PATH = '__basePath__';
 
-    private UrlGenerator $urlGenerator;
-
     private RoutingResults $routingResults;
+
+    private UrlGenerator $urlGenerator;
 
     private ?string $basePath;
 
     private function __construct(
-        UrlGenerator $urlGenerator,
         RoutingResults $routingResults,
+        UrlGenerator $urlGenerator,
         ?string $basePath = null
     ) {
         $this->urlGenerator = $urlGenerator;
@@ -39,8 +39,13 @@ final class RouteContext
 
     public static function fromRequest(ServerRequestInterface $request): self
     {
+        /* @var UrlGenerator|null $urlGenerator */
         $urlGenerator = $request->getAttribute(self::URL_GENERATOR);
+
+        /* @var RoutingResults|null $routingResults */
         $routingResults = $request->getAttribute(self::ROUTING_RESULTS);
+
+        /* @var string|null $basePath */
         $basePath = $request->getAttribute(self::BASE_PATH);
 
         if ($urlGenerator === null) {
@@ -55,10 +60,7 @@ final class RouteContext
             );
         }
 
-        /** @var UrlGenerator $urlGenerator */
-        /** @var RoutingResults $routingResults */
-        /** @var string|null $basePath */
-        return new self($urlGenerator, $routingResults, $basePath);
+        return new self($routingResults, $urlGenerator, $basePath);
     }
 
     public function getUrlGenerator(): UrlGenerator
@@ -74,5 +76,20 @@ final class RouteContext
     public function getBasePath(): ?string
     {
         return $this->basePath;
+    }
+
+    public function getRoute(): ?Route
+    {
+        return $this->routingResults->getRoute();
+    }
+
+    public function getArguments(): array
+    {
+        return $this->routingResults->getRouteArguments();
+    }
+
+    public function getArgument(string $key): mixed
+    {
+        return $this->routingResults->getRouteArgument($key);
     }
 }
