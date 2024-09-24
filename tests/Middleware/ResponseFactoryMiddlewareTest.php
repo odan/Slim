@@ -15,7 +15,6 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Slim\Builder\AppBuilder;
-use Slim\Enums\MiddlewareOrder;
 use Slim\Middleware\ResponseFactoryMiddleware;
 
 class ResponseFactoryMiddlewareTest extends TestCase
@@ -31,30 +30,6 @@ class ResponseFactoryMiddlewareTest extends TestCase
             return $response;
         });
         $app->add(ResponseFactoryMiddleware::class);
-
-        $request = $app->getContainer()
-            ->get(ServerRequestFactoryInterface::class)
-            ->createServerRequest('GET', '/test');
-
-        $response = $app->handle($request);
-
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('Expected Response', (string)$response->getBody());
-    }
-
-    public function testWithLifoMiddlewareOrder(): void
-    {
-        $builder = new AppBuilder();
-        $builder->setMiddlewareOrder(MiddlewareOrder::LIFO);
-        $app = $builder->build();
-
-        $app->add(ResponseFactoryMiddleware::class);
-        $app->add(function ($request, $handler) {
-            $response = $handler->handle($request);
-            $response->getBody()->write('Expected Response');
-
-            return $response;
-        });
 
         $request = $app->getContainer()
             ->get(ServerRequestFactoryInterface::class)

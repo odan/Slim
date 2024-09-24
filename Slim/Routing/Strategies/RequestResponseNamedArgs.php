@@ -23,7 +23,7 @@ final class RequestResponseNamedArgs implements RequestHandlerInvocationStrategy
         callable $callable,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $routeArguments
+        array $routeArguments,
     ): ResponseInterface {
         return $callable($request, $response, ...$routeArguments);
     }

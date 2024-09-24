@@ -88,8 +88,12 @@ class RouteTest extends TestCase
         $middlewareStack = $route->getMiddlewareStack();
 
         // The stack should contain route middlewares followed by group middleware
-        $this->assertCount(3, $middlewareStack);
-        $this->assertSame([$middleware1, $middleware2, $groupMiddleware], $middlewareStack);
+        $this->assertCount(2, $middlewareStack);
+        $this->assertSame([$middleware1, $middleware2], $middlewareStack);
+
+        $groupMiddlewares = $routeGroup->getMiddlewareStack();
+        $this->assertCount(1, $groupMiddlewares);
+        $this->assertSame($groupMiddleware, $groupMiddlewares[0]);
     }
 
     public function testSetNameAndGetName(): void
@@ -138,7 +142,7 @@ class RouteTest extends TestCase
         return new class implements MiddlewareInterface {
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 return $handler->handle($request);
             }

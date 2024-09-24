@@ -39,7 +39,7 @@ final class XmlExceptionRenderer implements ExceptionRendererInterface
         ServerRequestInterface $request,
         ResponseInterface $response,
         ?Throwable $exception = null,
-        bool $displayErrorDetails = false
+        bool $displayErrorDetails = false,
     ): ResponseInterface {
         $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;

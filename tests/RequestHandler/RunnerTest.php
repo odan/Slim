@@ -42,12 +42,14 @@ final class RunnerTest extends TestCase
             }
         };
 
-        $runner = new Runner([
-            $middleware,
-            function () use ($response) {
-                return $response->withHeader('X-Result', 'Success');
-            },
-        ]);
+        $runner = new Runner(
+            [
+                $middleware,
+                function () use ($response) {
+                    return $response->withHeader('X-Result', 'Success');
+                },
+            ]
+        );
 
         $result = $runner->handle($request);
 

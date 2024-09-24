@@ -25,7 +25,7 @@ final class RequestResponseArgs implements RequestHandlerInvocationStrategyInter
         callable $callable,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $routeArguments
+        array $routeArguments,
     ): ResponseInterface {
         return $callable($request, $response, ...array_values($routeArguments));
     }

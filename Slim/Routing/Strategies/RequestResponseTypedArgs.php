@@ -31,7 +31,7 @@ final class RequestResponseTypedArgs implements RequestHandlerInvocationStrategy
         callable $callable,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $routeArguments
+        array $routeArguments,
     ): ResponseInterface {
         $routeArguments['request'] = $request;
         $routeArguments['response'] = $response;

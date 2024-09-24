@@ -23,7 +23,7 @@ final class RequestResponse implements RequestHandlerInvocationStrategyInterface
         callable $callable,
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $routeArguments
+        array $routeArguments,
     ): ResponseInterface {
         return $callable($request, $response, $routeArguments);
     }
