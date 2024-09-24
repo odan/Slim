@@ -16,6 +16,7 @@ use FastRoute\RouteParser\Std;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Slim\App;
 use Slim\Configuration\Config;
 use Slim\Emitter\ResponseEmitter;
@@ -30,7 +31,6 @@ use Slim\Interfaces\EmitterInterface;
 use Slim\Interfaces\ExceptionHandlerInterface;
 use Slim\Interfaces\RequestHandlerInvocationStrategyInterface;
 use Slim\Interfaces\ServerRequestCreatorInterface;
-use Slim\Logging\StdLogger;
 use Slim\Media\MediaType;
 use Slim\Media\MediaTypeDetector;
 use Slim\Middleware\BodyParsingMiddleware;
@@ -47,19 +47,10 @@ use Slim\Routing\Strategies\RequestResponse;
  *
  * This class ensures that the Slim application can be properly instantiated with the necessary
  * components and services.
- *
- * It also selects the appropriate PSR-17 implementations based on the available libraries.
  */
 final class DefaultDefinitions
 {
     public function __invoke(): array
-    {
-        $definitions = $this->getDefaultDefinitions();
-
-        return array_merge($definitions, call_user_func(new HttpDefinitions()));
-    }
-
-    private function getDefaultDefinitions(): array
     {
         return [
             App::class => function (ContainerInterface $container) {
@@ -80,8 +71,12 @@ final class DefaultDefinitions
                     ->withDefaultBodyParsers();
             },
 
-            ConfigurationInterface::class => function (ContainerInterface $container) {
+            Config::class => function (ContainerInterface $container) {
                 return new Config($container->has('settings') ? (array)$container->get('settings') : []);
+            },
+
+            ConfigurationInterface::class => function (ContainerInterface $container) {
+                return $container->get(Config::class);
             },
 
             ContainerResolverInterface::class => function (ContainerInterface $container) {
@@ -105,6 +100,7 @@ final class DefaultDefinitions
                     ->withDefaultMediaType(MediaType::TEXT_HTML);
 
                 return $exceptionHandler
+                    ->withoutHandlers()
                     ->withHandler(MediaType::APPLICATION_JSON, JsonExceptionRenderer::class)
                     ->withHandler(MediaType::TEXT_HTML, HtmlExceptionRenderer::class)
                     ->withHandler(MediaType::APPLICATION_XHTML_XML, HtmlExceptionRenderer::class)
@@ -126,7 +122,7 @@ final class DefaultDefinitions
             },
 
             LoggerInterface::class => function () {
-                return new StdLogger();
+                return new NullLogger();
             },
 
             RequestHandlerInterface::class => function (ContainerInterface $container) {
