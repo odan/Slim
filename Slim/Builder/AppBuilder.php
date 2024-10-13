@@ -83,6 +83,8 @@ final class AppBuilder
      *
      * @param array|string $definitions An array of service definitions or a class name providing them
      *
+     * @throws RuntimeException
+     *
      * @return self The current AppBuilder instance for method chaining
      */
     public function addDefinitions(array|string $definitions): self

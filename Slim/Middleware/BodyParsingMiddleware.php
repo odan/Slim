@@ -109,6 +109,11 @@ final class BodyParsingMiddleware implements MiddlewareInterface
             ->withBodyParser(MediaType::TEXT_XML, $xmlCallable);
     }
 
+    /**
+     * Parse request body.
+     *
+     * @throws RuntimeException
+     */
     private function parseBody(ServerRequestInterface $request): array|object|null
     {
         // Negotiate content type

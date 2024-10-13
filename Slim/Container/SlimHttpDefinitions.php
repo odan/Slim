@@ -139,7 +139,7 @@ final class SlimHttpDefinitions
                     return $uriFactory;
                 }
 
-                throw new RuntimeException('Could not instantiate a URI factory.');
+                throw new RuntimeException('Could not instantiate a UriFactory.');
             },
             UploadedFileFactoryInterface::class => function (ContainerInterface $container) use ($that) {
                 $factoryClasses = [

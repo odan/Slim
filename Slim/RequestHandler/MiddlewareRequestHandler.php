@@ -16,7 +16,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Container\MiddlewareResolver;
 
 /**
- * An abstract PSR-15 request handler.
+ * Middleware (PSR-15) request handler.
  */
 final class MiddlewareRequestHandler implements RequestHandlerInterface
 {

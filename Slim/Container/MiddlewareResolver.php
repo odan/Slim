@@ -51,6 +51,8 @@ final class MiddlewareResolver
 
     /**
      * Add a new middleware to the stack.
+     *
+     * @throws RuntimeException
      */
     private function resolveMiddleware(MiddlewareInterface|callable|string|array $middleware): MiddlewareInterface
     {
@@ -69,6 +71,8 @@ final class MiddlewareResolver
 
     /**
      * Add a (non-standard) callable middleware to the stack
+     *
+     * @throws RuntimeException
      */
     private function addCallable(callable $middleware): MiddlewareInterface
     {
