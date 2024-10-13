@@ -42,7 +42,6 @@ final class MiddlewareResolver
      */
     public function resolveStack(array $queue): array
     {
-        // @todo respect
         foreach ($queue as $key => $value) {
             $queue[$key] = $this->resolveMiddleware($value);
         }
