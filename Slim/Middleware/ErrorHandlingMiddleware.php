@@ -15,7 +15,6 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 final class ErrorHandlingMiddleware implements MiddlewareInterface
 {
-
     /**
      * @throws ErrorException
      */
