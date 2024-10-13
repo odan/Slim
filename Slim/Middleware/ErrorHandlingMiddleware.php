@@ -11,21 +11,17 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Converts errors into `ErrorException` instances.
+ * Converts errors into ErrorException instances.
  */
 final class ErrorHandlingMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var callable|null
-     */
-    private $errorHandler = null;
 
     /**
      * @throws ErrorException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $this->errorHandler = set_error_handler(function ($code, $message, $file, $line) {
+        $errorHandler = set_error_handler(function ($code, $message, $file, $line) {
             $level = error_reporting();
             if (($level & $code) === 0) {
                 // silent error
@@ -38,7 +34,7 @@ final class ErrorHandlingMiddleware implements MiddlewareInterface
         try {
             $response = $handler->handle($request);
         } finally {
-            if ($this->errorHandler) {
+            if ($errorHandler) {
                 restore_error_handler();
             }
         }
